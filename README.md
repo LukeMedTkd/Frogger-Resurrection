@@ -1,2 +1,2 @@
 # Frogger-Resurretion
-Ooperating System University Project
+Operating System University Project
