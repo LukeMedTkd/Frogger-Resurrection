@@ -72,8 +72,7 @@ void print_game_area(){
         for (int x = 0; x < COLS; x++) {mvwaddch(stdscr, y, x, ' ');}
     }
     attroff(COLOR_PAIR(COLOR_GRASS_ID));
-    mvprintw(LINES, 4, "cioa");
     refresh();
-    sleep(20);
+    sleep(2);
     endwin();
 }
