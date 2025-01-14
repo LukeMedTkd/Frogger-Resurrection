@@ -10,7 +10,6 @@ int main(){
     init_colors();
 
     print_game_area();
-    //play_game();
 
     return 0;
 }
