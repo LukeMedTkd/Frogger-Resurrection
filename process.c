@@ -2,9 +2,9 @@
 #include "struct.h"
 #include "utils.h"
 
-void add_node(Node **list,int stream,int y,int dir,int active){
+void add_node(Pid_node **list,int stream,int y,int dir,int active){
 
-        Node *new=(Node*)malloc(sizeof(Node));
+        Pid_node *new = (Pid_node*)malloc(sizeof(Pid_node));
         if ((new==NULL))
         {
             puts("ERRORE:");
@@ -21,7 +21,7 @@ void add_node(Node **list,int stream,int y,int dir,int active){
             *list = new;
         }
 
-        Node *current = *list;
+        Pid_node *current = *list;
         while (current->next != NULL)
         {
             current = current->next;
@@ -30,81 +30,6 @@ void add_node(Node **list,int stream,int y,int dir,int active){
     }
 
 void AssignementProcessToCrocodile(node **list);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void create_process(int* fd, Character **list, void (*func_process)(int, int*), int* func_params) {

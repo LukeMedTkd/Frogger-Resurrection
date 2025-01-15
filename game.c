@@ -18,11 +18,16 @@ void start_game(){
     gameVar.score = SCORE;
     gameVar.time = TIME;
 
+    // define args_process_function
+    int *args_process_function[2];
+
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
     for (int i = 1; i <= N_STREAM; i++){
         // randomize speed and spaq time
         for (int j = 1; j <= MAX_N_CROCODILE; i++){
+            args_process_function[0] = i;
+            args_process_function[1] = j;
             //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* params))->Creazione processo Coccodrillo
             //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
         }

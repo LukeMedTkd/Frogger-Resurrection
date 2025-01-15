@@ -11,13 +11,6 @@ typedef struct
 
 typedef struct
 {
-   pid_t* list;
-   int lenght;
-
-}Pid_node;
-
-typedef struct
-{
     int time;
     int manche;
     int score;    
@@ -28,10 +21,8 @@ typedef struct
 {
    int id;
    int y;
-   int x_entity;
-   int x_bullet;
-   int dir;
-   int active;
+   int x;
+   int sig;
 
 }Character;
 
@@ -39,6 +30,6 @@ typedef struct
 {
     Character info;
     struct node *next;
-}Node;
+}Pid_node;
 
 
