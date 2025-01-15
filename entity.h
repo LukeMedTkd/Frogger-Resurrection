@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include "process.h"
 
 #define TRUE 1
 #define FALSE 0 
@@ -23,4 +24,4 @@
 // #define FROG_POSITION_SIG 0
 #define FROG_SHOT_SIG 1
 
-//void Frog(int pipe_fds, item entity,WINDOW *game, int running);
+void frog_process(int pipe_write, int* params);

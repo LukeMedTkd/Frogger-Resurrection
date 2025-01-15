@@ -1,7 +1,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-typedef struct
+#ifndef STRUCT_H
+#define STRUCT_H
+typedef struct Msg
 {
     int id;
     int y;
@@ -16,14 +18,15 @@ typedef struct
     int score;    
 }Game_var;
 
-//list for crocodiles and its own bullet id process
+
 typedef struct
-{   
-   pid_t pid; 
+{
+   int pid;
    int id;
    int y;
    int x;
    int sig;
+
 }Character;
 
 typedef struct
@@ -32,4 +35,4 @@ typedef struct
     struct Pid_node *next;
 }Pid_node;
 
-
+#endif

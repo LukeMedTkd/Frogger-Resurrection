@@ -5,3 +5,5 @@
 #define MAX_N_CROCODILE 3
 
 
+
+void start_game();

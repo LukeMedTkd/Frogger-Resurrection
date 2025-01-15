@@ -36,13 +36,13 @@ void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), i
     }
     if(pid == PID_CHILD) {
         close(fd[PIPE_READ]);
-        addNode(&list,func_params);
+        add_node(&list,func_params);
         func_process(fd[PIPE_WRITE], func_params);
         _exit;
     }
 }
 
-void write_msg(int pipe_write, Msg msg) {
+void write_msg(int pipe_write, Msg msg){
     while(write(pipe_write, &msg, sizeof(Msg)) < 0) {
         perror("Errore in scrittura sulla pipe");
     }

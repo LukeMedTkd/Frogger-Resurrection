@@ -1,5 +1,7 @@
 #include "game.h"
 #include "struct.h"
+#include "process.h"
+#include "entity.h"
 
 /*
 1. creazione iniziale frog -> inserimento in una lista con FROG_ID perchè? va ucciso il processo
@@ -18,10 +20,15 @@ void start_game(){
     gameVar.score = SCORE;
     gameVar.time = TIME;
 
-    // define args_process_function
-    int *args_process_function[2];
+    // Define args_process_function
+    int args_process_function[2];
+    // Define fds array
+    int fd[2];
+    // Define Empty List
+    Pid_node *p_list = NULL;
 
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
+    create_process(fd, &p_list, &frog_process, NULL);
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
     for (int i = 1; i <= N_STREAM; i++){
         // randomize speed and spaq time
