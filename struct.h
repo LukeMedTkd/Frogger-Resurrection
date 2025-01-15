@@ -33,12 +33,12 @@ typedef struct
    int dir;
    int active;
 
-}character;
+}Character;
 
 typedef struct
 {
-    character info;
+    Character info;
     struct node *next;
-}node;
+}Node;
 
 
