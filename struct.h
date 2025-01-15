@@ -7,21 +7,21 @@ typedef struct
     int y;
     int x;
     int sig;
-}msg;
+}Msg;
 
 typedef struct
 {
    pid_t id;
    struct pid_node *next;
 
-}pid_node;
+}Pid_node;
 
 typedef struct
 {
     int time;
     int manche;
     int score;    
-}game_var;
+}Game_var;
 
 
 
