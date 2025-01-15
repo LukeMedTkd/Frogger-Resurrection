@@ -32,4 +32,4 @@ void InizializeCrocodileList(node **list,int stream,int y,int dir,int active){
     }
 }
 
-void AssignementProcessToCrocodile(node **list)
+void AssignementProcessToCrocodile(node **list);
