@@ -18,18 +18,18 @@ typedef struct
 
 //list for crocodiles and its own bullet id process
 typedef struct
-{
+{   
+   pid_t pid; 
    int id;
    int y;
    int x;
    int sig;
-
 }Character;
 
 typedef struct
 {
     Character info;
-    struct node *next;
+    struct Pid_node *next;
 }Pid_node;
 
 

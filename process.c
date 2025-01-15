@@ -1,8 +1,9 @@
 #include "process.h"
 #include "struct.h"
 #include "utils.h"
+#include "entity.h"
 
-void add_node(Pid_node **list,int stream,int y,int dir,int active){
+void add_node(Pid_node **list,int* func_params){
 
         Pid_node *new = (Pid_node*)malloc(sizeof(Pid_node));
         if ((new==NULL))
@@ -10,13 +11,11 @@ void add_node(Pid_node **list,int stream,int y,int dir,int active){
             puts("ERRORE:");
             exit(-1);
         }
-        new->info.id=(stream*10)+i;
-        //new->info.x_entity=dir;
-        //new->info.x_bullet
-        new->info.dir = dir;
-        new->next = NULL;
-        new->info.active = 0;//non è ancora stato aseegnato a nessun processo
-
+        
+        new->info.pid=getpid();//il figlio recupera il proprio pid
+        new->info.id = (func_params[0]*10)+func_params[1];
+        new->next = NULL;   
+        
         if (*list == NULL){
             *list = new;
         }
@@ -27,12 +26,9 @@ void add_node(Pid_node **list,int stream,int y,int dir,int active){
             current = current->next;
         }
         current->next = new;
-    }
+}
 
-void AssignementProcessToCrocodile(node **list);
-
-
-void create_process(int* fd, Character **list, void (*func_process)(int, int*), int* func_params) {
+void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params) {
     pid_t pid = fork();
     if(pid < 0) {
         //signal_all(*pids, SIGKILL);
@@ -40,13 +36,11 @@ void create_process(int* fd, Character **list, void (*func_process)(int, int*), 
     }
     if(pid == PID_CHILD) {
         close(fd[PIPE_READ]);
+        addNode(&list,func_params);
         func_process(fd[PIPE_WRITE], func_params);
         _exit;
     }
-    addNode();
 }
-
-
 
 void write_msg(int pipe_write, Msg msg) {
     while(write(pipe_write, &msg, sizeof(Msg)) < 0) {

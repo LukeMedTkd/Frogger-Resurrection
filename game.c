@@ -28,7 +28,7 @@ void start_game(){
         for (int j = 1; j <= MAX_N_CROCODILE; i++){
             args_process_function[0] = i;
             args_process_function[1] = j;
-            //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* params))->Creazione processo Coccodrillo
+            //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* args_process_function))->Creazione processo Coccodrillo
             //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
         }
         
