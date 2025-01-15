@@ -13,22 +13,22 @@ for i=0; i < n_manches, i++
  */
 void start_game(){
     //set game variables
-    game_var gameVar;
+    Game_var gameVar;
     gameVar.manche = MANCHES;
     gameVar.score = SCORE;
     gameVar.time = TIME;
 
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
-    for (int i = 0; i < MANCHES; i++)
-    {
-        //reset default position-> posizione rana, tempo, score
-        //Randomizzare velocità e settare direzione dei flussi
-        for (int i = 0; i < 8; i++)
-        {
+    for (int i = 0; i < 8; i++){
             //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* params))->Creazione processo Coccodrillo
             //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
-        }
+    }
+    
+    for (int i = 0; i < MANCHES; i++){
+        //reset default position-> posizione rana, tempo, score
+        //Randomizzare velocità e settare direzione dei flussi
+        
         /*ProcessoControllo
         -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
         -Stampa Area di gioco
