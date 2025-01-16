@@ -9,7 +9,5 @@ int main(){
     //set colors
     init_colors();
 
-    print_game_area();
-
     return 0;
 }

@@ -45,4 +45,3 @@
 // Function's prototypes
 void init_screen();
 void init_colors();
-void print_game_area();

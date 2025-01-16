@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "sprites.h"
 #include "struct.h"
 /*
 1.frogProcess-> (pipe, *params)
@@ -66,9 +67,11 @@ void parent_process(int pipe_read, Pid_node **list){
     // Manche Loop
     while(!manche_ended){
 
-        // Read msg from the pipe
-        msg = read_msg(pipe_read);
+        // Print Game Area
+        print_game_area();
 
+        // Read msg from the pipes
+        msg = read_msg(pipe_read);
         switch (msg.id){
 
         // Msg from FROG
@@ -78,10 +81,12 @@ void parent_process(int pipe_read, Pid_node **list){
             if(msg.sig == FROG_POSITION_SIG){
                 (*list)->info.x += msg.x;
                 (*list)->info.y += msg.y;
+                //print_frog();
+
             }
 
             // FROG has shotted
-            if(msg.sig == FROG_POSITION_SIG){
+            if(msg.sig == FROG_SHOT_SIG){
                 // TO DO
             }
 
