@@ -3,6 +3,19 @@
 #include "utils.h"
 #include "entity.h"
 
+void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params) {
+    pid_t pid = fork();
+    if(pid < 0) {
+        //signal_all(*pids, SIGKILL);
+        perror("Pipe call");
+    }
+    if(pid == PID_CHILD) {
+        close(fd[PIPE_READ]);
+        add_node(list,func_params);
+        func_process(fd[PIPE_WRITE], func_params);
+    }
+}
+
 void add_node(Pid_node **list,int* func_params){
 
         Pid_node *new = (Pid_node *)malloc(sizeof(Pid_node));
@@ -31,21 +44,16 @@ void add_node(Pid_node **list,int* func_params){
         }
 }
 
-void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params) {
-    pid_t pid = fork();
-    if(pid < 0) {
-        //signal_all(*pids, SIGKILL);
-        perror("Pipe call");
-    }
-    if(pid == PID_CHILD) {
-        close(fd[PIPE_READ]);
-        add_node(list,func_params);
-        func_process(fd[PIPE_WRITE], func_params);
-    }
-}
-
 void write_msg(int pipe_write, Msg msg){
     while(write(pipe_write, &msg, sizeof(Msg)) < 0) {
         perror("Errore in scrittura sulla pipe");
     }
+}
+
+Msg read_msg(int pipe_read){
+    Msg msg;
+    while(read(pipe_read, &msg, sizeof(Msg)) < 0) {
+        perror("Errore in lettura sulla pipe");
+    }
+    return msg;
 }

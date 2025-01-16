@@ -52,3 +52,14 @@ void frog_process(int pipe_write, int* params){
     }
 }
 
+void reset_frog_position(Pid_node **list){
+    (*list)->info.x = FROG_INIT_X;
+    (*list)->info.y = FROG_INIT_Y;
+}
+
+void parent_process(int pipe_read, Pid_node **list){
+    bool manche_ended = FALSE; // Flag
+    Msg msg; // Define msg to store pipe message
+
+
+}

@@ -14,7 +14,6 @@ void init_colors(){
 
     // Enable colors
     start_color();
-    use_default_colors();
 
     init_color(COLOR_BLACK, 0, 0, 0);
     init_color(COLOR_WHITE, 255, 255, 255);
