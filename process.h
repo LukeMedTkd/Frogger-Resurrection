@@ -12,3 +12,4 @@
 void add_node(Pid_node **list,int* func_params);
 void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params);
 void write_msg(int pipe_write, Msg msg);
+void delete_list(Pid_node **list);
