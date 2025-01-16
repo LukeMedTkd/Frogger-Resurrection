@@ -5,7 +5,7 @@
 
 void add_node(Pid_node **list,int* func_params){
 
-        Pid_node *new = (Pid_node*)malloc(sizeof(Pid_node));
+        Pid_node *new = (Pid_node *)malloc(sizeof(Pid_node));
         if ((new==NULL))
         {
             puts("ERRORE:");
@@ -18,14 +18,17 @@ void add_node(Pid_node **list,int* func_params){
         
         if (*list == NULL){
             *list = new;
+            return;
         }
 
-        Pid_node *current = *list;
-        while (current->next != NULL)
-        {
-            current = current->next;
+        else{
+            Pid_node *current = *list;
+            while (current->next != NULL)
+            {
+                current = current->next;
+            }
+            current->next = new;
         }
-        current->next = new;
 }
 
 void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params) {

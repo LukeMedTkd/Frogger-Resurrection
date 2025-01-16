@@ -3,7 +3,8 @@
 
 #ifndef STRUCT_H
 #define STRUCT_H
-typedef struct Msg
+
+typedef struct
 {
     int id;
     int y;
