@@ -57,3 +57,12 @@ Msg read_msg(int pipe_read){
     }
     return msg;
 }
+
+void delete_list(Pid_node **list){
+    Pid_node *tmp;
+    while (*list != NULL){
+        tmp = *list;
+        *list = (*list)->next;
+        free(tmp);//deallocate memory
+    }
+}
