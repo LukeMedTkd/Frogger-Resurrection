@@ -30,7 +30,7 @@ typedef struct
 
 }Character;
 
-typedef struct
+typedef struct Pid_node
 {
     Character info;
     struct Pid_node *next;
