@@ -59,8 +59,9 @@ void start_game(){
         reset_frog_position(&p_list);
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
         
-        /* PARENT PROCESS
-
+        //PARENT PROCESS
+        parent_process(fd[PIPE_READ], &p_list);
+        /* 
         -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
         -Stampa Area di gioco
         -Collisioni:

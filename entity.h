@@ -21,7 +21,7 @@
 // #define FROG_LIM_LEFT 0
 // #define FROG_LIM_RIGHT (MAIN_COLS-FROG_DIM_X)
 // #define FROG_NOT_ON_CROCCODILE (-1)
-// #define FROG_POSITION_SIG 0
+#define FROG_POSITION_SIG 0
 #define FROG_SHOT_SIG 1
 
 void frog_process(int pipe_write, int* params);
