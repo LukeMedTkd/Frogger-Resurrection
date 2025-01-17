@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "entity.h"
 #include "sprites.h"
 
 void print_game_area(){
@@ -30,6 +31,37 @@ void print_game_area(){
         for (int x = 0; x < COLS; x++) {mvwaddch(stdscr, y, x, ' ');}
     }
     attroff(COLOR_PAIR(COLOR_GRASS_ID));
-    refresh();
-    endwin();
+}
+
+void print_frog(){
+    // Defined Frog Sprite
+    static const char* frog[4][6]={
+       { "","","","▖","▗",""},
+       { "", "", "▟", "▀", "▙", ""},
+       { "▝", "▟", "▀", "▀", "▙", "▘"},
+    };
+
+    attron(COLOR_PAIR(COLOR_FROG_ID));
+    for (int i = 0; i < FROG_DIM_Y; i++)
+    {
+        for (int j = 0; j < FROG_DIM_X; j++)
+        {
+            if (i==0)
+            {
+                attron(COLOR_PAIR(COLOR_EYE_ID));
+                mvwprintw(stdscr,i+5,j+5,"%s",frog[i][j]);
+                attroff(COLOR_PAIR(COLOR_EYE_ID));
+                continue;
+            }
+            else if(i==2 && (j==0  || j==1 ||  j==4 || j==5))
+            {
+                attron(COLOR_PAIR(COLOR_LEGS_ID));
+                mvwprintw(stdscr,i+5,j+5,"%s",frog[i][j]);
+                attroff(COLOR_PAIR(COLOR_LEGS_ID));
+                continue;
+            }
+            mvwprintw(stdscr,i+5,j+5,"%s",frog[i][j]);
+        }
+    }
+    attroff(COLOR_PAIR(COLOR_FROG_ID));
 }

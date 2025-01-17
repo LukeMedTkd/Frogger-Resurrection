@@ -8,6 +8,7 @@
 
 // Defined Color_Id
 #define COLOR_FROG 100
+#define COLOR_LEGS 102
 #define COLOR_RIVER 110
 #define COLOR_CROCODILLE 120
 #define COLOR_DENS 130
@@ -16,6 +17,8 @@
 
 // Defined Color_Pair_Id
 #define COLOR_FROG_ID 200
+#define COLOR_EYE_ID 101
+#define COLOR_LEGS_ID 102
 #define COLOR_RIVER_ID 210
 #define COLOR_CROCODILLE_ID 220
 #define COLOR_DENS_ID 230

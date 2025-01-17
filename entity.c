@@ -16,7 +16,7 @@ void frog_process(int pipe_write, int* params){
     // Declare msg and attr
     Msg msg;
     msg.id = FROG_ID;
-    msg.sig = FROG_POSITION_SIG;
+    msg.sig = FROG_POSITION_SIG; // Set message signal to move the frog
 
     while(TRUE){
         move = getch();
@@ -52,6 +52,7 @@ void frog_process(int pipe_write, int* params){
             msg.sig = FROG_POSITION_SIG;
             msg_to_send= FALSE;
         }
+        usleep(50000);
     }
 }
 
@@ -81,7 +82,6 @@ void parent_process(int pipe_read, Pid_node **list){
             if(msg.sig == FROG_POSITION_SIG){
                 (*list)->info.x += msg.x;
                 (*list)->info.y += msg.y;
-                //print_frog();
 
             }
 
@@ -95,6 +95,11 @@ void parent_process(int pipe_read, Pid_node **list){
         default:
             break;
         }
+        print_frog();
+
+        // Refresh the screen
+        refresh();
     }
+
 
 }

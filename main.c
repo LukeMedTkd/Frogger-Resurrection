@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "game.h"
 
 int main(){
 
@@ -8,6 +9,8 @@ int main(){
 
     //set colors
     init_colors();
+
+    start_game();
 
     return 0;
 }

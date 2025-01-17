@@ -8,6 +8,7 @@ void init_screen(){
     curs_set(0); // Remove cursor
     cbreak(); // Don't wait ENTER in getch()
     keypad(stdscr, TRUE); // Enable function keys listener
+    nodelay(stdscr, TRUE);
 }
 
 void init_colors(){
@@ -23,7 +24,8 @@ void init_colors(){
     init_color(COLOR_BLUE, 0, 0, 255);
     init_color(COLOR_MAGENTA, 255, 0, 255);
     init_color(COLOR_CYAN, 0, 255, 255);
-    init_color(COLOR_FROG, 55, 166, 43);
+    init_color(COLOR_FROG, 215, 650, 168);
+    init_color(COLOR_LEGS, 58, 392, 19);
     init_color(COLOR_RIVER, 215, 570, 800);
     init_color(COLOR_CROCODILLE, 29, 87, 23);
     init_color(COLOR_DENS, 568, 250, 205);
@@ -33,6 +35,8 @@ void init_colors(){
 
     // (text, bg)
     init_pair(COLOR_FROG_ID, COLOR_WHITE, COLOR_FROG);
+    init_pair(COLOR_EYE_ID, COLOR_BLACK, COLOR_BLACK);
+    init_pair(COLOR_LEGS_ID, COLOR_LEGS, COLOR_BLACK);
     init_pair(COLOR_RIVER_ID, COLOR_WHITE, COLOR_RIVER);
     init_pair(COLOR_CROCODILLE_ID, COLOR_WHITE, COLOR_CROCODILLE);
     init_pair(COLOR_DENS_ID, COLOR_WHITE, COLOR_DENS);

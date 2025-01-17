@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "entity.h"
 
-void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params) {
+void create_process(int* fd, Pid_node **list, void (*func_process)(int, int*), int* func_params){
     pid_t pid = fork();
     if(pid < 0) {
         //signal_all(*pids, SIGKILL);
@@ -36,7 +36,7 @@ void add_node(Pid_node **list,int* func_params){
 
         else{
             Pid_node *current = *list;
-            while (current->next != NULL)
+            while (current != NULL)
             {
                 current = current->next;
             }

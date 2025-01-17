@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "game.h"
 #include "struct.h"
 #include "process.h"
@@ -22,8 +23,11 @@ void start_game(){
 
     // Define args array to get the correct id for the process (entity)
     int args[2];
-    // Define fds array
+
+    // Define fds array and Pipe Creation
     int fd[2];
+    if(pipe(fd) == -1) {perror("Pipe call"); exit(1);}
+
     // Define Empty List
     Pid_node *p_list = NULL;
 
@@ -31,18 +35,20 @@ void start_game(){
     // Set args with FROG ID
     args[0] = FROG_ID; args[1] = FROG_ID;
     create_process(fd, &p_list, &frog_process, args);
+
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
-    for (int i = 1; i <= N_STREAM; i++){
-        // randomize speed and spawn time
-        for (int j = 1; j <= MAX_N_CROCODILE; i++){
-            args[0] = i;
-            args[1] = j;
 
-            //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* args_process_function))->Creazione processo Coccodrillo
-            //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
-        }
+    // for (int i = 1; i <= N_STREAM; i++){
+    //     // randomize speed and spawn time
+    //     for (int j = 1; j <= MAX_N_CROCODILE; i++){
+    //         args[0] = i;
+    //         args[1] = j;
 
-    }
+    //         //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* args_process_function))->Creazione processo Coccodrillo
+    //         //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
+    //     }
+
+    // }
     
     /*
     
@@ -55,8 +61,8 @@ void start_game(){
     */
 
     for (int i = 0; i < MANCHES; i++){
-        //reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
-        reset_frog_position(&p_list);
+    //     //reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
+    //     reset_frog_position(&p_list);
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
         
         //PARENT PROCESS
