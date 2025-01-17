@@ -36,7 +36,7 @@ void print_game_area(){
 void print_frog(){
     // Defined Frog Sprite
     static const char* frog[4][6]={
-       { "","","","▖","▗",""},
+       { "","","▖","▗","", ""},
        { "", "", "▟", "▀", "▙", ""},
        { "▝", "▟", "▀", "▀", "▙", "▘"},
     };
@@ -49,18 +49,18 @@ void print_frog(){
             if (i==0)
             {
                 attron(COLOR_PAIR(COLOR_EYE_ID));
-                mvwprintw(stdscr,i+5,j+5,"%s",frog[i][j]);
+                mvwprintw(stdscr,i,j,"%s",frog[i][j]);
                 attroff(COLOR_PAIR(COLOR_EYE_ID));
                 continue;
             }
             else if(i==2 && (j==0  || j==1 ||  j==4 || j==5))
             {
                 attron(COLOR_PAIR(COLOR_LEGS_ID));
-                mvwprintw(stdscr,i+5,j+5,"%s",frog[i][j]);
+                mvwprintw(stdscr,i,j,"%s",frog[i][j]);
                 attroff(COLOR_PAIR(COLOR_LEGS_ID));
                 continue;
             }
-            mvwprintw(stdscr,i+5,j+5,"%s",frog[i][j]);
+            mvwprintw(stdscr,i,j,"%s",frog[i][j]);
         }
     }
     attroff(COLOR_PAIR(COLOR_FROG_ID));

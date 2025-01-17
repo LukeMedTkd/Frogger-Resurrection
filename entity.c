@@ -52,16 +52,16 @@ void frog_process(int pipe_write, int* params){
             msg.sig = FROG_POSITION_SIG;
             msg_to_send= FALSE;
         }
-        usleep(50000);
     }
 }
 
-void reset_frog_position(Pid_node **list){
-    (*list)->info.x = FROG_INIT_X;
-    (*list)->info.y = FROG_INIT_Y;
+
+void reset_frog_position(Character *entities, int index){
+    entities[index].x = FROG_INIT_X;
+    entities[index].y = FROG_INIT_Y;
 }
 
-void parent_process(int pipe_read, Pid_node **list){
+void parent_process(int pipe_read, Character *entities){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -70,6 +70,9 @@ void parent_process(int pipe_read, Pid_node **list){
 
         // Print Game Area
         print_game_area();
+        // Print the Frog
+        print_frog();
+
 
         // Read msg from the pipes
         msg = read_msg(pipe_read);
@@ -80,8 +83,8 @@ void parent_process(int pipe_read, Pid_node **list){
 
             // FROG has moved - Update POSITION
             if(msg.sig == FROG_POSITION_SIG){
-                (*list)->info.x += msg.x;
-                (*list)->info.y += msg.y;
+                entities[FROG_ID].x += msg.x * FROG_MOVE_X;
+                entities[FROG_ID].y += msg.y * FROG_MOVE_Y;
 
             }
 
@@ -95,7 +98,6 @@ void parent_process(int pipe_read, Pid_node **list){
         default:
             break;
         }
-        print_frog();
 
         // Refresh the screen
         refresh();
