@@ -28,14 +28,13 @@ void start_game(WINDOW *score, WINDOW *game){
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
-    Character entities [4];
-
-
+    // Define Character List
+    Pid_node *Entities = NULL;
 
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
     // Set args with FROG ID
     args[0] = FROG_ID; args[1] = FROG_ID;
-    //create_process(fds,  entities, FROG_ID, &frog_process, args);
+    create_process(fds,  &Entities, FROG_ID, &frog_process, args);
 
 
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
@@ -65,11 +64,11 @@ void start_game(WINDOW *score, WINDOW *game){
     for(int i = 0; i < MANCHES; i++){
 
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
-        reset_frog_position(&(entities[FROG_ID]));
+        reset_frog_position(&(Entities->info));
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
         
         //PARENT PROCESS
-        parent_process(game, fds[PIPE_READ], entities);
+        parent_process(game, fds[PIPE_READ], &Entities);
 
         
         // -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo

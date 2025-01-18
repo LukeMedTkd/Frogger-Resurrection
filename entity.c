@@ -57,11 +57,11 @@ void frog_process(int pipe_write, int* params){
 
 
 void reset_frog_position(Character *frog_entity){
-    frog_entity->x = FROG_INIT_X;
+    frog_entity->x= FROG_INIT_X;
     frog_entity->y = FROG_INIT_Y;
 }
 
-void parent_process(WINDOW *game, int pipe_read, Character *entities){
+void parent_process(WINDOW *game, int pipe_read, Pid_node **Entities){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -69,9 +69,12 @@ void parent_process(WINDOW *game, int pipe_read, Character *entities){
     while(!manche_ended){
         // Print Game Area
         print_game_area(game);
-        wrefresh(game);
+
         // Print the Frog
-        print_frog(game, entities[FROG_ID]);
+        print_frog(game, (*Entities)->info);
+
+        // Refresh the game screen
+        wrefresh(game);
 
         // Read msg from the pipes
         msg = read_msg(pipe_read);
@@ -82,8 +85,8 @@ void parent_process(WINDOW *game, int pipe_read, Character *entities){
 
             // FROG has moved - Update POSITION
             if(msg.sig == FROG_POSITION_SIG){
-                entities[FROG_ID].x += msg.x;
-                entities[FROG_ID].y += msg.y;
+                (*Entities)->info.x += msg.x;
+                (*Entities)->info.y += msg.y;
 
             }
 

@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "entity.h"
 
-void create_process(int *fds,  Character *entities, int index,  void (*func_process)(int, int*), int *func_params){
+void create_process(int *fds,  Pid_node **Entities, int index,  void (*func_process)(int, int*), int *func_params){
     pid_t pid = fork();
     if(pid < 0) {
         //signal_all(*pids, SIGKILL);
@@ -11,8 +11,7 @@ void create_process(int *fds,  Character *entities, int index,  void (*func_proc
     }
     if(pid == PID_CHILD) {
         close(fds[PIPE_READ]);
-        //add_node(list,func_params);
-        entities[index].id = (func_params[0]*10)+func_params[1];
+        add_node(Entities,func_params);
         func_process(fds[PIPE_WRITE], func_params);
     }
 }
@@ -33,8 +32,8 @@ Msg read_msg(int pipe_read){
 
 
 
-/*
-void add_node(Pid_node **list,int* func_params){
+
+void add_node(Pid_node **Entities,int* func_params){
 
         Pid_node *new = (Pid_node *)malloc(sizeof(Pid_node));
         if ((new==NULL))
@@ -47,13 +46,13 @@ void add_node(Pid_node **list,int* func_params){
         new->info.id = (func_params[0]*10)+func_params[1];
         new->next = NULL;   
         
-        if (*list == NULL){
-            *list = new;
+        if (*Entities == NULL){
+            *Entities = new;
             return;
         }
 
         else{
-            Pid_node *current = *list;
+            Pid_node *current = *Entities;
             while (current != NULL)
             {
                 current = current->next;
@@ -62,13 +61,12 @@ void add_node(Pid_node **list,int* func_params){
         }
 }
 
-void delete_list(Pid_node **list){ 
+void delete_Entities(Pid_node **Entities){ 
 
     Pid_node *tmp;
-    while (*list != NULL){
-        tmp = *list;
-        *list = (*list)->next;
+    while (*Entities != NULL){
+        tmp = *Entities;
+        *Entities = (*Entities)->next;
         free(tmp);//deallocate memory
     }
 }
-*/

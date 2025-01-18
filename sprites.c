@@ -33,35 +33,41 @@ void print_game_area(WINDOW *game){
 }
 
 
-void print_frog(WINDOW *game, Character frog_entity){
+void print_frog(WINDOW *game, Character frog_entity) {
     // Defined Frog Sprite
-    static const char* frog[4][6]={
-       {"","","▖","▗", "", ""},
+    static const char* frog[FROG_DIM_Y][FROG_DIM_X] = {
+       {"", "", "▖", "▗", "", ""},
        {"", "", "▟", "▀", "▙", ""},
        {"▝", "▟", "▀", "▀", "▙", "▘"},
     };
 
-    wattron(game, COLOR_PAIR(COLOR_FROG_ID));
-    for (int i = 0; i < FROG_DIM_Y; i++)
-    {
-        for (int j = 0; j < FROG_DIM_X; j++)
-        {
-            if (i==0)
-            {
+
+
+    for (int i = 0; i < FROG_DIM_Y; i++) {
+        for (int j = 0; j < FROG_DIM_X; j++) {
+            if (frog[i][j][0] == '\0') {
+                continue; // Salta le posizioni vuote
+            }
+
+            // Determina il colore
+            if (i == 0) {
                 wattron(game, COLOR_PAIR(COLOR_EYE_ID));
-                mvwprintw(game, frog_entity.x, frog_entity.y,"%s",frog[i][j]);
-                wattroff(game, COLOR_PAIR(COLOR_EYE_ID));
-                continue;
-            }
-            else if(i==2 && (j==0  || j==1 ||  j==4 || j==5))
-            {
+            } else if (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5)) {
                 wattron(game, COLOR_PAIR(COLOR_LEGS_ID));
-                mvwprintw(game, frog_entity.x, frog_entity.y + 1,"%s",frog[i][j]);
-                wattroff(game, COLOR_PAIR(COLOR_LEGS_ID));
-                continue;
+            } else {
+                wattron(game, COLOR_PAIR(COLOR_FROG_ID));
             }
-            mvwprintw(game, frog_entity.x, frog_entity.y + 2, "%s",frog[i][j]);
+
+            // Stampa il carattere
+            mvwprintw(game, frog_entity.y + i, frog_entity.x + j, "%s", frog[i][j]);
+
+            // Ripristina il colore
+            if (i == 0 || (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5))) {
+                wattroff(game, COLOR_PAIR(COLOR_EYE_ID));
+                wattroff(game, COLOR_PAIR(COLOR_LEGS_ID));
+            } else {
+                wattroff(game, COLOR_PAIR(COLOR_FROG_ID));
+            }
         }
     }
-    wattroff(game, COLOR_PAIR(COLOR_FROG_ID));
 }

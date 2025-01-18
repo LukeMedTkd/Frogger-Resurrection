@@ -9,9 +9,9 @@
 #define PIPE_WRITE 1
 
 //definire le altezze di ogni flusso
-void create_process(int *fd, /* Pid_node **list,*/ Character *entitites, int index, void (*func_process)(int, int*), int* func_params);
+void create_process(int *fds, Pid_node **Entitites, int index, void (*func_process)(int, int*), int* func_params);
 void write_msg(int pipe_write, Msg msg);
 Msg read_msg(int pipe_read);
 
-// void add_node(Pid_node **list,int* func_params);
-// void delete_list(Pid_node **list);
+void add_node(Pid_node **Entities,int* func_params);
+void delete_list(Pid_node **Entities);

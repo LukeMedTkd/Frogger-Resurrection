@@ -33,14 +33,16 @@ void init_colors(){
     init_color(COLOR_SCORE, 25, 25, 25);
     
 
-    // (text, bg)
-    init_pair(COLOR_FROG_ID, COLOR_WHITE, COLOR_FROG);
-    init_pair(COLOR_EYE_ID, COLOR_BLACK, COLOR_BLACK);
-    init_pair(COLOR_LEGS_ID, COLOR_LEGS, COLOR_BLACK);
-    init_pair(COLOR_RIVER_ID, COLOR_WHITE, COLOR_RIVER);
-    init_pair(COLOR_CROCODILLE_ID, COLOR_WHITE, COLOR_CROCODILLE);
-    init_pair(COLOR_DENS_ID, COLOR_WHITE, COLOR_DENS);
+    // Background Color
+    init_pair(COLOR_RIVER_ID, COLOR_RIVER, COLOR_RIVER);
+    init_pair(COLOR_GRASS_ID, COLOR_GRASS, COLOR_GRASS);    
+    init_pair(COLOR_DENS_ID, COLOR_DENS, COLOR_DENS);
     init_pair(COLOR_SCORE_ID, COLOR_WHITE, COLOR_SCORE); 
-    init_pair(COLOR_GRASS_ID, COLOR_WHITE, COLOR_GRASS);     
+
+    // Entities Colors 
+    init_pair(COLOR_FROG_ID, COLOR_FROG, COLOR_WHITE);
+    init_pair(COLOR_EYE_ID, COLOR_BLACK, COLOR_WHITE);
+    init_pair(COLOR_LEGS_ID, COLOR_LEGS, COLOR_WHITE);
+    init_pair(COLOR_CROCODILLE_ID, COLOR_WHITE, COLOR_CROCODILLE);
 
 }
