@@ -30,11 +30,12 @@ void start_game(WINDOW *score, WINDOW *game){
 
     Character entities [4];
 
+
+
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
     // Set args with FROG ID
     args[0] = FROG_ID; args[1] = FROG_ID;
-    reset_frog_position(&(entities[FROG_ID]));
-    create_process(fds,  entities, FROG_ID, &frog_process, args);
+    //create_process(fds,  entities, FROG_ID, &frog_process, args);
 
 
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO

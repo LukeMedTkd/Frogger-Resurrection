@@ -67,14 +67,11 @@ void parent_process(WINDOW *game, int pipe_read, Character *entities){
 
     // Manche Loop
     while(!manche_ended){
-
         // Print Game Area
         print_game_area(game);
+        wrefresh(game);
         // Print the Frog
         print_frog(game, entities[FROG_ID]);
-
-        // Refresh the game screen
-        wrefresh(game);
 
         // Read msg from the pipes
         msg = read_msg(pipe_read);
@@ -85,8 +82,8 @@ void parent_process(WINDOW *game, int pipe_read, Character *entities){
 
             // FROG has moved - Update POSITION
             if(msg.sig == FROG_POSITION_SIG){
-                entities[FROG_ID].x += msg.x * FROG_MOVE_X;
-                entities[FROG_ID].y += msg.y * FROG_MOVE_Y;
+                entities[FROG_ID].x += msg.x;
+                entities[FROG_ID].y += msg.y;
 
             }
 
