@@ -1,3 +1,5 @@
+#include <ncurses.h>
+
 #define MANCHES 5
 #define SCORE 0
 #define TIME 60000 //msleep(milliseconds)
@@ -6,4 +8,4 @@
 
 
 
-void start_game();
+void start_game(WINDOW *score, WINDOW *game);

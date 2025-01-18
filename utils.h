@@ -29,6 +29,7 @@
 // Defined sizes of game area
 #define SCORE_HEIGHT 3
 #define GAME_HEIGHT (LINES-SCORE_HEIGHT)
+#define GAME_START (SCORE_HEIGHT)
 
 #define DENS_HEIGTH 4
 #define DENS_Y_START (SCORE_HEIGHT)

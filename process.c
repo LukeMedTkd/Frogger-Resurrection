@@ -12,13 +12,10 @@ void create_process(int *fds,  Character *entities, int index,  void (*func_proc
     if(pid == PID_CHILD) {
         close(fds[PIPE_READ]);
         //add_node(list,func_params);
+        entities[index].id = (func_params[0]*10)+func_params[1];
         func_process(fds[PIPE_WRITE], func_params);
     }
-    else{
-        entities[index].id = (func_params[0]*10)+func_params[1];
-    }
 }
-
 
 void write_msg(int pipe_write, Msg msg){
     while(write(pipe_write, &msg, sizeof(Msg)) < 0){
