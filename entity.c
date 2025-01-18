@@ -55,9 +55,8 @@ void frog_process(int pipe_write, int* params){
     }
 }
 
-
 void reset_frog_position(Character *frog_entity){
-    frog_entity->x= FROG_INIT_X;
+    frog_entity->x = FROG_INIT_X;
     frog_entity->y = FROG_INIT_Y;
 }
 
@@ -67,11 +66,13 @@ void parent_process(WINDOW *game, int pipe_read, Pid_node **Entities){
 
     // Manche Loop
     while(!manche_ended){
+
         // Print Game Area
         print_game_area(game);
 
         // Print the Frog
         print_frog(game, (*Entities)->info);
+
 
         // Refresh the game screen
         wrefresh(game);
@@ -100,6 +101,9 @@ void parent_process(WINDOW *game, int pipe_read, Pid_node **Entities){
         default:
             break;
         }
+
+        // Refresh the game screen
+        wrefresh(game);
 
     }
 

@@ -8,12 +8,13 @@ void create_process(int *fds,  Pid_node **Entities, int index,  void (*func_proc
     if(pid < 0) {
         //signal_all(*pids, SIGKILL);
         perror("Pipe call");
+        exit(0);
     }
     if(pid == PID_CHILD) {
         close(fds[PIPE_READ]);
-        add_node(Entities,func_params);
         func_process(fds[PIPE_WRITE], func_params);
     }
+    add_node(Entities,func_params, pid);
 }
 
 void write_msg(int pipe_write, Msg msg){
@@ -30,19 +31,16 @@ Msg read_msg(int pipe_read){
     return msg;
 }
 
-
-
-
-void add_node(Pid_node **Entities,int* func_params){
+void add_node(Pid_node **Entities, int* func_params, pid_t child_pid){
 
         Pid_node *new = (Pid_node *)malloc(sizeof(Pid_node));
         if ((new==NULL))
         {
             puts("ERRORE:");
-            exit(-1);
+            exit(1);
         }
         
-        new->info.pid=getpid();//il figlio recupera il proprio pid
+        new->info.pid = child_pid;
         new->info.id = (func_params[0]*10)+func_params[1];
         new->next = NULL;   
         
@@ -61,7 +59,7 @@ void add_node(Pid_node **Entities,int* func_params){
         }
 }
 
-void delete_Entities(Pid_node **Entities){ 
+void delete_list(Pid_node **Entities){ 
 
     Pid_node *tmp;
     while (*Entities != NULL){

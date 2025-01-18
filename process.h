@@ -13,5 +13,5 @@ void create_process(int *fds, Pid_node **Entitites, int index, void (*func_proce
 void write_msg(int pipe_write, Msg msg);
 Msg read_msg(int pipe_read);
 
-void add_node(Pid_node **Entities,int* func_params);
+void add_node(Pid_node **Entities,int* func_params, pid_t child_pid);
 void delete_list(Pid_node **Entities);
