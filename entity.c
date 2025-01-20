@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "sprites.h"
 #include "struct.h"
+#include "game.h"
 /*
 1.frogProcess-> (pipe, *params)
 2.Crocodile process-> (pipe, *params)

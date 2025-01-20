@@ -8,5 +8,11 @@
 #define MAX_N_CROCODILE_PER_STREAM 3
 #define N_ENTITIES (MAX_N_CROCODILE_PER_STREAM * N_STREAM + 2)
 
+// STREAMS
+#define STREAM_DIRECTION ((rand() % 2) * 2 - 1) // Return 1 or -1
+#define INVERT_DIRECTION -1
+#define MAX_STREAM_SPEED 200000
+#define MIN_STREAM_SPEED 100000
+
 // Functions Prototypes
 void start_game(WINDOW *score, WINDOW *game);

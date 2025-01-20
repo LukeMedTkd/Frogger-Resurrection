@@ -39,6 +39,7 @@ void print_frog(WINDOW *game, Character frog_entity) {
        {"", "", "▖", "▗", "", ""},
        {"", "", "▟", "▀", "▙", ""},
        {"▝", "▟", "▀", "▀", "▙", "▘"},
+
     };
 
 

@@ -4,6 +4,7 @@
 #include "process.h"
 #include "entity.h"
 #include "sprites.h"
+#include "utils.h"
 
 /*
 1. creazione iniziale frog -> inserimento in una lista con FROG_ID perchè? va ucciso il processo
@@ -21,36 +22,41 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.score = SCORE;
     gameVar.time = TIME;
 
-    // Define args array to get the correct id for the process (entity)
-    int args[2] = {0};
+    // Args for process function and stream speed
+    int args[3] = {0}, stream_speed;
 
     // Define fds array and Pipe Creation
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
-    // Define Character Array
+    // Define CArray of Characters
     Character Entities[N_ENTITIES];
 
-    //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
-    // Set args with FROG ID
+    // Create FROG process
     reset_frog_position(&Entities[FROG_ID]);
     create_process(fds, Entities, FROG_ID, &frog_process, args);
 
 
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
 
-    /*
+
+    
+    
+    
+
+    
     for (int i = 1; i <= N_STREAM; i++){
-        // randomize speed and spawn time
-        for (int j = 1; j <= MAX_N_CROCODILE; i++){
+        // Randomize STREAM SPEED: FIXED for each GAME
+        stream_speed = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
+        for (int j = 1; j <= MAX_N_CROCODILE_PER_STREAM; i++){
             args[0] = i;
             args[1] = j;
-
+            args[2] = stream_speed * ((i%2 == 0) ? 1 : -1);
             //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* args_process_function))->Creazione processo Coccodrillo
             //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
         }
 
-    }*/ 
+    } 
     
     /*
     FUZNIONAMENTO GENERALE DEGLI SPOSTAMENTI DELLE ENTITA:
@@ -65,6 +71,7 @@ void start_game(WINDOW *score, WINDOW *game){
 
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
         reset_frog_position(&Entities[FROG_ID]);
+
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
 
         //PARENT PROCESS

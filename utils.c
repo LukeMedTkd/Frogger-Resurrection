@@ -1,3 +1,5 @@
+#include <sys/ioctl.h>
+#include <time.h>
 #include "utils.h"
 
 void init_screen(){
@@ -9,6 +11,7 @@ void init_screen(){
     cbreak(); // Don't wait ENTER in getch()
     keypad(stdscr, TRUE); // Enable function keys listener
     nodelay(stdscr, TRUE);
+    srand(time(0));
 }
 
 void init_colors(){
@@ -45,4 +48,8 @@ void init_colors(){
     init_pair(COLOR_LEGS_ID, COLOR_LEGS, COLOR_WHITE);
     init_pair(COLOR_CROCODILLE_ID, COLOR_WHITE, COLOR_CROCODILLE);
 
+}
+
+int rand_range(int min0, int max0) {
+    return rand() % (max0-min0) + min0;
 }
