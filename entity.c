@@ -11,12 +11,14 @@ void frog_process(int pipe_write, int* params){
 
     // Init some variables
     int move, direction = 1;
-    bool msg_to_send = FALSE; // avoid writing no movements
+    bool msg_to_send = TRUE; // avoid writing no movements
 
     // Declare msg and attr
     Msg msg;
     msg.id = FROG_ID;
     msg.sig = FROG_POSITION_SIG; // Set message signal to move the frog
+    msg.y = 0;
+    msg.x = 0;
 
     while(TRUE){
         move = getch();
@@ -55,30 +57,21 @@ void frog_process(int pipe_write, int* params){
     }
 }
 
-void reset_frog_position(Character *frog_entity){
-    frog_entity->x = FROG_INIT_X;
-    frog_entity->y = FROG_INIT_Y;
+void reset_frog_position(Character frog_entity){
+    frog_entity.x = FROG_INIT_X;
+    frog_entity.y = FROG_INIT_Y;
 }
 
-void parent_process(WINDOW *game, int pipe_read, Pid_node **Entities){
+void parent_process(WINDOW *game, int pipe_read, Character *Entities){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
     // Manche Loop
     while(!manche_ended){
 
-        // Print Game Area
-        print_game_area(game);
-
-        // Print the Frog
-        print_frog(game, (*Entities)->info);
-
-
-        // Refresh the game screen
-        wrefresh(game);
-
         // Read msg from the pipes
         msg = read_msg(pipe_read);
+
         switch (msg.id){
 
         // Msg from FROG
@@ -86,8 +79,8 @@ void parent_process(WINDOW *game, int pipe_read, Pid_node **Entities){
 
             // FROG has moved - Update POSITION
             if(msg.sig == FROG_POSITION_SIG){
-                (*Entities)->info.x += msg.x;
-                (*Entities)->info.y += msg.y;
+                Entities[FROG_ID].y += msg.y;
+                Entities[FROG_ID].x += msg.x;
 
             }
 
@@ -102,10 +95,13 @@ void parent_process(WINDOW *game, int pipe_read, Pid_node **Entities){
             break;
         }
 
+        // Print Game Area
+        print_game_area(game);
+
+        // Print the Frog
+        print_frog(game, Entities[FROG_ID]);
+
         // Refresh the game screen
         wrefresh(game);
-
     }
-
-
 }

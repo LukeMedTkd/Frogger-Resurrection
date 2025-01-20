@@ -46,6 +46,6 @@
 #define GRASS_Y_INF_START (RIVER_Y_END)
 #define GRASS_Y_INF_END (GRASS_Y_INF_START+GRASS_HEIGHT)
 
-// Function's prototypes
+// Functions Prototypes
 void init_screen();
 void init_colors();

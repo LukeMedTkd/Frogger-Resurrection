@@ -22,19 +22,18 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.time = TIME;
 
     // Define args array to get the correct id for the process (entity)
-    int args[2];
+    int args[2] = {0};
 
     // Define fds array and Pipe Creation
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
-    // Define Character List
-    Pid_node *Entities = NULL;
+    // Define Character Array
+    Character Entities[N_ENTITIES];
 
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
     // Set args with FROG ID
-    args[0] = FROG_ID; args[1] = FROG_ID;
-    create_process(fds,  &Entities, FROG_ID, &frog_process, args);
+    create_process(fds, Entities, FROG_ID, &frog_process, args);
 
 
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
@@ -64,13 +63,12 @@ void start_game(WINDOW *score, WINDOW *game){
     for(int i = 0; i < MANCHES; i++){
 
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
-        reset_frog_position(&(Entities->info));
+        reset_frog_position(Entities[FROG_ID]);
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
-        
-        //PARENT PROCESS
-        parent_process(game, fds[PIPE_READ], &Entities);
 
-        
+        //PARENT PROCESS
+        parent_process(game, fds[PIPE_READ], Entities);
+
         // -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
         // -Stampa Area di gioco
         // -Collisioni:
@@ -89,5 +87,15 @@ void start_game(WINDOW *score, WINDOW *game){
           
     }
     
+    // Kill Processes in the list. Parent process wait all the children
+    kill_processes(Entities);
+    wait_children(Entities);
 
+    // Close file descriptors
+    close(fds[PIPE_READ]);
+    close(fds[PIPE_WRITE]);
+
+    endwin();
+
+    return;
 }

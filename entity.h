@@ -25,6 +25,8 @@
 #define FROG_POSITION_SIG 0
 #define FROG_SHOT_SIG 1
 
+
+// Functions Prototypes
 void frog_process(int pipe_write, int* params);
-void reset_frog_position(Character *frog_entity);
-void parent_process(WINDOW *game, int pipe_read, Pid_node **entities);
+void reset_frog_position(Character frog_entity);
+void parent_process(WINDOW *game, int pipe_read, Character *Entities);
