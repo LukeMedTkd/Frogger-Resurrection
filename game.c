@@ -33,6 +33,7 @@ void start_game(WINDOW *score, WINDOW *game){
 
     //CreateProcess(pipe,listpid,void (*Frog_process)(int, int*),int* params)->Creazione processo RANA
     // Set args with FROG ID
+    reset_frog_position(&Entities[FROG_ID]);
     create_process(fds, Entities, FROG_ID, &frog_process, args);
 
 
@@ -63,7 +64,7 @@ void start_game(WINDOW *score, WINDOW *game){
     for(int i = 0; i < MANCHES; i++){
 
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
-        reset_frog_position(Entities[FROG_ID]);
+        reset_frog_position(&Entities[FROG_ID]);
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
 
         //PARENT PROCESS

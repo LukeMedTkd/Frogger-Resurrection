@@ -57,9 +57,9 @@ void frog_process(int pipe_write, int* params){
     }
 }
 
-void reset_frog_position(Character frog_entity){
-    frog_entity.x = FROG_INIT_X;
-    frog_entity.y = FROG_INIT_Y;
+void reset_frog_position(Character *frog_entity){
+    frog_entity->y = FROG_INIT_Y;
+    frog_entity->x = FROG_INIT_X;
 }
 
 void parent_process(WINDOW *game, int pipe_read, Character *Entities){

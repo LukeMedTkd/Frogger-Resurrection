@@ -28,5 +28,5 @@
 
 // Functions Prototypes
 void frog_process(int pipe_write, int* params);
-void reset_frog_position(Character frog_entity);
+void reset_frog_position(Character *frog_entity);
 void parent_process(WINDOW *game, int pipe_read, Character *Entities);
