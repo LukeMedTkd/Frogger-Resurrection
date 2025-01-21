@@ -1,9 +1,6 @@
-#include <stdlib.h>
 #include "game.h"
 #include "struct.h"
-#include "process.h"
 #include "entity.h"
-#include "sprites.h"
 #include "utils.h"
 
 /*
@@ -43,7 +40,7 @@ void start_game(WINDOW *score, WINDOW *game){
     for (int i = 1; i <= N_STREAM; i++){
         // Randomize STREAM SPEED: FIXED for each GAME
         stream_speed = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
-        for (int j = 1; j <= MAX_N_CROCODILE_PER_STREAM; i++){
+        for (int j = 1; j <= MAX_N_CROCODILE_PER_STREAM; j++){
             args[0] = i;
             args[1] = j;
             args[2] = stream_speed * ((i%2 == 0) ? (STREAM_DIRECTION) : (STREAM_DIRECTION * INVERT_DIRECTION));
@@ -62,7 +59,7 @@ void start_game(WINDOW *score, WINDOW *game){
 
    
     while(gameVar.manche > 0){
-
+    
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
         reset_frog_position(&Entities[FROG_ID]);
 

@@ -1,2 +1,3 @@
 # Ignora tutti i file oggetto
 *.o
+*.txt

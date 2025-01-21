@@ -1,6 +1,6 @@
+#include "sprites.h"
 #include "utils.h"
 #include "entity.h"
-#include "sprites.h"
 
 void print_game_area(WINDOW *game){
     // Dens
@@ -31,7 +31,6 @@ void print_game_area(WINDOW *game){
     }
     wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
 }
-
 
 void print_frog(WINDOW *game, Character frog_entity) {
     // Defined Frog Sprite

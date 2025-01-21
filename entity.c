@@ -1,5 +1,4 @@
 #include "entity.h"
-#include "sprites.h"
 #include "struct.h"
 #include "game.h"
 /*
@@ -61,6 +60,16 @@ void frog_process(int pipe_write, int* params){
 void reset_frog_position(Character *frog_entity){
     frog_entity->y = FROG_INIT_Y;
     frog_entity->x = FROG_INIT_X;
+}
+
+void crocodile_process(int pipe_write, int* params){
+
+}
+
+void reset_crocodile_position(Character *crocodile_entity, int* args){
+    // Determine the correct position: set crocodile_init_x, crocodile_init_y
+    crocodile_entity->y = CROCODILE_OFFSET_Y + ((args[0] - 1)*CROCODILE_DIM_Y);
+    crocodile_entity->x = (args[2] > 0 ? (-CROCODILE_DIM_X) : (COLS + CROCODILE_DIM_X));
 }
 
 void parent_process(WINDOW *game, int pipe_read, Character *Entities){
