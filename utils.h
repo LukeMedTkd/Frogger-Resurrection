@@ -1,10 +1,13 @@
 // Include Lib
+#pragma once
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ncurses.h>
 #include <locale.h>
+
+#define DEBUG_FILE_NAME "log.txt"
 
 // Defined Color_Id
 #define COLOR_FROG 100
@@ -49,3 +52,5 @@
 // Functions Prototypes
 void init_screen();
 void init_colors();
+int rand_range(int min0, int max0);
+void debuglog(char *message, int arg);

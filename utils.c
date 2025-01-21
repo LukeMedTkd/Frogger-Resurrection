@@ -1,4 +1,3 @@
-#include <sys/ioctl.h>
 #include <time.h>
 #include "utils.h"
 
@@ -50,6 +49,17 @@ void init_colors(){
 
 }
 
-int rand_range(int min0, int max0) {
+int rand_range(int min0, int max0){
     return rand() % (max0-min0) + min0;
+}
+
+void debuglog(char *message, int arg){
+    FILE *f = fopen(DEBUG_FILE_NAME, "a");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+    fprintf(f, message, arg);
+    fclose(f);
 }
