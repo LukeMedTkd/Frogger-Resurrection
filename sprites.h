@@ -2,11 +2,11 @@
 #include "struct.h"
 
 // Frog constants
-#define FROG_DIM_X 6
-#define FROG_DIM_Y 3
+#define FROG_DIM_X 10
+#define FROG_DIM_Y 4
 
 // Crocodile constants
-#define CROCODILE_DIM_X 20
+#define CROCODILE_DIM_X 30
 #define CROCODILE_DIM_Y 4
 
 // Functions Prototypes

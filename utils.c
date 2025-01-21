@@ -26,7 +26,7 @@ void init_colors(){
     init_color(COLOR_BLUE, 0, 0, 255);
     init_color(COLOR_MAGENTA, 255, 0, 255);
     init_color(COLOR_CYAN, 0, 255, 255);
-    init_color(COLOR_FROG, 215, 650, 168);
+    init_color(COLOR_FROG, 70, 350, 70);
     init_color(COLOR_LEGS, 58, 392, 19);
     init_color(COLOR_RIVER, 215, 570, 800);
     init_color(COLOR_CROCODILLE, 29, 87, 23);
@@ -42,9 +42,9 @@ void init_colors(){
     init_pair(COLOR_SCORE_ID, COLOR_WHITE, COLOR_SCORE); 
 
     // Entities Colors 
-    init_pair(COLOR_FROG_ID, COLOR_FROG, COLOR_WHITE);
-    init_pair(COLOR_EYE_ID, COLOR_BLACK, COLOR_WHITE);
-    init_pair(COLOR_LEGS_ID, COLOR_LEGS, COLOR_WHITE);
+    init_pair(COLOR_FROG_ID, COLOR_FROG, COLOR_LEGS);
+    init_pair(COLOR_EYE_ID, COLOR_BLACK, COLOR_FROG);
+    init_pair(COLOR_LEGS_ID, COLOR_LEGS, COLOR_FROG);
     init_pair(COLOR_CROCODILLE_ID, COLOR_WHITE, COLOR_CROCODILLE);
 
 }

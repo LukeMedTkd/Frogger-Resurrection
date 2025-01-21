@@ -20,7 +20,7 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.time = TIME;
 
     // Args for process function and stream speed
-    int args[3] = {0}, stream_speed;
+    int args[3] = {0}, stream_speed, stream_dir, crocodile_index = 2;
 
     // Define fds array and Pipe Creation
     int fds[2];
@@ -35,18 +35,21 @@ void start_game(WINDOW *score, WINDOW *game){
 
 
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
-
-
+    stream_dir = STREAM_DIRECTION;
     for (int i = 1; i <= N_STREAM; i++){
         // Randomize STREAM SPEED: FIXED for each GAME
         stream_speed = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
         for (int j = 1; j <= MAX_N_CROCODILE_PER_STREAM; j++){
             args[0] = i;
             args[1] = j;
-            args[2] = stream_speed * ((i%2 == 0) ? (STREAM_DIRECTION) : (STREAM_DIRECTION * INVERT_DIRECTION));
+            args[2] = stream_speed * stream_dir;
+            reset_crocodile_position(&(Entities[crocodile_index]), args);
+            //debuglog("Y: %d\n", Entities[crocodile_index].x);
+            crocodile_index++;
             //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* args_process_function))->Creazione processo Coccodrillo
             //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
         }
+        stream_dir *= INVERT_DIRECTION;
     } 
     
     /*

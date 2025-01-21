@@ -6,28 +6,28 @@ void print_game_area(WINDOW *game){
     // Dens
     wattron(game, COLOR_PAIR(COLOR_DENS_ID));
     for (int y = DENS_Y_START; y < DENS_Y_END; y++){
-        mvwhline(game, y, 0, ' ', COLS);
+        mvwhline(game, y, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
     
     // Upper edge
     wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
     for (int y = GRASS_Y_SUP_START; y < GRASS_Y_SUP_END; y++){
-        mvwhline(game, y, 0, ' ', COLS);
+        mvwhline(game, y, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
 
     // River
     wattron(game, COLOR_PAIR(COLOR_RIVER_ID));
     for (int y = RIVER_Y_START; y < RIVER_Y_END; y++){
-        mvwhline(game, y, 0, ' ', COLS);
+        mvwhline(game, y, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_RIVER_ID));
 
     // Bottom edge
     wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
     for (int y = GRASS_Y_INF_START; y < GRASS_Y_INF_END; y++){
-        mvwhline(game, y, 0, ' ', COLS);
+        mvwhline(game, y, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
 }
@@ -35,9 +35,10 @@ void print_game_area(WINDOW *game){
 void print_frog(WINDOW *game, Character frog_entity) {
     // Defined Frog Sprite
     static const char* frog[FROG_DIM_Y][FROG_DIM_X] = {
-       {"", "", "▖", "▗", "", ""},
-       {"", "", "▟", "▀", "▙", ""},
-       {"▝", "▟", "▀", "▀", "▙", "▘"},
+       {"▄", "█", "", "▀", "▌", "▐", "▀", "", "█", "▄"},
+        {"", "▀", "▄", " ", "▄", " ", " ", "▄", "▀", ""},
+        {"", "", "▄", "█", "▄", "▀", "▄", "▄", "", ""},
+        {"▀", "█", "▀", "", "", "", "", "▀", "█", "▀"},
 
     };
 

@@ -5,6 +5,8 @@
 #include <time.h>
 #include <ncurses.h>
 #include <locale.h>
+#include "sprites.h"
+#include "game.h"
 
 #define DEBUG_FILE_NAME "log.txt"
 
@@ -29,19 +31,20 @@
 
 
 // Defined sizes of game area
-#define SCORE_HEIGHT 3
-#define GAME_HEIGHT (24 + 3*3)
-#define GAME_START (SCORE_HEIGHT)
-
-#define DENS_HEIGTH 3
+#define DENS_HEIGTH 5
 #define DENS_Y_START 0
 #define DENS_Y_END (DENS_Y_START+DENS_HEIGTH)
 
-#define GRASS_HEIGHT 3
+#define SCORE_HEIGHT 1
+#define GAME_HEIGHT ((FROG_DIM_Y * N_STREAM) + (FROG_DIM_Y * 2) + DENS_HEIGTH)
+#define GAME_WIDTH 150
+#define GAME_START (SCORE_HEIGHT)
+
+#define GRASS_HEIGHT 4
 #define GRASS_Y_SUP_START (DENS_Y_END)
 #define GRASS_Y_SUP_END (GRASS_Y_SUP_START+GRASS_HEIGHT)
 
-#define RIVER_HEIGHT 24
+#define RIVER_HEIGHT (FROG_DIM_Y * N_STREAM)
 #define RIVER_Y_START (GRASS_Y_SUP_END)
 #define RIVER_Y_END (RIVER_Y_START+RIVER_HEIGHT)
 
