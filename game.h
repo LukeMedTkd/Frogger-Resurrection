@@ -12,7 +12,7 @@
 #define STREAM_DIRECTION ((rand() % 2) * 2 - 1) // Return 1 or -1
 #define INVERT_DIRECTION -1
 #define MAX_STREAM_SPEED 200000
-#define MIN_STREAM_SPEED 100000
+#define MIN_STREAM_SPEED 50000
 
 // Functions Prototypes
 void start_game(WINDOW *score, WINDOW *game);

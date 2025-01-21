@@ -40,34 +40,28 @@ void start_game(WINDOW *score, WINDOW *game){
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
 
 
-    
-    
-    
-
-    
     for (int i = 1; i <= N_STREAM; i++){
         // Randomize STREAM SPEED: FIXED for each GAME
         stream_speed = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
         for (int j = 1; j <= MAX_N_CROCODILE_PER_STREAM; i++){
             args[0] = i;
             args[1] = j;
-            args[2] = stream_speed * ((i%2 == 0) ? 1 : -1);
+            args[2] = stream_speed * ((i%2 == 0) ? (STREAM_DIRECTION) : (STREAM_DIRECTION * INVERT_DIRECTION));
             //CreateProcess(pipe,listpid,void (*Crocodile_process)(int, int*),int* args_process_function))->Creazione processo Coccodrillo
             //CrocodileProcess(int y, int velocità di creazione,direzione del flusso)
         }
-
     } 
     
     /*
-    FUZNIONAMENTO GENERALE DEGLI SPOSTAMENTI DELLE ENTITA:
-    1. Il processo controllo, per disegnare le entità sullo schermo deve leggere le coordinate presenti nelle struct Character presenti nei nodi della lista. 
-    2. Quando legge i msg dalla pipe, si occupa di aggiornare le coordinnate nelle struct Character nei nodi della lista.
+    FUNZIONAMENTO GENERALE DEGLI SPOSTAMENTI DELLE ENTITA:
+    1. Il processo controllo, per disegnare le entità sullo schermo deve leggere le coordinate presenti nelle struct Character presenti nell'array 
+    2. Quando legge i msg dalla pipe, si occupa di aggiornare le coordinnate nelle struct Character dell' array.
     3. Quindi ad ogni inizio della manche resetta queste posizioni   
     */
 
 
    
-    for(int i = 0; i < MANCHES; i++){
+    while(gameVar.manche > 0){
 
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
         reset_frog_position(&Entities[FROG_ID]);
