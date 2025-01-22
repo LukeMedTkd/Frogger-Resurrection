@@ -13,6 +13,8 @@
 #define INVERT_DIRECTION -1
 #define MAX_STREAM_SPEED 150000
 #define MIN_STREAM_SPEED 30000
+#define MAX_SPAWN_TIME 700000
+#define MIN_SPAWN_TIME 100000
 
 // Functions Prototypes
 void start_game(WINDOW *score, WINDOW *game);

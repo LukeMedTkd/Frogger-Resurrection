@@ -15,7 +15,6 @@ void frog_process(int pipe_write, int* params){
 
     // Declare msg and attr
     Msg msg;
-    msg.id = FROG_ID;
     msg.sig = FROG_POSITION_SIG; // Set message signal to move the frog
     msg.y = 0;
     msg.x = 0;
@@ -62,17 +61,34 @@ void reset_frog_position(Character *frog_entity){
     frog_entity->x = FROG_INIT_X;
 }
 
-void crocodile_process(int pipe_write, int* params){
+void crocodile_process(int pipe_write, int* args){
+    // The spawn delay based on crocodile_id
+    int spawn_delay = args[2]; 
+
+    // Get direction through the stream speed    args[3]:  | n_stream | stream_speed_with_dir | spawn delay |
+    int direction = (args[1] > 0 ? 1 : -1);
+
+    // Declare msg and Set attr
+    Msg msg;
+    msg.sig = CROCODILE_ONLINE; // Set message signal to check if the crocodile is on game
+    msg.x = CROCODILE_MOVE_X * direction;
+
+    // The spawn time is delayed
+    usleep(spawn_delay);
+
+    while (TRUE){
+        write_msg(pipe_write, msg);
+    }
     
 }
 
 void reset_crocodile_position(Character *crocodile_entity, int* args){
     // Determine the correct position: set crocodile_init_x, crocodile_init_y
-    crocodile_entity->y = (CROCODILE_OFFSET_Y) + ((args[0] - 1)*CROCODILE_DIM_Y);
-    crocodile_entity->x = (args[2] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH + CROCODILE_DIM_X));
+    crocodile_entity->y = (CROCODILE_OFFSET_Y) + ((args[0])*CROCODILE_DIM_Y);
+    crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH + CROCODILE_DIM_X));
 }
 
-void parent_process(WINDOW *game, int pipe_read, Character *Entities){
+void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var gameVar){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -89,9 +105,8 @@ void parent_process(WINDOW *game, int pipe_read, Character *Entities){
 
             // FROG has moved - Update POSITION
             if(msg.sig == FROG_POSITION_SIG){
-                Entities[FROG_ID].y += msg.y;
-                Entities[FROG_ID].x += msg.x;
-
+                Entities[FROG_ID].y += ((Entities[FROG_ID].y + msg.y >= 0) && (Entities[FROG_ID].y + msg.y < GAME_HEIGHT)) ? msg.y : 0;
+                Entities[FROG_ID].x += ((Entities[FROG_ID].x + msg.x >= 0) && (Entities[FROG_ID].x + msg.x < GAME_WIDTH)) ? msg.x : 0;
             }
 
             // FROG has shotted
@@ -100,7 +115,22 @@ void parent_process(WINDOW *game, int pipe_read, Character *Entities){
             }
 
             break;
-        
+
+        // Msg from some crocodile
+        case FIRST_CROCODILLE ... LAST_CROCODILLE:
+            // Check if this crocodille is online or is offline
+            Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + msg.x < 0) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
+
+            // Update the crocodile position only if the crocodile signal is ONLINE, else reset crocodile positin
+            if(Entities[msg.id].sig == CROCODILE_ONLINE){
+                Entities[msg.id].x += msg.x;
+            }
+
+            else{
+                // TO DO
+                // reset_crocodile_position(Entities[msg.id], args);
+            }
+
         default:
             break;
         }

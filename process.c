@@ -17,7 +17,7 @@ void create_process(int *fds,  Character *Entities, int index,  void (*func_proc
     }
     else{
         // Set Id and Pid
-        Entities[index].id = (func_params[0]*10)+func_params[1];
+        Entities[index].id = index;
         Entities[index].pid = pid;
     }
 }

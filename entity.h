@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <sys/types.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -18,12 +19,16 @@
 #define FROG_SHOT_SIG 1
 
 // Crocodile constants
+#define FIRST_CROCODILLE 2
+#define LAST_CROCODILLE 26
+#define CROCODILE_MOVE_X 1
 #define CROCODILE_OFFSET_Y (SCORE_HEIGHT + DENS_HEIGTH + GRASS_HEIGHT)
-
+#define CROCODILE_ONLINE 1
+#define CROCODILE_OFFLINE 0
 
 // Functions Prototypes
 void frog_process(int pipe_write, int* params);
 void reset_frog_position(Character *frog_entity);
-void crocodile_process(int pipe_write, int* params);
+void crocodile_process(int pipe_write, int* args);
 void reset_crocodile_position(Character *crocodile_entity, int* args);
-void parent_process(WINDOW *game, int pipe_read, Character *Entities);
+void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var gameVar);
