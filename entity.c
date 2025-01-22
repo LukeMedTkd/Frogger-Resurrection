@@ -63,7 +63,7 @@ void reset_frog_position(Character *frog_entity){
 
 void crocodile_process(int pipe_write, int* args){
     // The spawn delay based on crocodile_id
-    int spawn_delay = args[2]; 
+    int stream_speed = args[1], spawn_delay = args[2]; 
 
     // Get direction through the stream speed    args[3]:  | n_stream | stream_speed_with_dir | spawn delay |
     int direction = (args[1] > 0 ? 1 : -1);
@@ -78,6 +78,8 @@ void crocodile_process(int pipe_write, int* args){
 
     while (TRUE){
         write_msg(pipe_write, msg);
+        usleep(stream_speed);
+        debuglog("stream_speed: %d\n", stream_speed);
     }
     
 }
@@ -85,7 +87,7 @@ void crocodile_process(int pipe_write, int* args){
 void reset_crocodile_position(Character *crocodile_entity, int* args){
     // Determine the correct position: set crocodile_init_x, crocodile_init_y
     crocodile_entity->y = (CROCODILE_OFFSET_Y) + ((args[0])*CROCODILE_DIM_Y);
-    crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH + CROCODILE_DIM_X));
+    crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH));
 }
 
 void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var gameVar){
@@ -131,12 +133,19 @@ void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var g
                 // reset_crocodile_position(Entities[msg.id], args);
             }
 
+            break;
+
         default:
             break;
         }
 
         // Print Game Area
         print_game_area(game);
+
+        // Print Crocodile
+        for(int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++){
+            print_crocodile(game, Entities[i], 1);
+        }
 
         // Print the Frog
         print_frog(game, Entities[FROG_ID]);

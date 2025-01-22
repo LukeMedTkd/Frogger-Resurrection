@@ -12,3 +12,4 @@
 // Functions Prototypes
 void print_game_area(WINDOW *game);
 void print_frog(WINDOW *game, Character frog_entity);
+void print_crocodile(WINDOW *game, Character crocodile_entity, int dir);

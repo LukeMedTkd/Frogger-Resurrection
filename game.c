@@ -30,7 +30,6 @@ void start_game(WINDOW *score, WINDOW *game){
     Character Entities[N_ENTITIES];
 
     // Create FROG process
-    reset_frog_position(&Entities[FROG_ID]);
     create_process(fds, Entities, FROG_ID, &frog_process, args);
 
 
@@ -48,11 +47,12 @@ void start_game(WINDOW *score, WINDOW *game){
 
             // Reset the Crocodilles Position - Modify the characters structs
             reset_crocodile_position(&(Entities[crocodile_index]), args);
-            crocodile_index++;
-            
+        
             // Create CROCODILE process
-
+            create_process(fds, Entities, crocodile_index, &crocodile_process, args);
+            crocodile_index++;
         }
+
         spawn_delay = args[2] = 0;
         stream_dir *= INVERT_DIRECTION;
     } 
@@ -70,7 +70,6 @@ void start_game(WINDOW *score, WINDOW *game){
     
         // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
         reset_frog_position(&Entities[FROG_ID]);
-
         //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
 
         //PARENT PROCESS

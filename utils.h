@@ -12,23 +12,24 @@
 
 // Defined Color_Id
 #define COLOR_FROG 100
-#define COLOR_LEGS 102
-#define COLOR_RIVER 110
-#define COLOR_CROCODILLE 120
-#define COLOR_DENS 130
-#define COLOR_GRASS 140
-#define COLOR_SCORE 150
+#define COLOR_LEGS 110
+#define COLOR_RIVER 120
+#define COLOR_CROCODILE_BODY 130
+#define COLOR_CROCODILE_SCALES 140
+#define COLOR_DENS 150
+#define COLOR_GRASS 160
+#define COLOR_SCORE 170
 
 // Defined Color_Pair_Id
 #define COLOR_FROG_ID 200
-#define COLOR_EYE_ID 101
-#define COLOR_LEGS_ID 102
-#define COLOR_RIVER_ID 210
-#define COLOR_CROCODILLE_ID 220
-#define COLOR_DENS_ID 230
-#define COLOR_GRASS_ID 240
-#define COLOR_SCORE_ID 250
-
+#define COLOR_EYE_ID 201
+#define COLOR_LEGS_ID 202
+#define COLOR_RIVER_ID 203
+#define COLOR_CROCODILE_BODY_ID 204
+#define COLOR_CROCODILE_SCALES_ID 205
+#define COLOR_DENS_ID 206
+#define COLOR_GRASS_ID 207
+#define COLOR_SCORE_ID 208
 
 // Defined sizes of game area
 #define DENS_HEIGTH 5
