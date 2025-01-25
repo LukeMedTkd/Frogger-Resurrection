@@ -50,9 +50,8 @@ void start_game(WINDOW *score, WINDOW *game){
     // Create FROG process and run his routine
     create_process(fds, Entities, FROG_ID, &frog_process, args);
 
-
-    //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
-
+    //Create TIME process
+    create_process(fds, Entities, TIME_ID, &timer_process, args);
 
     // Set streams speed with direction on gameVar array
     randomize_streams_speed(gameVar.streams_speed);
@@ -91,7 +90,7 @@ void start_game(WINDOW *score, WINDOW *game){
     
         // Reset default FROG position 
         reset_frog_position(&Entities[FROG_ID]);
-        create_process(fds, Entities,TIME_ID,&time_process,&(gameVar.time));
+        
         // Randomize the streams direction
         //randomize_streams_direction(gameVar.streams_speed);
 

@@ -2,6 +2,13 @@
 #include "utils.h"
 #include "entity.h"
 
+void print_timer(WINDOW *score, int timer){
+    wattron(score, COLOR_PAIR(COLOR_SCORE_ID));
+    mvwprintw(score, 0, 5, "TIME: %d", timer);
+    wattroff(score, COLOR_PAIR(COLOR_SCORE_ID));
+    // TO DO: print bar time at right side
+}
+
 void print_game_area(WINDOW *game){
     // Dens
     wattron(game, COLOR_PAIR(COLOR_DENS_ID));

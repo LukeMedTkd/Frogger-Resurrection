@@ -7,7 +7,7 @@
 3.Bullet process-> (pipe, *params)
 */
 
-void frog_process(int pipe_write, int* params){
+void frog_process(int pipe_write, int* args){
 
     // Init some variables
     int move, direction = 1;
@@ -91,14 +91,16 @@ void reset_crocodile_position(Character *crocodile_entity, int* args){
     crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH));
 }
 
-void time_process(int pipe_write, int* params){
-    
-    while (TRUE){
-        Msg msg;
-        msg.x = *params;
-        msg.id = TIME_ID;
-        msg.y = 2;
+void reset_timer(Character *timer_entity){
+    timer_entity->x = TIME;
+}
 
+void timer_process(int pipe_write, int* args){
+    Msg msg;
+    msg.x = -1;
+    msg.id = TIME_ID;
+
+    while(TRUE){
         write_msg(pipe_write,msg);
         sleep(1);
     }
@@ -117,7 +119,7 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
         switch (msg.id){
         
             // ************************** 
-            // Msg from FROG
+            // Msg from FROG process
             // **************************
             case FROG_ID:
 
@@ -135,9 +137,9 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
                 break;
 
 
-            // ************************** 
-            // Msg from some CROCODILE
-            // **************************
+            // ************************************ 
+            // Msg from some CROCODILE processes
+            // ************************************  
             case FIRST_CROCODILLE ... LAST_CROCODILLE:
 
                 // Check if this crocodille is online or is offline
@@ -154,17 +156,17 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
                 break;
 
             // ************************** 
-            // Msg from some TIME
+            // Msg from TIME
             // **************************
             case TIME_ID:
-            
-                gameVar.time = msg.x;
-                mvwprintw(score,1,5,"%d",gameVar.time);
-                gameVar.time--;
+                gameVar.time += msg.x;
 
             default:
                 break;
         }
+
+        // Print Timer
+        print_timer(score, gameVar.time);
 
         // Print Game Area
         print_game_area(game);
@@ -172,11 +174,11 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
         // Print Crocodiles
         print_crocodiles(game, Entities, gameVar.streams_speed);
 
-
         // Print the Frog
         print_frog(game, Entities[FROG_ID]);
 
-        // Refresh the game screen
+        // Refresh the game and the score screen
         wrefresh(game);
+        wrefresh(score);
     }
 }
