@@ -57,7 +57,7 @@ void start_game(WINDOW *score, WINDOW *game){
     // Set streams speed with direction on gameVar array
     randomize_streams_speed(gameVar.streams_speed);
     randomize_streams_direction(gameVar.streams_speed);
-    
+    /*----------- DEBUG randomize functions OK !!!-----------*/
     
     // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
     for (int i = 0; i < N_STREAM; i++){
@@ -93,7 +93,7 @@ void start_game(WINDOW *score, WINDOW *game){
         reset_frog_position(&Entities[FROG_ID]);
 
         // Randomize the streams direction
-        randomize_streams_direction(gameVar.streams_speed);
+        //randomize_streams_direction(gameVar.streams_speed);
 
         // Reset default CROCODILES position
         //for(int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++) reset_crocodile_position(&(Entities[i]), args);

@@ -77,13 +77,13 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
 
     // Define 2 crocodile sprites
     static const char* items[2][4][30] = {
-        {//DX->SX
+        {//SX-DX
             {"", "", "", "", "▀", "▀", "▀", "█", "█", "█", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "█", "█", "▀", "▀", "▀", "", "", ""},
             {"▄", "▄", "▄", "▄", " ", "▄", " ", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", " ", "▀", "█", "▄", "▄", "▄"},
             {"▀", "▀", "▀", "▀", " ", "▀", " ", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", " ", "▄", "█", "▀", "▀", "▀"},
             {"", "", "", "", "▄", "▄", "▄", "█", "█", "█", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "█", "█", "▄", "▄", "▄", "", "", ""}
         },
-        {//SX->DX
+        {//DX-SX
             {"", "", "", "", "▀", "▀", "▀", "█", "█", "█", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "█", "█", "▀", "▀", "▀", "", "", ""},
             {"▄", "▄", "▄", "█", "▀", " ", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", " ", "▄"," ","▄", "▄", "▄", "▄"},
             {"▀", "▀", "▀", "█", "▄", " ", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", " ", "▀"," ","▀", "▀", "▀", "▀"},
@@ -96,14 +96,14 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
 
     for(int n = FIRST_CROCODILLE; n < LAST_CROCODILLE; n++){
         // Set n_stream index from 0 to 7
-        n_stream = (n - FIRST_CROCODILLE) - MAX_N_CROCODILE_PER_STREAM;
+        n_stream = (n - FIRST_CROCODILLE) / MAX_N_CROCODILE_PER_STREAM;
         if(n_stream > 7) n_stream = 7;
 
         // Get direction
         dir = (stream_speed_with_dir[n_stream] > 0 ? 1 : -1);
-
+    
         // Get sprite_index
-        sprite_index = (dir == 1 ? 1 : 0);
+        sprite_index = (dir == 1 ? 0 : 1);
 
         // Print
         for(int i = 0; i < CROCODILE_DIM_Y; i++){
