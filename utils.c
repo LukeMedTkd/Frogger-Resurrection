@@ -51,8 +51,8 @@ void init_colors(){
 
 }
 
-int rand_range(int min0, int max0){
-    return rand() % (max0-min0) + min0;
+int rand_range(int max0, int min0){
+    return rand() % (max0 - min0 + 1) + min0;
 }
 
 void debuglog(char *message, int arg){

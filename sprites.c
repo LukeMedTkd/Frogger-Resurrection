@@ -73,52 +73,52 @@ void print_frog(WINDOW *game, Character frog_entity) {
     }
 }
 
-void print_crocodile(WINDOW *game, Character crocodile_entity, int dir){
-static const char* items[2][4][30] = {
-{//DX->SX
-    {"", "", "", "", "▀", "▀", "▀", "█", "█", "█", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "█", "█", "▀", "▀", "▀", "", "", ""},
-    {"▄", "▄", "▄", "▄", " ", "▄", " ", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", " ", "▀", "█", "▄", "▄", "▄"},
-    {"▀", "▀", "▀", "▀", " ", "▀", " ", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", " ", "▄", "█", "▀", "▀", "▀"},
-    {"", "", "", "", "▄", "▄", "▄", "█", "█", "█", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "█", "█", "▄", "▄", "▄", "", "", ""}
-},
-{//SX->DX
-    {"", "", "", "", "▀", "▀", "▀", "█", "█", "█", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "█", "█", "▀", "▀", "▀", "", "", ""},
-    {"▄", "▄", "▄", "█", "▀", " ", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", " ", "▄"," ","▄", "▄", "▄", "▄"},
-    {"▀", "▀", "▀", "█", "▄", " ", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", " ", "▀"," ","▀", "▀", "▀", "▀"},
-    {"", "", "", "", "▄", "▄", "▄", "█", "█", "█", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "█", "█", "▄", "▄", "▄", "", "", ""}
-}
-};
+void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_dir){
 
-if (dir == 1) {
-    for (int i = 0; i < CROCODILE_DIM_Y; i++) {
-        for (int j = 0; j < CROCODILE_DIM_X; j++) {
-            if((i == 1 || i == 2) && (j > 5 && j < 24)){
-                wattron(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID)); //quadratini neri
-                mvwprintw(game,i, i, "%s", items[0][i][j]); 
-                wattroff(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
-            }
-            else{
-                wattron(game,COLOR_PAIR(COLOR_CROCODILE_BODY_ID)); // resto del corpo
-                mvwprintw(game,i,i , "%s", items[0][i][j]); 
-                wattroff(game,COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
+    // Define 2 crocodile sprites
+    static const char* items[2][4][30] = {
+        {//DX->SX
+            {"", "", "", "", "▀", "▀", "▀", "█", "█", "█", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "█", "█", "▀", "▀", "▀", "", "", ""},
+            {"▄", "▄", "▄", "▄", " ", "▄", " ", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", " ", "▀", "█", "▄", "▄", "▄"},
+            {"▀", "▀", "▀", "▀", " ", "▀", " ", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", " ", "▄", "█", "▀", "▀", "▀"},
+            {"", "", "", "", "▄", "▄", "▄", "█", "█", "█", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "█", "█", "▄", "▄", "▄", "", "", ""}
+        },
+        {//SX->DX
+            {"", "", "", "", "▀", "▀", "▀", "█", "█", "█", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "▄", "█", "█", "▀", "▀", "▀", "", "", ""},
+            {"▄", "▄", "▄", "█", "▀", " ", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", " ", "▄"," ","▄", "▄", "▄", "▄"},
+            {"▀", "▀", "▀", "█", "▄", " ", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", "▄", "▀", " ", "▀"," ","▀", "▀", "▀", "▀"},
+            {"", "", "", "", "▄", "▄", "▄", "█", "█", "█", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "▀", "█", "█", "▄", "▄", "▄", "", "", ""}
+        }
+    };
+
+    // Variables Statement
+    int dir, n_stream, sprite_index;
+
+    for(int n = FIRST_CROCODILLE; n < LAST_CROCODILLE; n++){
+        // Set n_stream index from 0 to 7
+        n_stream = (n - FIRST_CROCODILLE) - MAX_N_CROCODILE_PER_STREAM;
+        if(n_stream > 7) n_stream = 7;
+
+        // Get direction
+        dir = (stream_speed_with_dir[n_stream] > 0 ? 1 : -1);
+
+        // Get sprite_index
+        sprite_index = (dir == 1 ? 1 : 0);
+
+        // Print
+        for(int i = 0; i < CROCODILE_DIM_Y; i++){
+            for(int j = 0; j < CROCODILE_DIM_X; j++){
+                if((i == 1 || i == 2) && (j > 5 && j < 24)){
+                    wattron(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
+                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
+                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
+                }
+                else{
+                    wattron(game, COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
+                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
+                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
+                }
             }
         }
     }
-}
-else if (dir == -1){
-    for (int i = 0; i < CROCODILE_DIM_Y; i++) {
-        for (int j = 0; j < CROCODILE_DIM_X; j++) {
-            if((i == 1 || i == 2) && (j > 5 && j < 24)){
-                wattron(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
-                mvprintw( i,  i, "%s", items[1][i][j]); 
-                wattroff(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
-            }
-            else{
-                wattron(game,COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
-                mvprintw( i,  i, "%s", items[1][i][j]); 
-                wattroff(game,COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
-            }
-        }
-    }
-}
 }

@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <unistd.h>
+#include "game.h"
 
 #ifndef STRUCT_H
 #define STRUCT_H
@@ -16,7 +17,9 @@ typedef struct
 {
     int time;
     int manche;
-    int score;    
+    int score;   
+    int streams_speed[N_STREAM];
+    int spawn_delays[N_STREAM]; 
 }Game_var;
 
 
@@ -29,11 +32,5 @@ typedef struct
    int sig;
 
 }Character;
-
-typedef struct Pid_node
-{
-    Character info;
-    struct Pid_node *next;
-}Pid_node;
 
 #endif

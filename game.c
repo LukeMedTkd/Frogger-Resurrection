@@ -3,14 +3,31 @@
 #include "entity.h"
 #include "utils.h"
 
-/*
-1. creazione iniziale frog -> inserimento in una lista con FROG_ID perchè? va ucciso il processo
-2. creazione iniziale dei crocodilles
-for i=0; i < n_manches, i++
-    play_manche();
-        creazione processi 
- */
 
+void randomize_streams_speed(int *streams_speed){
+    // Randomize STREAMS SPEED: FIXED for each GAME
+    for (int i = 0; i < N_STREAM; i++){
+        streams_speed[i] = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
+    }
+}
+
+void randomize_streams_direction(int *stream_speed){
+    // stream_dir takes 1 or -1 each time this fucntion is called
+    int stream_dir = STREAM_DIRECTION;
+    for (int i = 0; i < N_STREAM; i++){
+        stream_speed[i] *= stream_dir;
+        stream_dir *= INVERT_DIRECTION;
+    }
+}
+
+void randomize_spawn_time(int *streams_speed, int *spawn_delays){
+    // TO DO: Implementare una randomizzazione pseudo casuale che si basi anche sulla streams_speed
+    int spawn_delay;
+    for (int i = 0; i < N_STREAM; i++){
+        spawn_delay = rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
+        spawn_delays[i] += spawn_delay;
+    }
+}
 
 void start_game(WINDOW *score, WINDOW *game){
     //set game variables
@@ -19,58 +36,67 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.score = SCORE;
     gameVar.time = TIME;
 
-    // Variables Declaration
-    int args[3] = {0}, stream_speed, spawn_delay = 0, stream_dir, crocodile_index = 2;
+    // Dynamic allocation of the characters array
+    Character *Entities = malloc(N_ENTITIES * sizeof(Character));
+
+    // Variables Statement
+    int args[4] = {0}, crocodile_index;
 
     // Define fds array and Pipe Creation
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
-    // Define CArray of Characters
-    Character Entities[N_ENTITIES];
 
-    // Create FROG process
+    // Create FROG process and run his routine
     create_process(fds, Entities, FROG_ID, &frog_process, args);
 
 
     //CreateProcess(pipe,listpid,void (*Time_process)(int, int*),int* params)->Creazione processo TEMPO
-    stream_dir = STREAM_DIRECTION;
-    for (int i = 0; i < N_STREAM; i++){
-        // Randomize STREAM SPEED: FIXED for each GAME
-        stream_speed = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
-        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
-            // Set args for crocodile process  -  args[3]:  | n_stream | stream_speed_with_dir | spawn delay |
-            args[0] = i;
-            args[1] = stream_speed * stream_dir;
-            args[2] += spawn_delay;
-            spawn_delay = rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
 
+
+    // Set streams speed with direction on gameVar array
+    randomize_streams_speed(gameVar.streams_speed);
+    randomize_streams_direction(gameVar.streams_speed);
+    
+    
+    // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
+    for (int i = 0; i < N_STREAM; i++){
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
+            // Get crocodile index through i and j
+            crocodile_index = FIRST_CROCODILLE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
+
+            // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+            args[0] = i;
+            args[1] = gameVar.streams_speed[i];
+            /*----------- DEBUG gameVar.streams_speed[i] OK !!!-----------*/
+            args[2] += rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
+            args[3] = crocodile_index;
+            
             // Reset the Crocodilles Position - Modify the characters structs
             reset_crocodile_position(&(Entities[crocodile_index]), args);
-        
-            // Create CROCODILE process
-            create_process(fds, Entities, crocodile_index, &crocodile_process, args);
-            crocodile_index++;
-        }
 
-        spawn_delay = args[2] = 0;
-        stream_dir *= INVERT_DIRECTION;
+            /*----------- DEBUG reset_crocodile_position OK !!!-----------*/
+
+            // Create CROCODILE process and run his routine
+            create_process(fds, Entities, crocodile_index, &crocodile_process, args);  
+        }
+        args[2] = 0;
     } 
     
-    /*
-    FUNZIONAMENTO GENERALE DEGLI SPOSTAMENTI DELLE ENTITA:
-    1. Il processo controllo, per disegnare le entità sullo schermo deve leggere le coordinate presenti nelle struct Character presenti nell'array 
-    2. Quando legge i msg dalla pipe, si occupa di aggiornare le coordinnate nelle struct Character dell' array.
-    3. Quindi ad ogni inizio della manche resetta queste posizioni   
-    */
 
 
-   
+   /******************************************************************/
+   /************************* Manche Loop ***************************/
     while(gameVar.manche > 0){
     
-        // reset default position-> posizione rana (agire sul primo nodo della lista), tempo, score
+        // Reset default FROG position 
         reset_frog_position(&Entities[FROG_ID]);
-        //Randomizzare velocità e settare direzione dei flussi (agire sui nodidella lista)
+
+        // Randomize the streams direction
+        randomize_streams_direction(gameVar.streams_speed);
+
+        // Reset default CROCODILES position
+        //for(int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++) reset_crocodile_position(&(Entities[i]), args);
 
         //PARENT PROCESS
         parent_process(game, fds[PIPE_READ], Entities, gameVar);
@@ -93,9 +119,12 @@ void start_game(WINDOW *score, WINDOW *game){
           
     }
     
-    // Kill Processes in the list. Parent process wait all the children
+    // Kill Processes in the array. Parent process wait all the children
     kill_processes(Entities);
     wait_children(Entities);
+
+    // Free the memeory of Entities array
+    free(Entities);
 
     // Close file descriptors
     close(fds[PIPE_READ]);
