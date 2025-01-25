@@ -91,7 +91,7 @@ void start_game(WINDOW *score, WINDOW *game){
     
         // Reset default FROG position 
         reset_frog_position(&Entities[FROG_ID]);
-
+        create_process(fds, Entities,TIME_ID,&time_process,&(gameVar.time));
         // Randomize the streams direction
         //randomize_streams_direction(gameVar.streams_speed);
 
@@ -99,7 +99,7 @@ void start_game(WINDOW *score, WINDOW *game){
         //for(int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++) reset_crocodile_position(&(Entities[i]), args);
 
         //PARENT PROCESS
-        parent_process(game, fds[PIPE_READ], Entities, gameVar);
+        parent_process(game,score, fds[PIPE_READ], Entities, gameVar);
 
         // -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
         // -Stampa Area di gioco

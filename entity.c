@@ -91,7 +91,20 @@ void reset_crocodile_position(Character *crocodile_entity, int* args){
     crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH));
 }
 
-void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var gameVar){
+void time_process(int pipe_write, int* params){
+    
+    while (TRUE){
+        Msg msg;
+        msg.x = *params;
+        msg.id = TIME_ID;
+        msg.y = 2;
+
+        write_msg(pipe_write,msg);
+        sleep(1);
+    }
+}
+
+void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entities, Game_var gameVar){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -139,6 +152,15 @@ void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var g
                     // reset_crocodile_position(Entities[msg.id], args);
                 }
                 break;
+
+            // ************************** 
+            // Msg from some TIME
+            // **************************
+            case TIME_ID:
+            
+                gameVar.time = msg.x;
+                mvwprintw(score,1,5,"%d",gameVar.time);
+                gameVar.time--;
 
             default:
                 break;

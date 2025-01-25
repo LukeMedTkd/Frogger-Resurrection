@@ -26,9 +26,12 @@
 #define CROCODILE_ONLINE 1
 #define CROCODILE_OFFLINE 0
 
+#define TIME_ID 1
+
 // Functions Prototypes
 void frog_process(int pipe_write, int* params);
 void reset_frog_position(Character *frog_entity);
 void crocodile_process(int pipe_write, int* args);
 void reset_crocodile_position(Character *crocodile_entity, int* args);
-void parent_process(WINDOW *game, int pipe_read, Character *Entities, Game_var gameVar);
+void time_process(int pipe_write, int* params);
+void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entities, Game_var gameVar);
