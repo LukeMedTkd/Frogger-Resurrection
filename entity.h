@@ -29,6 +29,7 @@
 // Time costants
 #define TIME_ID 1
 
+
 // Functions Prototypes
 void frog_process(int pipe_write, int* args);
 void reset_frog_position(Character *frog_entity);

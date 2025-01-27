@@ -6,7 +6,7 @@ CFLAGS = -Wall
 LIBS = -lncursesw
 
 # Source files and target
-SRC = main.c game.c process.c entity.c sprites.c utils.c
+SRC = main.c game.c process.c entity.c sprites.c utils.c collisions.c
 OBJ = ${SRC:.c=.o}
 TARGET = output
 

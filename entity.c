@@ -1,11 +1,8 @@
 #include "entity.h"
 #include "struct.h"
 #include "game.h"
-/*
-1.frogProcess-> (pipe, *params)
-2.Crocodile process-> (pipe, *params)
-3.Bullet process-> (pipe, *params)
-*/
+#include "sprites.h"
+#include "collisions.h"
 
 void frog_process(int pipe_write, int* args){
 
@@ -134,6 +131,10 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
                     // TO DO
                 }
 
+                // FROG can saved itself
+                dens_collision(Entities, &gameVar, &manche_ended);
+
+
                 break;
 
 
@@ -169,7 +170,7 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
         print_timer(score, gameVar.time);
 
         // Print Game Area
-        print_game_area(game);
+        print_game_area(game, gameVar.dens);
 
         // Print Crocodiles
         print_crocodiles(game, Entities, gameVar.streams_speed);

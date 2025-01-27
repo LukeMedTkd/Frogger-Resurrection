@@ -2,6 +2,7 @@
 #include "struct.h"
 #include "entity.h"
 #include "utils.h"
+#include "sprites.h"
 
 
 void randomize_streams_speed(int *streams_speed){
@@ -35,6 +36,8 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.manche = MANCHES;
     gameVar.score = SCORE;
     gameVar.time = TIME;
+    gameVar.lifes = LIFES;
+    for (int i = 0; i < N_DENS; i++) gameVar.dens[i] = TRUE;
 
     // Dynamic allocation of the characters array
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));

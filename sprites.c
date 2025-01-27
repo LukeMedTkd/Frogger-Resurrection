@@ -9,13 +9,51 @@ void print_timer(WINDOW *score, int timer){
     // TO DO: print bar time at right side
 }
 
-void print_game_area(WINDOW *game){
+void print_game_area(WINDOW *game, bool *dens){
     // Dens
-    wattron(game, COLOR_PAIR(COLOR_DENS_ID));
     for (int y = DENS_Y_START; y < DENS_Y_END; y++){
-        mvwhline(game, y, 0, ' ', GAME_WIDTH);
+        for (int x = 0; x < GAME_WIDTH; x++){
+            if ((dens[0] == TRUE) && (x >= DENS1_START && x < (DENS1_START + FROG_DIM_X)) && (y > DENS_Y_START)){
+                wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
+                mvwprintw(game, y, x, "%c", ' ');
+                wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
+                continue;
+            }
+
+            if ((dens[1] == TRUE) && (x >= DENS2_START && x < (DENS2_START + FROG_DIM_X) && (y > DENS_Y_START))){
+                wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
+                mvwprintw(game, y, x, "%c", ' ');
+                wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
+                continue;
+            }
+
+            if ((dens[2] == TRUE) && (x >= DENS3_START && x < (DENS3_START + FROG_DIM_X) && (y > DENS_Y_START))){
+                wattron(game,COLOR_PAIR(COLOR_GRASS_ID));
+                mvwprintw(game, y, x, "%c", ' ');
+                wattroff(game,COLOR_PAIR(COLOR_GRASS_ID));
+                continue;
+            }
+
+            if ((dens[3] == TRUE) && (x >= DENS4_START && x < (DENS4_START + FROG_DIM_X) && (y > DENS_Y_START))){
+                wattron(game,COLOR_PAIR(COLOR_GRASS_ID));
+                mvwprintw(game, y, x, "%c", ' ');
+                wattroff(game,COLOR_PAIR(COLOR_GRASS));
+                continue;
+            }
+
+            if ((dens[4] == TRUE) && (x >= DENS5_START && x < (DENS5_START + FROG_DIM_X) && (y > DENS_Y_START))){
+                wattron(game,COLOR_PAIR(COLOR_GRASS_ID));
+                mvwprintw(game, y, x, "%c", ' ');
+                wattroff(game,COLOR_PAIR(COLOR_GRASS_ID));
+                continue;
+            }
+
+            wattron(game, COLOR_PAIR(COLOR_DENS_ID));
+            mvwprintw(game, y, x, "%c", ' ');
+            wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+        }
     }
-    wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+
     
     // Upper edge
     wattron(game, COLOR_PAIR(COLOR_GRASS_ID));

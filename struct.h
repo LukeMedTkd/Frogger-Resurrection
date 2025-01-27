@@ -1,5 +1,5 @@
+#include <stdbool.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include "game.h"
 
 #ifndef STRUCT_H
@@ -18,8 +18,10 @@ typedef struct
     int time;
     int manche;
     int score;   
+    int lifes;
     int streams_speed[N_STREAM];
     int spawn_delays[N_STREAM]; 
+    bool dens[N_DENS];
 }Game_var;
 
 
