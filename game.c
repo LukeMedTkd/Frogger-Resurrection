@@ -101,7 +101,7 @@ void start_game(WINDOW *score, WINDOW *game){
         //for(int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++) reset_crocodile_position(&(Entities[i]), args);
 
         //PARENT PROCESS
-        parent_process(game,score, fds[PIPE_READ], Entities, gameVar);
+        parent_process(game,score, fds[PIPE_READ], Entities, &gameVar);
 
         // -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
         // -Stampa Area di gioco

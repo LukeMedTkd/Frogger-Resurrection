@@ -103,7 +103,7 @@ void timer_process(int pipe_write, int* args){
     }
 }
 
-void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entities, Game_var gameVar){
+void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entities, Game_var *gameVar){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -132,7 +132,7 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
                 }
 
                 // FROG can saved itself
-                dens_collision(Entities, &gameVar, &manche_ended);
+                dens_collision(Entities, gameVar, msg, &manche_ended);
 
 
                 break;
@@ -160,20 +160,22 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
             // Msg from TIME
             // **************************
             case TIME_ID:
-                gameVar.time += msg.x;
+                gameVar->time += msg.x;
 
             default:
                 break;
         }
 
         // Print Timer
-        print_timer(score, gameVar.time);
+        print_timer(score, gameVar->time);
 
+        // Print Lifes
+        print_lifes(score, gameVar->lifes);
         // Print Game Area
-        print_game_area(game, gameVar.dens);
+        print_game_area(game, gameVar->dens);
 
         // Print Crocodiles
-        print_crocodiles(game, Entities, gameVar.streams_speed);
+        print_crocodiles(game, Entities, gameVar->streams_speed);
 
         // Print the Frog
         print_frog(game, Entities[FROG_ID]);

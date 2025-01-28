@@ -9,6 +9,13 @@ void print_timer(WINDOW *score, int timer){
     // TO DO: print bar time at right side
 }
 
+void print_lifes(WINDOW *score, int lifes){
+    wattron(score, COLOR_PAIR(COLOR_SCORE_ID));
+    mvwprintw(score, 0, 25, "Lifes: ");
+    for (int i = 0; i < lifes; i++) mvwprintw(score, 0, 33 + i*2, "%s", "🐸");
+    wattroff(score, COLOR_PAIR(COLOR_SCORE_ID));
+}
+
 void print_game_area(WINDOW *game, bool *dens){
     // Dens
     for (int y = DENS_Y_START; y < DENS_Y_END; y++){
