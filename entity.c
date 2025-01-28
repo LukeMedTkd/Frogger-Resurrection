@@ -166,11 +166,15 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
                 break;
         }
 
+        // Print Lifes
+        print_lifes(score, gameVar->lifes);
+
+        // Print Score
+        print_score(score, gameVar->score);
+
         // Print Timer
         print_timer(score, gameVar->time);
 
-        // Print Lifes
-        print_lifes(score, gameVar->lifes);
         // Print Game Area
         print_game_area(game, gameVar->dens);
 

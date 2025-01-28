@@ -3,17 +3,61 @@
 #include "entity.h"
 
 void print_timer(WINDOW *score, int timer){
-    wattron(score, COLOR_PAIR(COLOR_SCORE_ID));
-    mvwprintw(score, 0, 5, "TIME: %d", timer);
-    wattroff(score, COLOR_PAIR(COLOR_SCORE_ID));
-    // TO DO: print bar time at right side
+    for(int j = 0; j < TIME; j++) mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");
+
+    for (int i = (GAME_WIDTH - 1); i > (GAME_WIDTH - timer); i--){
+        mvwprintw(score, 0, GAME_WIDTH - TIME - 8, "TIME: ");
+        if(timer < 60 && timer > 56) wattron(score, COLOR_PAIR(COLOR_TIME1_ID) | A_BOLD);
+        if(timer <= 56 && timer > 52) wattron(score, COLOR_PAIR(COLOR_TIME2_ID) | A_BOLD);
+        if(timer <= 52 && timer > 48) wattron(score, COLOR_PAIR(COLOR_TIME3_ID) | A_BOLD);
+        if(timer <= 48 && timer > 44) wattron(score, COLOR_PAIR(COLOR_TIME4_ID) | A_BOLD);
+        if(timer <= 44 && timer > 40) wattron(score, COLOR_PAIR(COLOR_TIME5_ID) | A_BOLD);
+        if(timer <= 40 && timer > 36) wattron(score, COLOR_PAIR(COLOR_TIME6_ID) | A_BOLD);
+        if(timer <= 36 && timer > 32) wattron(score, COLOR_PAIR(COLOR_TIME7_ID) | A_BOLD);
+        if(timer <= 32 && timer > 28) wattron(score, COLOR_PAIR(COLOR_TIME8_ID) | A_BOLD);
+        if(timer <= 28 && timer > 24) wattron(score, COLOR_PAIR(COLOR_TIME9_ID) | A_BOLD);
+        if(timer <= 24 && timer > 20) wattron(score, COLOR_PAIR(COLOR_TIME10_ID) | A_BOLD);
+        if(timer <= 20 && timer > 16) wattron(score, COLOR_PAIR(COLOR_TIME11_ID) | A_BOLD);
+        if(timer <= 16 && timer > 12) wattron(score, COLOR_PAIR(COLOR_TIME12_ID) | A_BOLD);
+        if(timer <= 12 && timer > 8) wattron(score, COLOR_PAIR(COLOR_TIME13_ID) | A_BOLD);
+        if(timer <= 8 && timer > 4) wattron(score, COLOR_PAIR(COLOR_TIME14_ID) | A_BOLD | A_BLINK);
+        if(timer <= 4 && timer > 0) wattron(score, COLOR_PAIR(COLOR_TIME15_ID) | A_BOLD | A_BLINK);
+        mvwprintw(score, 0, i, "█");
+    }
+    wattroff(score, COLOR_PAIR(COLOR_TIME1_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME2_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME3_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME4_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME5_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME6_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME7_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME8_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME9_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME10_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME11_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME12_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME13_ID) | A_BOLD);
+    wattroff(score, COLOR_PAIR(COLOR_TIME14_ID) | A_BOLD | A_BLINK);
+    wattroff(score, COLOR_PAIR(COLOR_TIME15_ID) | A_BOLD | A_BLINK);
+    
+}
+
+void print_score(WINDOW *score, int vscore){
+    wattron(score, COLOR_PAIR(COLOR_SCORE_ID) | A_BOLD);
+    mvwprintw(score, 0, GAME_WIDTH/3, "SCORE: %d", vscore);
+    wattroff(score, COLOR_PAIR(COLOR_SCORE_ID) | A_BOLD);
 }
 
 void print_lifes(WINDOW *score, int lifes){
-    wattron(score, COLOR_PAIR(COLOR_SCORE_ID));
-    mvwprintw(score, 0, 25, "Lifes: ");
-    for (int i = 0; i < lifes; i++) mvwprintw(score, 0, 33 + i*2, "%s", "🐸");
-    wattroff(score, COLOR_PAIR(COLOR_SCORE_ID));
+    wattron(score, COLOR_PAIR(COLOR_LIFES_ID) | A_BOLD);
+    mvwprintw(score, 0, 1, "LIFES: ");
+    mvwprintw(score, 0, 7, "%s", "                         ");
+    for (int i = 0; i < lifes; i++){
+        if(lifes < 3) wattron(score, A_BLINK);
+        mvwprintw(score, 0, (8 + (i*3)), "%s", "🐸");
+    }
+    wattroff(score, A_BLINK);
+    wattroff(score, COLOR_PAIR(COLOR_LIFES_ID) | A_BOLD);
 }
 
 void print_game_area(WINDOW *game, bool *dens){
