@@ -204,7 +204,18 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
         // Print
         for(int i = 0; i < CROCODILE_DIM_Y; i++){
             for(int j = 0; j < CROCODILE_DIM_X; j++){
-                if((i == 1 || i == 2) && (j > 5 && j < 24)){
+                if (sprite_index == 0 && (i == 1 || i ==2) && (j == 25)){
+                    wattron(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]);
+                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                }
+                else if (sprite_index == 1 && (i == 1 || i ==2) && (j == 4)){
+                    wattron(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]);
+                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                }
+                
+                else if((i == 1 || i == 2) && (j > 5 && j < 24)){
                     wattron(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
                     mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
                     wattroff(game, COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
