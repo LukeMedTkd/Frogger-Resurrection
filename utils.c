@@ -51,6 +51,8 @@ void init_colors(){
     init_color(COLOR_TIME13, 815, 165, 98);
     init_color(COLOR_TIME14, 815, 115, 98);
     init_color(COLOR_TIME15, 815, 65, 98);
+    init_color(COLOR_BKG_LOST_GAME, 925, 741, 458);
+    init_color(COLOR_WRT_LOST_GAME, 541, 329, 309);
 
     // Time Colors
     init_pair(COLOR_TIME1_ID, COLOR_TIME1, COLOR_BLACK);
@@ -76,6 +78,8 @@ void init_colors(){
     init_pair(COLOR_DENS_ID, COLOR_DENS, COLOR_DENS);
     init_pair(COLOR_SCORE_ID, COLOR_SCORE, COLOR_BLACK); 
     init_pair(COLOR_LIFES_ID, COLOR_LIFES, COLOR_BLACK);
+    init_pair(COLOR_BKG_LOST_GAME_ID, COLOR_BKG_LOST_GAME, COLOR_BKG_LOST_GAME);
+    init_pair(COLOR_WRT_LOST_GAME_ID, COLOR_WRT_LOST_GAME, COLOR_BKG_LOST_GAME);
 
     // Entities Colors 
     init_pair(COLOR_FROG_ID, COLOR_FROG, COLOR_LEGS);

@@ -35,6 +35,6 @@ void frog_process(int pipe_write, int* args);
 void reset_frog_position(Character *frog_entity);
 void crocodile_process(int pipe_write, int* args);
 void reset_crocodile_position(Character *crocodile_entity, int* args);
-void reset_timer(Character *timer_entity);
+void reset_timer(Game_var *gameVar);
 void timer_process(int pipe_write, int* args);
 void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entities, Game_var *gameVar);

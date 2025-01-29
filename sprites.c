@@ -229,3 +229,25 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
         }
     }
 }
+
+void print_lost_game(WINDOW *game){
+    
+    // Print background
+    wattron(game, COLOR_PAIR(COLOR_BKG_LOST_GAME_ID));
+    for (int i = 0; i < GAME_HEIGHT; i++){
+        mvwhline(game, i, 0, ' ', GAME_WIDTH);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_BKG_LOST_GAME_ID));
+
+    wattron(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK );
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 0, (GAME_WIDTH / 2) - (64 / 2), "██╗   ██╗ ██████╗ ██╗   ██╗    ██╗      ██████╗ ███████╗███████╗");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 1, (GAME_WIDTH / 2) - (64 / 2), "╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║     ██╔═══██╗██╔════╝██╔════╝");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 2, (GAME_WIDTH / 2) - (64 / 2), " ╚████╔╝ ██║   ██║██║   ██║    ██║     ██║   ██║███████╗█████╗  ");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 3, (GAME_WIDTH / 2) - (64 / 2), "  ╚██╔╝  ██║   ██║██║   ██║    ██║     ██║   ██║╚════██║██╔══╝  ");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 4, (GAME_WIDTH / 2) - (64 / 2), "   ██║   ╚██████╔╝╚██████╔╝    ███████╗╚██████╔╝███████║███████╗");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 5, (GAME_WIDTH / 2) - (64 / 2), "   ╚═╝    ╚═════╝  ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝╚══════╝");
+    wattroff(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK);
+
+    wrefresh(game);
+    usleep(5000000);
+}

@@ -2,10 +2,10 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#define MANCHES 5
+#define MANCHES 3
 #define SCORE 0
 #define TIME 60
-#define LIFES 5
+#define LIFES MANCHES
 #define N_DENS 5
 #define N_STREAM 8
 #define MAX_N_CROCODILE_PER_STREAM 3

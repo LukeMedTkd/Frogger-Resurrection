@@ -59,7 +59,6 @@ void start_game(WINDOW *score, WINDOW *game){
     // Set streams speed with direction on gameVar array
     randomize_streams_speed(gameVar.streams_speed);
     randomize_streams_direction(gameVar.streams_speed);
-    /*----------- DEBUG randomize functions OK !!!-----------*/
     
     // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
     for (int i = 0; i < N_STREAM; i++){
@@ -70,14 +69,11 @@ void start_game(WINDOW *score, WINDOW *game){
             // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
             args[0] = i;
             args[1] = gameVar.streams_speed[i];
-            /*----------- DEBUG gameVar.streams_speed[i] OK !!!-----------*/
             args[2] += rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
             args[3] = crocodile_index;
             
             // Reset the Crocodilles Position - Modify the characters structs
             reset_crocodile_position(&(Entities[crocodile_index]), args);
-
-            /*----------- DEBUG reset_crocodile_position OK !!!-----------*/
 
             // Create CROCODILE process and run his routine
             create_process(fds, Entities, crocodile_index, &crocodile_process, args);  
@@ -91,6 +87,9 @@ void start_game(WINDOW *score, WINDOW *game){
    /************************* Manche Loop ***************************/
     while(gameVar.manche > 0){
     
+        // Reset the timer
+        reset_timer(&gameVar);
+
         // Reset default FROG position 
         reset_frog_position(&Entities[FROG_ID]);
         
@@ -121,6 +120,10 @@ void start_game(WINDOW *score, WINDOW *game){
           
     }
     
+
+    // Print LOST GAME
+    print_lost_game(game);
+
     // Kill Processes in the array. Parent process wait all the children
     kill_processes(Entities);
     wait_children(Entities);

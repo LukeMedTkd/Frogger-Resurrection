@@ -24,3 +24,4 @@ void print_lifes(WINDOW *score, int lifes);
 void print_game_area(WINDOW *game, bool *dens);
 void print_frog(WINDOW *game, Character frog_entity);
 void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_dir);
+void print_lost_game(WINDOW *game);

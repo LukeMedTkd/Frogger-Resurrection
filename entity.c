@@ -88,8 +88,8 @@ void reset_crocodile_position(Character *crocodile_entity, int* args){
     crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH));
 }
 
-void reset_timer(Character *timer_entity){
-    timer_entity->x = TIME;
+void reset_timer(Game_var *gameVar){
+    gameVar->time = TIME;
 }
 
 void timer_process(int pipe_write, int* args){
