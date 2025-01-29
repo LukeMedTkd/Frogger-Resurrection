@@ -133,6 +133,7 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
 
                 // FROG can saved itself
                 dens_collision(Entities, gameVar, msg, &manche_ended);
+                //frog_collision(Entities, gameVar, msg, &manche_ended);
 
 
                 break;
