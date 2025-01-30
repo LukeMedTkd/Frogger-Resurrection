@@ -23,6 +23,7 @@ typedef struct
     int manche;
     int score;   
     int lifes;
+    int outcome;
     int streams_speed[N_STREAM];
     int spawn_delays[N_STREAM]; 
     bool dens[N_DENS];

@@ -3,132 +3,55 @@
 
 void dens_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manche_ended){
 
-    // 1 DENS - INSIDE
-    if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == DENS1_START)){ 
-        if (gameVar->dens[0] ==  FALSE){ //Tana già chiusa-> MANCHE PERSA!
-            gameVar->lifes--;
-            gameVar->manche--;
-            //Manche LOST
+    int dens_start[] = {DENS1_START, DENS2_START, DENS3_START, DENS4_START, DENS5_START};
+
+    for (int i = 0; i < N_DENS; i++){
+        // Legal AREA
+        if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == dens_start[i])){ 
+            // The den already close: lost manche
+            if (gameVar->dens[i] ==  FALSE){ 
+                gameVar->lifes--;
+                gameVar->manche--;
+            }
+            // The den is still open: update the score
+            else{
+                gameVar->dens[i] = FALSE;
+                gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
+            }
             *(manche_ended) = TRUE;
         }
-        else{
-            gameVar->dens[0] = FALSE;//
-            gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
-            // Manche WON
-            *(manche_ended) = TRUE;
-        }
-    }
-    // 1 DENS - OUTSIDE
-    else if((Entities[FROG_ID].y == 1) && ((Entities[FROG_ID].x >= 0) && (Entities[FROG_ID].x < DENS1_START))){
-        (*gameVar).lifes--;
-        gameVar->manche--;
-        // Manche LOST
-        *(manche_ended) = TRUE;
+
     }
 
-    /*-----------------------------------------------------------------------------------------------------------------*/
-
-    // 2 DENS - INSIDE
-    if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == DENS2_START)){ 
-        if (gameVar->dens[1] ==  FALSE){//Tana già chiusa-> MANCHE PERSA!
+    // Illegal AREA
+    if(Entities[FROG_ID].y == 1){
+        // FROG on the dens' edges
+        if (Entities[FROG_ID].x < dens_start[0] || Entities[FROG_ID].x > dens_start[N_DENS - 1]) {
             gameVar->lifes--;
             gameVar->manche--;
-            // Manche LOST
-            *(manche_ended) = TRUE;
-        }
+            *manche_ended = TRUE;
+        } 
+        
+        // FROG between two dens
         else{
-            gameVar->dens[1] = FALSE;//
-            gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
-            // Manche WON
-            *(manche_ended) = TRUE;
+            for (int i = 0; i < N_DENS - 1; i++) {
+                if (Entities[FROG_ID].x > dens_start[i] && Entities[FROG_ID].x < dens_start[i + 1]) {
+                    gameVar->lifes--;
+                    gameVar->manche--;
+                    *manche_ended = TRUE;
+                }
+            }
         }
     }
-    // 2 DENS - OUTSIDE
-    else if((Entities[FROG_ID].y == 1) && ((Entities[FROG_ID].x >= (DENS1_START + 1)) && (Entities[FROG_ID].x < DENS2_START))){
-        gameVar->lifes--;
-        gameVar->manche--;
-        // Manche LOST
-        *(manche_ended) = TRUE;
-    }
-    /*-----------------------------------------------------------------------------------------------------------------*/
+    
 
-    // 3 DENS - INSIDE
-    if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == DENS3_START)){ 
-        if (gameVar->dens[2] ==  FALSE){//Tana già chiusa-> MANCHE PERSA!
-            gameVar->lifes--;
-            gameVar->manche--;
-            // Manche LOST
-            *(manche_ended) = TRUE;
-        }
-        else{
-            gameVar->dens[2] = FALSE;//
-            gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
-            // Manche WON
-            *(manche_ended) = TRUE;
-        }
-    }
-    // 3 DENS - OUTSIDE
-    else if((Entities[FROG_ID].y == 1) && ((Entities[FROG_ID].x >= (DENS2_START + 1) && (Entities[FROG_ID].x < DENS3_START)))){
-        gameVar->lifes--;
-        gameVar->manche--;
-        // Manche LOST
-        *(manche_ended) = TRUE;
-    }
-    /*-----------------------------------------------------------------------------------------------------------------*/
+    // Set LOSER_OUTCOME to gameVar.outcome if manche == 0
+    if(gameVar->manche == 0) gameVar->outcome = LOSER_OUTCOME;
+}
 
-    // 4 DENS - INSIDE
-    if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == DENS4_START)){ 
-        if (gameVar->dens[3] ==  FALSE){//Tana già chiusa-> MANCHE PERSA!
-            gameVar->lifes--;
-            gameVar->manche--;
-            // Manche LOST
-            *(manche_ended) = TRUE;
-        }
-        else{
-            gameVar->dens[3] = FALSE;//
-            gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
-            // Manche WON
-            *(manche_ended) = TRUE;
-        }
-    }
-    // 4 DENS - OUTSIDE
-    else if((Entities[FROG_ID].y == 1) && ((Entities[FROG_ID].x >= (DENS3_START + 1)) && (Entities[FROG_ID].x < DENS4_START))){
-        gameVar->lifes--;
-        gameVar->manche--;
-        // Manche LOST
-        *(manche_ended) = TRUE;
-    }
-    /*-----------------------------------------------------------------------------------------------------------------*/
-
-    // 5 DENS - INSIDE
-    if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == DENS5_START)){ 
-        if (gameVar->dens[4] ==  FALSE){//Tana già chiusa-> MANCHE PERSA!
-            gameVar->lifes--;
-            gameVar->manche--;
-            // Manche LOST
-            *(manche_ended) = TRUE;
-        }
-        else{
-            gameVar->dens[4] = FALSE;//
-            gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
-            // Manche WON
-            *(manche_ended) = TRUE;
-        }
-    }
-    // 5 DENS - OUTSIDE
-    else if((Entities[FROG_ID].y == 1) && ((Entities[FROG_ID].x >= (DENS4_START + 1)) && (Entities[FROG_ID].x < DENS5_START))){
-        gameVar->lifes--;
-        gameVar->manche--;
-        // Manche LOST
-        *(manche_ended) = TRUE;
-    }
-    // 5 DENS - OUTSIDE
-    else if((Entities[FROG_ID].y == 1) && ((Entities[FROG_ID].x >= (DENS5_START + 1)) && (Entities[FROG_ID].x < GAME_WIDTH))){
-        gameVar->lifes--;
-        gameVar->manche--;
-        // Manche LOST
-        *(manche_ended) = TRUE;
-    }
+void is_time_up(Game_var *gameVar){
+    // Set TIME_IS_UP_OUTCOME to gameVar.outcome if gameVar.time == 0
+    if(gameVar->time == 0) gameVar->outcome = TIME_IS_UP_OUTCOME;
 }
 
 void frog_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manche_ended){

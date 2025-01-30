@@ -5,7 +5,7 @@
 
 #define MANCHES 3
 #define SCORE 0
-#define TIME 60
+#define TIME 10
 #define LIFES MANCHES
 #define N_DENS 5
 #define N_STREAM 8
@@ -20,9 +20,15 @@
 #define MAX_SPAWN_TIME 6000000
 #define MIN_SPAWN_TIME 3000000
 
+// OUTCOMES
+#define WINNER_OUTCOME 22
+#define LOSER_OUTCOME 21
+#define TIME_IS_UP_OUTCOME 20
+
 // Functions Prototypes
 void randomize_streams_speed(int *streams_speed);
 void randomize_streams_direction(int *stream_speed);
 void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar);
 int get_nStream_based_on_id(int id);
+void outcome(WINDOW *game, Game_var *gameVar);
 void start_game(WINDOW *score, WINDOW *game);
