@@ -3,6 +3,7 @@
 #include "game.h"
 #include "sprites.h"
 #include "collisions.h"
+#include "utils.h"
 
 void frog_process(int pipe_write, int* args){
 
@@ -82,10 +83,10 @@ void crocodile_process(int pipe_write, int* args){
     
 }
 
-void reset_crocodile_position(Character *crocodile_entity, int* args){
+void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar){
     // Determine the correct position: set crocodile_init_x, crocodile_init_y
-    crocodile_entity->y = (CROCODILE_OFFSET_Y) + ((args[0])*CROCODILE_DIM_Y);
-    crocodile_entity->x = (args[1] > 0 ? (-CROCODILE_DIM_X) : (GAME_WIDTH));
+    crocodile_entity->y = (CROCODILE_OFFSET_Y) + (n_stream * CROCODILE_DIM_Y);
+    crocodile_entity->x = (gameVar->streams_speed[n_stream] > 0 ? (-CROCODILE_DIM_X - 1) : (GAME_WIDTH + 1));
 }
 
 void reset_timer(Game_var *gameVar){
@@ -103,7 +104,7 @@ void timer_process(int pipe_write, int* args){
     }
 }
 
-void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entities, Game_var *gameVar){
+void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entities, Game_var *gameVar){
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -142,7 +143,7 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
             // ************************************ 
             // Msg from some CROCODILE processes
             // ************************************  
-            case FIRST_CROCODILLE ... LAST_CROCODILLE:
+            case FIRST_CROCODILE ... LAST_CROCODILE:
 
                 // Check if this crocodille is online or is offline
                 Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + CROCODILE_DIM_X + msg.x < 0) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
@@ -152,8 +153,8 @@ void parent_process(WINDOW *game, WINDOW *score,int pipe_read, Character *Entiti
                     Entities[msg.id].x += msg.x;
                 }
                 else{
-                    // TO DO
-                    // reset_crocodile_position(Entities[msg.id], args);
+                    // If some crocodile is OFFLINE -> reset his position
+                    reset_crocodile_position(&(Entities[msg.id]), get_nStream_based_on_id(msg.id), gameVar);
                 }
                 break;
 

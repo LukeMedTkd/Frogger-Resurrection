@@ -1,5 +1,8 @@
 #include <ncurses.h>
+#include <stdbool.h>
 #include "struct.h"
+
+extern bool crocodiles_creation;
 
 // Frog constants
 #define FROG_DIM_X 10

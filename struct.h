@@ -1,6 +1,10 @@
 #include <stdbool.h>
 #include <sys/types.h>
-#include "game.h"
+
+#ifndef MAX_PLAYERS
+#define N_STREAM 8
+#define N_DENS 5
+#endif
 
 #ifndef STRUCT_H
 #define STRUCT_H

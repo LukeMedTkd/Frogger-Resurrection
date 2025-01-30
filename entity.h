@@ -19,8 +19,8 @@
 #define FROG_SHOT_SIG 1
 
 // Crocodile constants
-#define FIRST_CROCODILLE 2
-#define LAST_CROCODILLE 26
+#define FIRST_CROCODILE 2
+#define LAST_CROCODILE (FIRST_CROCODILE + (N_STREAM * MAX_N_CROCODILE_PER_STREAM))
 #define CROCODILE_MOVE_X 1
 #define CROCODILE_OFFSET_Y (DENS_HEIGTH + GRASS_HEIGHT)
 #define CROCODILE_ONLINE 1
@@ -34,7 +34,7 @@
 void frog_process(int pipe_write, int* args);
 void reset_frog_position(Character *frog_entity);
 void crocodile_process(int pipe_write, int* args);
-void reset_crocodile_position(Character *crocodile_entity, int* args);
+void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar);
 void reset_timer(Game_var *gameVar);
 void timer_process(int pipe_write, int* args);
 void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entities, Game_var *gameVar);

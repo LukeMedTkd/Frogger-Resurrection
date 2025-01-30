@@ -190,9 +190,9 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
     // Variables Statement
     int dir, n_stream, sprite_index;
 
-    for(int n = FIRST_CROCODILLE; n < LAST_CROCODILLE; n++){
+    for(int n = FIRST_CROCODILE; n < LAST_CROCODILE; n++){
         // Set n_stream index from 0 to 7
-        n_stream = (n - FIRST_CROCODILLE) / MAX_N_CROCODILE_PER_STREAM;
+        n_stream = (n - FIRST_CROCODILE) / MAX_N_CROCODILE_PER_STREAM;
         if(n_stream > 7) n_stream = 7;
 
         // Get direction
@@ -202,28 +202,33 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
         sprite_index = (dir == 1 ? 0 : 1);
 
         // Print
-        for(int i = 0; i < CROCODILE_DIM_Y; i++){
-            for(int j = 0; j < CROCODILE_DIM_X; j++){
-                if (sprite_index == 0 && (i == 1 || i ==2) && (j == 25)){
-                    wattron(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
-                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]);
-                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
-                }
-                else if (sprite_index == 1 && (i == 1 || i ==2) && (j == 4)){
-                    wattron(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
-                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]);
-                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
-                }
-                
-                else if((i == 1 || i == 2) && (j > 5 && j < 24)){
-                    wattron(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
-                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
-                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
-                }
-                else{
-                    wattron(game, COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
-                    mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
-                    wattroff(game, COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
+        if(crocodiles_creation != FALSE){
+            for(int i = 0; i < CROCODILE_DIM_Y; i++){
+                for(int j = 0; j < CROCODILE_DIM_X; j++){
+
+                    if (sprite_index == 0 && (i == 1 || i ==2) && (j == 25)){
+                        wattron(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                        mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]);
+                        wattroff(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                    }
+
+                    else if (sprite_index == 1 && (i == 1 || i ==2) && (j == 4)){
+                        wattron(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                        mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]);
+                        wattroff(game, COLOR_PAIR(COLOR_CROCODILE_EYES_ID));
+                    }
+                    
+                    else if((i == 1 || i == 2) && (j > 5 && j < 24)){
+                        wattron(game,COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
+                        mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
+                        wattroff(game, COLOR_PAIR(COLOR_CROCODILE_SCALES_ID));
+                    }
+
+                    else{
+                        wattron(game, COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
+                        mvwprintw(game, Entities[n].y + i, Entities[n].x + j, "%s", items[sprite_index][i][j]); 
+                        wattroff(game, COLOR_PAIR(COLOR_CROCODILE_BODY_ID));
+                    }
                 }
             }
         }
@@ -249,5 +254,5 @@ void print_lost_game(WINDOW *game){
     wattroff(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK);
 
     wrefresh(game);
-    usleep(5000000);
+    usleep(3200000);
 }

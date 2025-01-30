@@ -136,7 +136,7 @@ void frog_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manch
     //FROG falls into the RIVER
     bool frog_on_crocodile = FALSE;
     if (Entities[FROG_ID].y < GRASS_Y_INF_START && Entities[FROG_ID].y > RIVER_Y_START){
-        for (int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++){
+        for (int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
             if ((Entities[FROG_ID].y == Entities[i].y) && ((Entities[FROG_ID].x >= (Entities[i].x + FROG_DIM_X)) && (Entities[FROG_ID].x <= (Entities[i].x) + (FROG_DIM_X * 2)))){
             frog_on_crocodile = TRUE;
             //Entities[FROG_ID].y = Entities[i].y;

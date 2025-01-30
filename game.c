@@ -1,9 +1,10 @@
-#include "game.h"
 #include "struct.h"
+#include "game.h"
 #include "entity.h"
 #include "utils.h"
 #include "sprites.h"
 
+bool crocodiles_creation = false;
 
 void randomize_streams_speed(int *streams_speed){
     // Randomize STREAMS SPEED: FIXED for each GAME
@@ -13,23 +14,49 @@ void randomize_streams_speed(int *streams_speed){
 }
 
 void randomize_streams_direction(int *stream_speed){
-    // stream_dir takes 1 or -1 each time this fucntion is called
+    // stream_dir takes 1 or -1
     int stream_dir = STREAM_DIRECTION;
     for (int i = 0; i < N_STREAM; i++){
+        stream_speed[i] = abs(stream_speed[i]); // invert correctly dir
         stream_speed[i] *= stream_dir;
         stream_dir *= INVERT_DIRECTION;
     }
 }
 
-void randomize_spawn_time(int *streams_speed, int *spawn_delays){
-    // TO DO: Implementare una randomizzazione pseudo casuale che si basi anche sulla streams_speed
-    int spawn_delay;
-    for (int i = 0; i < N_STREAM; i++){
-        spawn_delay = rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
-        spawn_delays[i] += spawn_delay;
-    }
+void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar){
+        // Variables Statement
+        int args[4] = {0}, crocodile_index;
+
+        // Set the streams direction to generate a new original scene
+        randomize_streams_direction(gameVar->streams_speed);
+        
+        // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
+        for (int i = 0; i < N_STREAM; i++){
+            for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
+                // Get crocodile index through i and j
+                crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
+                // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+                args[0] = i;
+                args[1] = gameVar->streams_speed[i];
+                args[2] += rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
+                args[3] = crocodile_index;
+                
+                // Reset the Crocodilles Position - Modify the characters structs
+                reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
+
+                // Create CROCODILE process and run his routine
+                create_process(fds, Entities, crocodile_index, &crocodile_process, args);  
+            }
+            args[2] = 0;
+        }
+        crocodiles_creation = TRUE;
 }
 
+int get_nStream_based_on_id(int id){
+    return (id - FIRST_CROCODILE) / MAX_N_CROCODILE_PER_STREAM;
+}
+
+/*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
     //set game variables
     Game_var gameVar;
@@ -42,65 +69,39 @@ void start_game(WINDOW *score, WINDOW *game){
     // Dynamic allocation of the characters array
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));
 
-    // Variables Statement
-    int args[4] = {0}, crocodile_index;
-
     // Define fds array and Pipe Creation
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
-
     // Create FROG process and run his routine
-    create_process(fds, Entities, FROG_ID, &frog_process, args);
+    create_process(fds, Entities, FROG_ID, &frog_process, NULL);
 
-    //Create TIME process
-    create_process(fds, Entities, TIME_ID, &timer_process, args);
+    //Create TIME process and run his routine
+    create_process(fds, Entities, TIME_ID, &timer_process, NULL);
 
-    // Set streams speed with direction on gameVar array
+    // Set the fixed streams speed and
     randomize_streams_speed(gameVar.streams_speed);
-    randomize_streams_direction(gameVar.streams_speed);
-    
-    // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
-    for (int i = 0; i < N_STREAM; i++){
-        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
-            // Get crocodile index through i and j
-            crocodile_index = FIRST_CROCODILLE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
-
-            // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
-            args[0] = i;
-            args[1] = gameVar.streams_speed[i];
-            args[2] += rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
-            args[3] = crocodile_index;
-            
-            // Reset the Crocodilles Position - Modify the characters structs
-            reset_crocodile_position(&(Entities[crocodile_index]), args);
-
-            // Create CROCODILE process and run his routine
-            create_process(fds, Entities, crocodile_index, &crocodile_process, args);  
-        }
-        args[2] = 0;
-    } 
-    
-
+     
 
    /******************************************************************/
    /************************* Manche Loop ***************************/
     while(gameVar.manche > 0){
-    
+        
         // Reset the timer
         reset_timer(&gameVar);
 
         // Reset default FROG position 
         reset_frog_position(&Entities[FROG_ID]);
         
-        // Randomize the streams direction
-        //randomize_streams_direction(gameVar.streams_speed);
+        // Create Crocodiles on the streams
+        set_crocodiles_on_streams(Entities, fds, &gameVar);
 
-        // Reset default CROCODILES position
-        //for(int i = FIRST_CROCODILLE; i < LAST_CROCODILLE; i++) reset_crocodile_position(&(Entities[i]), args);
-
-        //PARENT PROCESS
+        // Parent Process
         parent_process(game,score, fds[PIPE_READ], Entities, &gameVar);
+
+        // Kill all the crocodile processes to generate a new original scene
+        kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
 
         // -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
         // -Stampa Area di gioco
@@ -108,7 +109,6 @@ void start_game(WINDOW *score, WINDOW *game){
         //     Rana:
         //     -Cade nell'acqua->perde vita e manche
         //     -Rana sopra il coccodrillo
-        //     -Rana nella tana già occupata->perde vita e manche
         //     -Rana sparata dal coccodrillo->perde vita e manche
         //     -Rana va dietro le tane->perde vita e manche
         //     -Rana raggiunge la tana->finisce la manche e aumenta il punteggio
@@ -125,8 +125,8 @@ void start_game(WINDOW *score, WINDOW *game){
     print_lost_game(game);
 
     // Kill Processes in the array. Parent process wait all the children
-    kill_processes(Entities);
-    wait_children(Entities);
+    kill_processes(Entities, 0, N_ENTITIES);
+    wait_children(Entities, 0, N_ENTITIES);
 
     // Free the memeory of Entities array
     free(Entities);

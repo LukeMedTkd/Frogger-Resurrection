@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <stdbool.h>
+#include "struct.h"
 
 #define MANCHES 3
 #define SCORE 0
@@ -22,5 +23,6 @@
 // Functions Prototypes
 void randomize_streams_speed(int *streams_speed);
 void randomize_streams_direction(int *stream_speed);
-void randomize_spawn_time(int *stream_speed, int *spawn_time);
+void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar);
+int get_nStream_based_on_id(int id);
 void start_game(WINDOW *score, WINDOW *game);

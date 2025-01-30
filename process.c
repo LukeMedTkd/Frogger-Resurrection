@@ -7,7 +7,7 @@
 void create_process(int *fds,  Character *Entities, int index,  void (*func_process)(int, int*), int *func_params){
     pid_t pid = fork();
     if(pid < 0) {
-        kill_processes(Entities);
+        kill_processes(Entities, 0, N_ENTITIES);
         perror("Pipe call");
         exit(0);
     }
@@ -22,15 +22,15 @@ void create_process(int *fds,  Character *Entities, int index,  void (*func_proc
     }
 }
 
-void kill_processes(Character *Entities){
-    for (int i = 0; i < N_ENTITIES; i++){
+void kill_processes(Character *Entities, int start, int end){
+    for (int i = start; i < end; i++){
         if(Entities[i].pid != 0) kill(Entities[i].pid, SIGKILL);
     }   
 }
 
-void wait_children(Character *Entities){
-    for(int i = 0; i < N_ENTITIES; i++){
-        if(Entities[i].pid != 0) waitpid(Entities[i].pid, NULL, 0);
+void wait_children(Character *Entities, int start, int end){
+    for(int i = start; i < end; i++){
+        if(Entities[i].pid != 0) waitpid(Entities[i].pid, NULL, WNOHANG);
     }
 }
 
