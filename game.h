@@ -5,7 +5,7 @@
 
 #define MANCHES 3
 #define SCORE 0
-#define TIME 10
+#define TIME 60
 #define LIFES MANCHES
 #define N_DENS 5
 #define N_STREAM 8
