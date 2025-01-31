@@ -167,7 +167,8 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
         /*------------------------ Check some collisions ----------------------*/
         // Check all the dens
         dens_collision(Entities, gameVar, &manche_ended);
-
+        //frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
+        set_outcome(gameVar, &manche_ended);
 
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes

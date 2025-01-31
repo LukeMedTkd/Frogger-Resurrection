@@ -1,5 +1,32 @@
 #include "struct.h"
 #include "entity.h"
+#include "collisions.h"
+
+void set_outcome(Game_var *gameVar, bool *manche_ended){
+    // Set LOSER_OUTCOME to gameVar.outcome if manche == 0
+    if(gameVar->manche == 0){
+        gameVar->outcome = LOSER_OUTCOME;
+        return;
+    }
+
+    // Set TIME_IS_UP_OUTCOME to gameVar.outcome if gameVar.time == 0
+    if(gameVar->time == 0){
+        gameVar->outcome = TIME_IS_UP_OUTCOME;
+        *manche_ended = TRUE;
+        return;
+    }
+
+    // Set WINNER_OUTCOME to gameVar.outcome if gameVar.dens[all] == FALSE
+    for(int i = 0; i < N_DENS; i++){
+        if (gameVar->dens[i] == TRUE){
+            gameVar->outcome = NO_OUTCOME;
+            return;
+        }
+    }
+    gameVar->outcome = WINNER_OUTCOME;
+    *manche_ended = TRUE;
+}
+
 
 void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 
@@ -44,47 +71,107 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
         }
     }
     
-
-    // Set LOSER_OUTCOME to gameVar.outcome if manche == 0
-    if(gameVar->manche == 0){
-        gameVar->outcome = LOSER_OUTCOME;
-        return;
-    }
-
-    // Set TIME_IS_UP_OUTCOME to gameVar.outcome if gameVar.time == 0
-    if(gameVar->time == 0){
-        gameVar->outcome = TIME_IS_UP_OUTCOME;
-        *manche_ended = TRUE;
-        return;
-    }
-
-    // Set WINNER_OUTCOME to gameVar.outcome if gameVar.dens[all] == FALSE
-    for(int i = 0; i < N_DENS; i++){
-        if (gameVar->dens[i] == TRUE){
-            gameVar->outcome = NO_OUTCOME;
-            return;
-        }
-    }
-    gameVar->outcome = WINNER_OUTCOME;
-    *manche_ended = TRUE;
 }
 
 
-void frog_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manche_ended){
+void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 
-    //FROG falls into the RIVER
     bool frog_on_crocodile = FALSE;
-    if (Entities[FROG_ID].y < GRASS_Y_INF_START && Entities[FROG_ID].y > RIVER_Y_START){
-        for (int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
-            if ((Entities[FROG_ID].y == Entities[i].y) && ((Entities[FROG_ID].x >= (Entities[i].x + FROG_DIM_X)) && (Entities[FROG_ID].x <= (Entities[i].x) + (FROG_DIM_X * 2)))){
-            frog_on_crocodile = TRUE;
-            //Entities[FROG_ID].y = Entities[i].y;
-            //Entities[FROG_ID].x = Entities[i].x;
-            break;
+    int direction, crocodile_index, current_stream = 0;
 
-            //TO DO: gestire rana sopra il coccodirllo
-            } 
+    // Check if the FROG is on the RIVER area
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END){
+
+        // Get index of th current stream
+        while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
+        // Get stream direction based on n_stream and frog.y
+        direction = ((gameVar->streams_speed[current_stream] > 0) ? 1 : -1);
+
+        // Check 3 crocodiles at once
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
+            crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
+
+            // Crocodiles from LEFT to RIGHT
+            if(direction == 1){
+
+                // Check if the FROG is on the crocodile
+                if((Entities[FROG_ID].x >= (Entities[crocodile_index].x + CROCODILE_TAIL_OFFSET)) && 
+                ((Entities[FROG_ID].x <= (Entities[crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))){
+                    frog_on_crocodile = TRUE;
+                    break;  
+                }
+            }
+
+            // Crocodiles from RIGHT to LEFT
+            if(direction == -1){
+
+                // Check if the FROG is on the crocodile
+                if((Entities[FROG_ID].x >= (Entities[crocodile_index].x + CROCODILE_HEAD_OFFSET)) && 
+                ((Entities[FROG_ID].x <= (Entities[crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))){
+                    frog_on_crocodile = TRUE;
+                    break;  
+                }
+            }   
         }
-        if(!frog_on_crocodile) gameVar->lifes--, *(manche_ended) = TRUE;
+
+        // Check if the FROG has fallen on the river -> She lose one life and one manche
+        if(frog_on_crocodile == FALSE){
+            gameVar->manche--;
+            gameVar->lifes--;
+            *manche_ended = TRUE;
+        }
+
+        else{
+            if(Entities[FROG_ID].x >= 0 && Entities[FROG_ID].x <= (GAME_WIDTH - FROG_DIM_X)){
+                switch (direction){
+                case 1:
+                    Entities[FROG_ID].x = Entities[crocodile_index].x + CROCODILE_TAIL_OFFSET + 1;
+                    break;
+                
+                case -1:
+                    Entities[FROG_ID].x = Entities[crocodile_index].x + CROCODILE_HEAD_OFFSET + (CROCODILE_HEAD_OFFSET);
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        } 
     }
+
+
+
+    // ***************************
+    // CORRA
+    // ***************************
+/*
+    //FROG falls into the RIVER
+    int direction, stream_index;
+
+    // Check if the FROG is on the RIVER area
+    if (Entities[FROG_ID].y < GRASS_Y_INF_START && (Entities[FROG_ID].y > RIVER_Y_START)){
+        int frog_on_crocodile = 0;
+        for (int i = 0; i < N_STREAM; i++){
+
+            if (Entities[FROG_ID].y == CROCODILE_OFFSET_Y + (CROCODILE_DIM_Y * i)){
+                stream_index = i;
+                for(int j = FIRST_CROCODILE + (3 * i); j < (3 * i) + 5; j++){
+                    
+                    if(Entities[FROG_ID].y == Entities[j].y && Entities[FROG_ID].x + FROG_DIM_X >= Entities[j].x && Entities[FROG_ID].x <= Entities[j].x + CROCODILE_DIM_X){
+                        frog_on_crocodile = j;
+                        break;
+                    }
+                }
+            }
+        }
+        if(frog_on_crocodile != 0){
+            //int direction = (gameVar->streams_speed[stream_index] > 0) ? 1 : -1;
+            Entities[FROG_ID].x = Entities[frog_on_crocodile].x ;
+            
+        }else{
+            gameVar->lifes--;
+            *(manche_ended) = TRUE;//FROG falls in the WATER
+        }
+    }
+*/
 }

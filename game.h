@@ -3,9 +3,9 @@
 #include <stdbool.h>
 #include "struct.h"
 
-#define MANCHES 3
+#define MANCHES 5
 #define SCORE 0
-#define TIME 5
+#define TIME 60
 #define LIFES MANCHES
 #define N_DENS 5
 #define N_STREAM 8
