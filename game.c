@@ -56,6 +56,29 @@ int get_nStream_based_on_id(int id){
     return (id - FIRST_CROCODILE) / MAX_N_CROCODILE_PER_STREAM;
 }
 
+void outcome(WINDOW *game, Game_var *gameVar){
+
+    switch (gameVar->outcome){
+
+        case WINNER_OUTCOME:
+            print_won_game(game);
+            break;
+
+        case LOSER_OUTCOME:
+            print_lost_game(game);
+            break;
+
+        case TIME_IS_UP_OUTCOME:
+            // TO DO
+            print_time_is_up(game);
+            break;
+        
+        case NO_OUTCOME:
+        break;
+    }
+}
+
+
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
     //set game variables
@@ -64,6 +87,7 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.score = SCORE;
     gameVar.time = TIME;
     gameVar.lifes = LIFES;
+    gameVar.outcome = NO_OUTCOME;
     for (int i = 0; i < N_DENS; i++) gameVar.dens[i] = TRUE;
 
     // Dynamic allocation of the characters array
@@ -85,7 +109,7 @@ void start_game(WINDOW *score, WINDOW *game){
 
    /******************************************************************/
    /************************* Manche Loop ***************************/
-    while(gameVar.manche > 0){
+    while(gameVar.manche > 0 && gameVar.outcome == NO_OUTCOME){
         
         // Reset the timer
         reset_timer(&gameVar);
@@ -121,8 +145,8 @@ void start_game(WINDOW *score, WINDOW *game){
     }
     
 
-    // Print LOST GAME
-    print_lost_game(game);
+    // Print OUTCOME
+    outcome(game, &gameVar);
 
     // Kill Processes in the array. Parent process wait all the children
     kill_processes(Entities, 0, N_ENTITIES);

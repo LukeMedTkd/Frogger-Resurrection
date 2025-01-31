@@ -1,7 +1,7 @@
 #include "struct.h"
 #include "entity.h"
 
-void dens_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manche_ended){
+void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 
     int dens_start[] = {DENS1_START, DENS2_START, DENS3_START, DENS4_START, DENS5_START};
 
@@ -46,13 +46,29 @@ void dens_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manch
     
 
     // Set LOSER_OUTCOME to gameVar.outcome if manche == 0
-    if(gameVar->manche == 0) gameVar->outcome = LOSER_OUTCOME;
+    if(gameVar->manche == 0){
+        gameVar->outcome = LOSER_OUTCOME;
+        return;
+    }
+
+    // Set TIME_IS_UP_OUTCOME to gameVar.outcome if gameVar.time == 0
+    if(gameVar->time == 0){
+        gameVar->outcome = TIME_IS_UP_OUTCOME;
+        *manche_ended = TRUE;
+        return;
+    }
+
+    // Set WINNER_OUTCOME to gameVar.outcome if gameVar.dens[all] == FALSE
+    for(int i = 0; i < N_DENS; i++){
+        if (gameVar->dens[i] == TRUE){
+            gameVar->outcome = NO_OUTCOME;
+            return;
+        }
+    }
+    gameVar->outcome = WINNER_OUTCOME;
+    *manche_ended = TRUE;
 }
 
-void is_time_up(Game_var *gameVar){
-    // Set TIME_IS_UP_OUTCOME to gameVar.outcome if gameVar.time == 0
-    if(gameVar->time == 0) gameVar->outcome = TIME_IS_UP_OUTCOME;
-}
 
 void frog_collision(Character *Entities, Game_var *gameVar, Msg msg, bool *manche_ended){
 

@@ -51,8 +51,13 @@ void init_colors(){
     init_color(COLOR_TIME13, 815, 165, 98);
     init_color(COLOR_TIME14, 815, 115, 98);
     init_color(COLOR_TIME15, 815, 65, 98);
-    init_color(COLOR_BKG_LOST_GAME, 925, 741, 458);
-    init_color(COLOR_WRT_LOST_GAME, 541, 329, 309);
+    init_color(COLOR_BKG_WON_GAME, 925, 741, 458);
+    init_color(COLOR_WRT_WON_GAME, 541, 329, 309);
+    init_color(COLOR_BKG_TIME_IS_UP, 247, 254, 286);
+    init_color(COLOR_WRT_TIME_IS_UP, 839, 149, 211);
+    init_color(COLOR_BKG_LOST_GAME, 192, 62, 101);
+    init_color(COLOR_WRT_LOST_GAME, 611, 192, 129);
+
 
     // Time Colors
     init_pair(COLOR_TIME1_ID, COLOR_TIME1, COLOR_BLACK);
@@ -67,9 +72,9 @@ void init_colors(){
     init_pair(COLOR_TIME10_ID, COLOR_TIME10, COLOR_BLACK);
     init_pair(COLOR_TIME11_ID, COLOR_TIME11, COLOR_BLACK);
     init_pair(COLOR_TIME12_ID, COLOR_TIME12, COLOR_BLACK);
-    init_pair(COLOR_TIME10_ID, COLOR_TIME13, COLOR_BLACK);
-    init_pair(COLOR_TIME11_ID, COLOR_TIME14, COLOR_BLACK);
-    init_pair(COLOR_TIME12_ID, COLOR_TIME15, COLOR_BLACK);
+    init_pair(COLOR_TIME13_ID, COLOR_TIME13, COLOR_BLACK);
+    init_pair(COLOR_TIME14_ID, COLOR_TIME14, COLOR_BLACK);
+    init_pair(COLOR_TIME15_ID, COLOR_TIME15, COLOR_BLACK);
     
 
     // Background Colors
@@ -80,6 +85,10 @@ void init_colors(){
     init_pair(COLOR_LIFES_ID, COLOR_LIFES, COLOR_BLACK);
     init_pair(COLOR_BKG_LOST_GAME_ID, COLOR_BKG_LOST_GAME, COLOR_BKG_LOST_GAME);
     init_pair(COLOR_WRT_LOST_GAME_ID, COLOR_WRT_LOST_GAME, COLOR_BKG_LOST_GAME);
+    init_pair(COLOR_BKG_TIME_IS_UP_ID, COLOR_BKG_TIME_IS_UP, COLOR_BKG_TIME_IS_UP);
+    init_pair(COLOR_WRT_TIME_IS_UP_ID, COLOR_WRT_TIME_IS_UP, COLOR_BKG_TIME_IS_UP);
+    init_pair(COLOR_BKG_WON_GAME_ID, COLOR_BKG_WON_GAME, COLOR_BKG_WON_GAME);
+    init_pair(COLOR_WRT_WON_GAME_ID, COLOR_WRT_WON_GAME, COLOR_BKG_WON_GAME);
 
     // Entities Colors 
     init_pair(COLOR_FROG_ID, COLOR_FROG, COLOR_LEGS);

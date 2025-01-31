@@ -2,45 +2,36 @@
 #include "utils.h"
 #include "entity.h"
 
-void print_timer(WINDOW *score, int timer){
-    for(int j = 0; j < TIME; j++) mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");
+void print_timer(WINDOW *score, int timer) {
 
-    for (int i = (GAME_WIDTH - 1); i > (GAME_WIDTH - timer); i--){
+    for (int j = 0; j <= TIME; j++) mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");
+
+    int color_id = COLOR_TIME1_ID; // Default
+    if (timer <= 56 && timer > 52) color_id = COLOR_TIME2_ID;
+    if (timer <= 52 && timer > 48) color_id = COLOR_TIME3_ID;
+    if (timer <= 48 && timer > 44) color_id = COLOR_TIME4_ID;
+    if (timer <= 44 && timer > 40) color_id = COLOR_TIME5_ID;
+    if (timer <= 40 && timer > 36) color_id = COLOR_TIME6_ID;
+    if (timer <= 36 && timer > 32) color_id = COLOR_TIME7_ID;
+    if (timer <= 32 && timer > 28) color_id = COLOR_TIME8_ID;
+    if (timer <= 28 && timer > 24) color_id = COLOR_TIME9_ID;
+    if (timer <= 24 && timer > 20) color_id = COLOR_TIME10_ID;
+    if (timer <= 20 && timer > 16) color_id = COLOR_TIME11_ID;
+    if (timer <= 16 && timer > 12) color_id = COLOR_TIME12_ID;
+    if (timer <= 12 && timer > 8) color_id = COLOR_TIME13_ID;
+    if (timer <= 8 && timer > 4) color_id = COLOR_TIME14_ID;
+    if (timer <= 4 && timer > 0) color_id = COLOR_TIME15_ID;
+
+    wattron(score, COLOR_PAIR(color_id) | A_BOLD);
+
+    for (int i = GAME_WIDTH - 1; i >= (GAME_WIDTH - timer); i--){
         mvwprintw(score, 0, GAME_WIDTH - TIME - 8, "TIME: ");
-        if(timer < 60 && timer > 56) wattron(score, COLOR_PAIR(COLOR_TIME1_ID) | A_BOLD);
-        if(timer <= 56 && timer > 52) wattron(score, COLOR_PAIR(COLOR_TIME2_ID) | A_BOLD);
-        if(timer <= 52 && timer > 48) wattron(score, COLOR_PAIR(COLOR_TIME3_ID) | A_BOLD);
-        if(timer <= 48 && timer > 44) wattron(score, COLOR_PAIR(COLOR_TIME4_ID) | A_BOLD);
-        if(timer <= 44 && timer > 40) wattron(score, COLOR_PAIR(COLOR_TIME5_ID) | A_BOLD);
-        if(timer <= 40 && timer > 36) wattron(score, COLOR_PAIR(COLOR_TIME6_ID) | A_BOLD);
-        if(timer <= 36 && timer > 32) wattron(score, COLOR_PAIR(COLOR_TIME7_ID) | A_BOLD);
-        if(timer <= 32 && timer > 28) wattron(score, COLOR_PAIR(COLOR_TIME8_ID) | A_BOLD);
-        if(timer <= 28 && timer > 24) wattron(score, COLOR_PAIR(COLOR_TIME9_ID) | A_BOLD);
-        if(timer <= 24 && timer > 20) wattron(score, COLOR_PAIR(COLOR_TIME10_ID) | A_BOLD);
-        if(timer <= 20 && timer > 16) wattron(score, COLOR_PAIR(COLOR_TIME11_ID) | A_BOLD);
-        if(timer <= 16 && timer > 12) wattron(score, COLOR_PAIR(COLOR_TIME12_ID) | A_BOLD);
-        if(timer <= 12 && timer > 8) wattron(score, COLOR_PAIR(COLOR_TIME13_ID) | A_BOLD);
-        if(timer <= 8 && timer > 4) wattron(score, COLOR_PAIR(COLOR_TIME14_ID) | A_BOLD | A_BLINK);
-        if(timer <= 4 && timer > 0) wattron(score, COLOR_PAIR(COLOR_TIME15_ID) | A_BOLD | A_BLINK);
         mvwprintw(score, 0, i, "█");
     }
-    wattroff(score, COLOR_PAIR(COLOR_TIME1_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME2_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME3_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME4_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME5_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME6_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME7_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME8_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME9_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME10_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME11_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME12_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME13_ID) | A_BOLD);
-    wattroff(score, COLOR_PAIR(COLOR_TIME14_ID) | A_BOLD | A_BLINK);
-    wattroff(score, COLOR_PAIR(COLOR_TIME15_ID) | A_BOLD | A_BLINK);
-    
+
+    wattroff(score, COLOR_PAIR(color_id) | A_BOLD);
 }
+
 
 void print_score(WINDOW *score, int vscore){
     wattron(score, COLOR_PAIR(COLOR_SCORE_ID) | A_BOLD);
@@ -252,6 +243,48 @@ void print_lost_game(WINDOW *game){
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 4, (GAME_WIDTH / 2) - (64 / 2), "   ██║   ╚██████╔╝╚██████╔╝    ███████╗╚██████╔╝███████║███████╗");
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 5, (GAME_WIDTH / 2) - (64 / 2), "   ╚═╝    ╚═════╝  ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝╚══════╝");
     wattroff(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK);
+
+    wrefresh(game);
+    usleep(3200000);
+}
+
+void print_time_is_up(WINDOW *game){
+    // Print background
+    wattron(game, COLOR_PAIR(COLOR_BKG_TIME_IS_UP_ID));
+    for (int i = 0; i < GAME_HEIGHT; i++){
+        mvwhline(game, i, 0, ' ', GAME_WIDTH);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_BKG_TIME_IS_UP_ID));
+
+    wattron(game, COLOR_PAIR(COLOR_WRT_TIME_IS_UP_ID) | A_BOLD | A_BLINK );
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 0, (GAME_WIDTH / 2) - (67 / 2), "████████╗██╗███╗   ███╗███████╗    ██╗███████╗    ██╗   ██╗██████╗ ");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 1, (GAME_WIDTH / 2) - (67 / 2), "╚══██╔══╝██║████╗ ████║██╔════╝    ██║██╔════╝    ██║   ██║██╔══██╗");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 2, (GAME_WIDTH / 2) - (67 / 2), "   ██║   ██║██╔████╔██║█████╗      ██║███████╗    ██║   ██║██████╔╝");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 3, (GAME_WIDTH / 2) - (67 / 2), "   ██║   ██║██║╚██╔╝██║██╔══╝      ██║╚════██║    ██║   ██║██╔═══╝ ");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 4, (GAME_WIDTH / 2) - (67 / 2), "   ██║   ██║██║ ╚═╝ ██║███████╗    ██║███████║    ╚██████╔╝██║     ");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 5, (GAME_WIDTH / 2) - (67 / 2), "   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝    ╚═╝╚══════╝     ╚═════╝ ╚═╝     ");
+    wattroff(game, COLOR_PAIR(COLOR_WRT_TIME_IS_UP_ID) | A_BOLD | A_BLINK);
+
+    wrefresh(game);
+    usleep(3200000);
+}
+
+void print_won_game(WINDOW *game){
+        // Print background
+    wattron(game, COLOR_PAIR(COLOR_BKG_WON_GAME_ID));
+    for (int i = 0; i < GAME_HEIGHT; i++){
+        mvwhline(game, i, 0, ' ', GAME_WIDTH);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_BKG_WON_GAME_ID));
+
+    wattron(game, COLOR_PAIR(COLOR_WRT_WON_GAME_ID) | A_BOLD | A_BLINK );
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 0, (GAME_WIDTH / 2) - (60 / 2), "██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗ ██████╗ ███╗   ██╗");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 1, (GAME_WIDTH / 2) - (60 / 2), "╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██╔═══██╗████╗  ██║");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 2, (GAME_WIDTH / 2) - (60 / 2), " ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║   ██║██╔██╗ ██║");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 3, (GAME_WIDTH / 2) - (60 / 2), "  ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║   ██║██║╚██╗██║");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 4, (GAME_WIDTH / 2) - (60 / 2), "   ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝╚██████╔╝██║ ╚████║");
+    mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 5, (GAME_WIDTH / 2) - (60 / 2), "   ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═══╝");
+    wattroff(game, COLOR_PAIR(COLOR_WRT_WON_GAME_ID) | A_BOLD | A_BLINK );
 
     wrefresh(game);
     usleep(3200000);

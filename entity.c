@@ -132,11 +132,7 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
                     // TO DO
                 }
 
-                // FROG can saved itself
-                dens_collision(Entities, gameVar, msg, &manche_ended);
-                //frog_collision(Entities, gameVar, msg, &manche_ended);
-
-
+    
                 break;
 
 
@@ -168,6 +164,12 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
                 break;
         }
 
+        /*------------------------ Check some collisions ----------------------*/
+        // Check all the dens
+        dens_collision(Entities, gameVar, &manche_ended);
+
+
+        /*------------------------ Update the scene --------------------------*/
         // Print Lifes
         print_lifes(score, gameVar->lifes);
 

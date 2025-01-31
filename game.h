@@ -5,7 +5,7 @@
 
 #define MANCHES 3
 #define SCORE 0
-#define TIME 60
+#define TIME 5
 #define LIFES MANCHES
 #define N_DENS 5
 #define N_STREAM 8
@@ -21,6 +21,7 @@
 #define MIN_SPAWN_TIME 3000000
 
 // OUTCOMES
+#define NO_OUTCOME -1
 #define WINNER_OUTCOME 22
 #define LOSER_OUTCOME 21
 #define TIME_IS_UP_OUTCOME 20
