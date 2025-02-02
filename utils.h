@@ -103,5 +103,6 @@
 // Functions Prototypes
 void init_screen();
 void init_colors();
+void center_game(WINDOW *score, WINDOW *game);
 int rand_range(int min0, int max0);
 void debuglog(char *message, int arg);

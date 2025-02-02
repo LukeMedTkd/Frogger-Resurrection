@@ -5,6 +5,8 @@
 #include "collisions.h"
 #include "utils.h"
 
+/*--------------------------------------------------*/
+/*------------------ Frog Entity -------------------*/
 void frog_process(int pipe_write, int* args){
 
     // Init some variables
@@ -13,7 +15,7 @@ void frog_process(int pipe_write, int* args){
 
     // Declare msg and attr
     Msg msg;
-    msg.sig = FROG_POSITION_SIG; // Set message signal to move the frog
+    msg.sig = FROG_POSITION_SIG; // Set the message signal to move the frog
     msg.y = 0;
     msg.x = 0;
 
@@ -34,8 +36,8 @@ void frog_process(int pipe_write, int* args){
                 msg.y = 0;
                 msg_to_send = TRUE;
                 break;
-            case KEY_BACKSPACE:
-                msg.sig = FROG_SHOT_SIG; // Change message signal to shot a bullet
+            case KEY_SHOT:
+                msg.sig = FROG_SHOT_SIG; // Change the message signal to shot a bullet
                 msg_to_send = TRUE; // Set flag to send msg
                 break;
             default: break; 
@@ -59,7 +61,39 @@ void reset_frog_position(Character *frog_entity){
     frog_entity->x = FROG_INIT_X;
 }
 
+void left_frog_bullet_process(int pipe_write, int* args){
+    Msg msg;
+    msg.x = -1;
+    msg.id = LEFT_FROG_BULLET_ID;
+
+    while(TRUE){
+        write_msg(pipe_write, msg);
+        usleep(BULLET_SPEED);
+    }
+}
+
+void right_frog_bullet_process(int pipe_write, int* args){
+    Msg msg;
+    msg.x = 1;
+    msg.id = RIGHT_FROG_BULLET_ID;
+
+    while(TRUE){
+        write_msg(pipe_write, msg);
+        usleep(BULLET_SPEED);
+    }    
+}
+
+void reset_frog_bullet_position(Character *Entities, Character *Bullets){
+    Bullets[FROG_ID].x = Entities[FROG_ID].x;
+    Bullets[FROG_ID].y = Entities[FROG_ID].y + (FROG_DIM_Y / 2);
+    Bullets[FROG_ID + 1].x = Entities[FROG_ID].x + FROG_DIM_X - 1;
+    Bullets[FROG_ID + 1].y = Entities[FROG_ID].y + (FROG_DIM_Y / 2);
+}
+
+/*-------------------------------------------------------*/
+/*------------------ Crocodile Entity -------------------*/
 void crocodile_process(int pipe_write, int* args){
+
     // The spawn delay based on crocodile_id
     int stream_speed = abs(args[1]), spawn_delay = args[2]; 
 
@@ -89,6 +123,9 @@ void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_va
     crocodile_entity->x = (gameVar->streams_speed[n_stream] > 0 ? (-CROCODILE_DIM_X - 1) : (GAME_WIDTH + 1));
 }
 
+
+/*---------------------------------------------------*/
+/*------------------ Timer Entity -------------------*/
 void reset_timer(Game_var *gameVar){
     gameVar->time = TIME;
 }
@@ -104,7 +141,11 @@ void timer_process(int pipe_write, int* args){
     }
 }
 
-void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entities, Game_var *gameVar){
+
+/*--------------------------------------------------------*/
+/*-------------------- Parent Process --------------------*/
+void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar){
+
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
@@ -112,7 +153,7 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
     while(!manche_ended){
 
         // Read msg from the pipes
-        msg = read_msg(pipe_read);
+        msg = read_msg(fds[PIPE_READ]);
 
         switch (msg.id){
         
@@ -129,10 +170,53 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
 
                 // FROG has shotted
                 if(msg.sig == FROG_SHOT_SIG){
-                    // TO DO
+
+                    if(Bullets[FROG_ID].sig == DEACTIVE && Bullets[FROG_ID+1].sig == DEACTIVE){
+
+                        // Initialize the bullets position
+                        reset_frog_bullet_position(Entities, Bullets);
+                        
+                        // Create BULLETS processes and run their routine
+                        create_process(fds, Bullets, FROG_ID, LEFT_FROG_BULLET_ID, &left_frog_bullet_process, NULL);
+                        create_process(fds, Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, &right_frog_bullet_process, NULL);
+                    }
+                }
+                break;
+
+
+            // ***********************************
+            // Msg from some FROG BULLET process
+            // ***********************************
+            case LEFT_FROG_BULLET_ID:
+
+                // Set Bullet
+                Bullets[FROG_ID].sig = ((Bullets[FROG_ID].x >= 0) ? ACTIVE : DEACTIVE);
+
+                // If bullet is ACTIVE
+                if(Bullets[FROG_ID].sig == ACTIVE) Bullets[FROG_ID].x += msg.x;
+
+                // If bullet is DEACTIVE
+                else{ 
+                    kill(Bullets[FROG_ID].pid, SIGKILL);
+                    waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
+                }
+                
+                break;
+
+
+            case RIGHT_FROG_BULLET_ID:
+                // Set Bullet
+                Bullets[FROG_ID + 1].sig = ((Bullets[FROG_ID + 1].x <= GAME_WIDTH) ? ACTIVE : DEACTIVE);
+
+                // If bullet is ACTIVE
+                if(Bullets[FROG_ID + 1].sig == ACTIVE) Bullets[FROG_ID + 1].x += msg.x;
+
+                // If bullet is DEACTIVE
+                else{ 
+                    kill(Bullets[FROG_ID + 1].pid, SIGKILL);
+                    waitpid(Bullets[FROG_ID + 1].pid, NULL, WNOHANG);
                 }
 
-    
                 break;
 
 
@@ -168,7 +252,9 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
         // Check all the dens
         dens_collision(Entities, gameVar, &manche_ended);
         //frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
+        frog_bullets_collision(Entities, Bullets, &manche_ended);
         set_outcome(gameVar, &manche_ended);
+        
 
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes
@@ -188,6 +274,9 @@ void parent_process(WINDOW *game, WINDOW *score, int pipe_read, Character *Entit
 
         // Print the Frog
         print_frog(game, Entities[FROG_ID]);
+
+        // Print Frog Bullets
+        print_frog_bullets(game, Bullets);
 
         // Refresh the game and the score screen
         wrefresh(game);

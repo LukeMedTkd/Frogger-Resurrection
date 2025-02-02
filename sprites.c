@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "entity.h"
 
+/*---------------------------------------------*/
+/*--------------- Game’s Prints ---------------*/
 void print_timer(WINDOW *score, int timer) {
 
     for (int j = 0; j <= TIME; j++) mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");
@@ -31,7 +33,6 @@ void print_timer(WINDOW *score, int timer) {
 
     wattroff(score, COLOR_PAIR(color_id) | A_BOLD);
 }
-
 
 void print_score(WINDOW *score, int vscore){
     wattron(score, COLOR_PAIR(COLOR_SCORE_ID) | A_BOLD);
@@ -119,6 +120,8 @@ void print_game_area(WINDOW *game, bool *dens){
     wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
 }
 
+/*---------------------------------------------*/
+/*-------------- Entities prints --------------*/
 void print_frog(WINDOW *game, Character frog_entity) {
     // Defined Frog Sprite
     static const char* frog[FROG_DIM_Y][FROG_DIM_X] = {
@@ -134,10 +137,10 @@ void print_frog(WINDOW *game, Character frog_entity) {
     for (int i = 0; i < FROG_DIM_Y; i++) {
         for (int j = 0; j < FROG_DIM_X; j++) {
             if (frog[i][j][0] == '\0') {
-                continue; // Salta le posizioni vuote
+                continue; // Skip the empty positions
             }
 
-            // Determina il colore
+            // Gets the color
             if (i == 0) {
                 wattron(game, COLOR_PAIR(COLOR_EYE_ID));
             } else if (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5)) {
@@ -146,10 +149,10 @@ void print_frog(WINDOW *game, Character frog_entity) {
                 wattron(game, COLOR_PAIR(COLOR_FROG_ID));
             }
 
-            // Stampa il carattere
+            // Prints the character
             mvwprintw(game, frog_entity.y + i, frog_entity.x + j, "%s", frog[i][j]);
 
-            // Ripristina il colore
+            // Resets the color
             if (i == 0 || (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5))) {
                 wattroff(game, COLOR_PAIR(COLOR_EYE_ID));
                 wattroff(game, COLOR_PAIR(COLOR_LEGS_ID));
@@ -158,6 +161,24 @@ void print_frog(WINDOW *game, Character frog_entity) {
             }
         }
     }
+}
+
+void print_frog_bullets(WINDOW *game, Character *Bullets){
+
+    // Print LEFT bullet
+    if(Bullets[FROG_ID].sig == ACTIVE){
+        wattron(game, COLOR_PAIR(COLOR_DENS_ID));
+        mvwprintw(game, Bullets[FROG_ID].y, Bullets[FROG_ID].x, " ");
+        wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+    }
+
+    // Print RIGHT bullet
+    if(Bullets[FROG_ID + 1].sig == ACTIVE){
+        wattron(game, COLOR_PAIR(COLOR_DENS_ID));
+        mvwprintw(game, Bullets[FROG_ID + 1].y, Bullets[FROG_ID + 1].x, " ");
+        wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+    }
+
 }
 
 void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_dir){
@@ -226,6 +247,9 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
     }
 }
 
+
+/*---------------------------------------------*/
+/*-------------- Outcomes prints --------------*/
 void print_lost_game(WINDOW *game){
     
     // Print background

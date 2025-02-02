@@ -27,7 +27,6 @@ void set_outcome(Game_var *gameVar, bool *manche_ended){
     *manche_ended = TRUE;
 }
 
-
 void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 
     int dens_start[] = {DENS1_START, DENS2_START, DENS3_START, DENS4_START, DENS5_START};
@@ -73,6 +72,17 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
     
 }
 
+void frog_bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){
+    // If frog_bullets are ACTVIE and the manche ends, the bullets are set to DEACTIVE and are killed
+    if(Bullets[FROG_ID].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && *manche_ended){
+        Bullets[FROG_ID].sig = DEACTIVE;
+        Bullets[FROG_ID+1].sig = DEACTIVE;
+        kill(Bullets[FROG_ID].pid, SIGKILL);
+        waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
+        kill(Bullets[FROG_ID + 1].pid, SIGKILL);
+        waitpid(Bullets[FROG_ID + 1].pid, NULL, WNOHANG);
+    }
+}
 
 void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 

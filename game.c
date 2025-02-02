@@ -45,7 +45,7 @@ void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar)
                 reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
 
                 // Create CROCODILE process and run his routine
-                create_process(fds, Entities, crocodile_index, &crocodile_process, args);  
+                create_process(fds, Entities, crocodile_index, crocodile_index, &crocodile_process, args);  
             }
             args[2] = 0;
         }
@@ -69,7 +69,6 @@ void outcome(WINDOW *game, Game_var *gameVar){
             break;
 
         case TIME_IS_UP_OUTCOME:
-            // TO DO
             print_time_is_up(game);
             break;
         
@@ -90,20 +89,21 @@ void start_game(WINDOW *score, WINDOW *game){
     gameVar.outcome = NO_OUTCOME;
     for (int i = 0; i < N_DENS; i++) gameVar.dens[i] = TRUE;
 
-    // Dynamic allocation of the characters array
+    // Dynamic allocation 
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));
+    Character *Bullets = malloc(N_BULLETS * sizeof(Character));
 
     // Define fds array and Pipe Creation
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
     // Create FROG process and run his routine
-    create_process(fds, Entities, FROG_ID, &frog_process, NULL);
+    create_process(fds, Entities, FROG_ID, FROG_ID, &frog_process, NULL);
 
-    //Create TIME process and run his routine
-    create_process(fds, Entities, TIME_ID, &timer_process, NULL);
+    // Create TIME process and run his routine
+    create_process(fds, Entities, TIME_ID, TIME_ID, &timer_process, NULL);
 
-    // Set the fixed streams speed and
+    // Set the streams speed, fixed for the whole game
     randomize_streams_speed(gameVar.streams_speed);
      
 
@@ -116,12 +116,12 @@ void start_game(WINDOW *score, WINDOW *game){
 
         // Reset default FROG position 
         reset_frog_position(&Entities[FROG_ID]);
-        
-        // Create Crocodiles on the streams
+
+        // Create the crocodiles on the streams
         set_crocodiles_on_streams(Entities, fds, &gameVar);
 
         // Parent Process
-        parent_process(game,score, fds[PIPE_READ], Entities, &gameVar);
+        parent_process(game, score, fds, Entities, Bullets, &gameVar);
 
         // Kill all the crocodile processes to generate a new original scene
         kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
@@ -152,8 +152,9 @@ void start_game(WINDOW *score, WINDOW *game){
     kill_processes(Entities, 0, N_ENTITIES);
     wait_children(Entities, 0, N_ENTITIES);
 
-    // Free the memeory of Entities array
+    // Free the allocated memeory
     free(Entities);
+    free(Bullets);
 
     // Close file descriptors
     close(fds[PIPE_READ]);

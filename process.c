@@ -4,7 +4,7 @@
 #include "entity.h"
 #include "game.h"
 
-void create_process(int *fds,  Character *Entities, int index,  void (*func_process)(int, int*), int *func_params){
+void create_process(int *fds,  Character *Entities, int index, int id, void (*func_process)(int, int*), int *func_params){
     pid_t pid = fork();
     if(pid < 0) {
         kill_processes(Entities, 0, N_ENTITIES);
@@ -17,7 +17,7 @@ void create_process(int *fds,  Character *Entities, int index,  void (*func_proc
     }
     else{
         // Set Id and Pid
-        Entities[index].id = index;
+        Entities[index].id = id;
         Entities[index].pid = pid;
     }
 }

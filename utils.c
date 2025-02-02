@@ -100,6 +100,13 @@ void init_colors(){
 
 }
 
+void center_game(WINDOW *score, WINDOW *game){
+    int start_y = (LINES - GAME_HEIGHT) / 2;
+    int start_x = (COLS - GAME_WIDTH) / 2;
+    mvwin(score, start_y, start_x);
+    mvwin(game, start_y + 1, start_x);
+}
+
 int rand_range(int max0, int min0){
     return rand() % (max0 - min0 + 1) + min0;
 }
