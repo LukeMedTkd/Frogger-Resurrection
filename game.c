@@ -6,6 +6,19 @@
 
 bool crocodiles_creation = false;
 
+Game_var initialize_gameVar(){
+    Game_var gameVar;
+    gameVar.manche = MANCHES;
+    gameVar.score = SCORE;
+    gameVar.time = TIME;
+    gameVar.lifes = LIFES;
+    gameVar.outcome = NO_OUTCOME;
+    gameVar.n_max_bullets = N_MAX_BULLETS;
+    for (int i = 0; i < N_DENS; i++) gameVar.dens[i] = TRUE;
+
+    return gameVar;
+}
+
 void randomize_streams_speed(int *streams_speed){
     // Randomize STREAMS SPEED: FIXED for each GAME
     for (int i = 0; i < N_STREAM; i++){
@@ -67,10 +80,6 @@ void outcome(WINDOW *game, Game_var *gameVar){
         case LOSER_OUTCOME:
             print_lost_game(game);
             break;
-
-        case TIME_IS_UP_OUTCOME:
-            print_time_is_up(game);
-            break;
         
         case NO_OUTCOME:
         break;
@@ -81,13 +90,7 @@ void outcome(WINDOW *game, Game_var *gameVar){
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
     //set game variables
-    Game_var gameVar;
-    gameVar.manche = MANCHES;
-    gameVar.score = SCORE;
-    gameVar.time = TIME;
-    gameVar.lifes = LIFES;
-    gameVar.outcome = NO_OUTCOME;
-    for (int i = 0; i < N_DENS; i++) gameVar.dens[i] = TRUE;
+    Game_var gameVar = initialize_gameVar();
 
     // Dynamic allocation 
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));
@@ -111,6 +114,9 @@ void start_game(WINDOW *score, WINDOW *game){
    /************************* Manche Loop ***************************/
     while(gameVar.manche > 0 && gameVar.outcome == NO_OUTCOME){
         
+        // Reset n_max_bullets
+        gameVar.n_max_bullets = N_MAX_BULLETS;
+        
         // Reset the timer
         reset_timer(&gameVar);
 
@@ -126,24 +132,8 @@ void start_game(WINDOW *score, WINDOW *game){
         // Kill all the crocodile processes to generate a new original scene
         kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
         wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
-
-        // -Legge da pipe i messaggi->controlla da quale entità sono stai mandati e li stampa a schermo
-        // -Stampa Area di gioco
-        // -Collisioni:
-        //     Rana:
-        //     -Cade nell'acqua->perde vita e manche
-        //     -Rana sopra il coccodrillo
-        //     -Rana sparata dal coccodrillo->perde vita e manche
-        //     -Rana va dietro le tane->perde vita e manche
-        //     -Rana raggiunge la tana->finisce la manche e aumenta il punteggio
-        //     Proiettile:
-        //     -Proiettile contro proiettile-> kill
-        //     -Proiettile che esce dallo schermo-> kill
-        //     Coccodrillo:
-        //     -se esce dallo schermo->ricicla processi*****
           
-    }
-    
+    }   
 
     // Print OUTCOME
     outcome(game, &gameVar);

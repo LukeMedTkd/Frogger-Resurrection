@@ -20,6 +20,9 @@ extern bool crocodiles_creation;
 #define DENS4_START 95
 #define DENS5_START 120
 
+// Animation's Duration
+#define DURATION 3200000
+
 // Functions Prototypes
 void print_timer(WINDOW *score, int timer);
 void print_score(WINDOW *score, int vscore);
@@ -28,6 +31,7 @@ void print_game_area(WINDOW *game, bool *dens);
 void print_frog(WINDOW *game, Character frog_entity);
 void print_frog_bullets(WINDOW *game, Character *Bullets);
 void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_dir);
+void print_crocodiles_bullets(WINDOW *game, Character *Bullets);
 void print_lost_game(WINDOW *game);
 void print_time_is_up(WINDOW *game);
 void print_won_game(WINDOW *game);

@@ -247,6 +247,14 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
     }
 }
 
+void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
+    for(int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
+        // Print the bullet
+        wattron(game, COLOR_PAIR(COLOR_DENS_ID));
+        mvwprintw(game, Bullets[i].y, Bullets[i].x, " ");
+        wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+    }
+}
 
 /*---------------------------------------------*/
 /*-------------- Outcomes prints --------------*/
@@ -269,7 +277,7 @@ void print_lost_game(WINDOW *game){
     wattroff(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK);
 
     wrefresh(game);
-    usleep(3200000);
+    usleep(DURATION);
 }
 
 void print_time_is_up(WINDOW *game){
@@ -290,7 +298,7 @@ void print_time_is_up(WINDOW *game){
     wattroff(game, COLOR_PAIR(COLOR_WRT_TIME_IS_UP_ID) | A_BOLD | A_BLINK);
 
     wrefresh(game);
-    usleep(3200000);
+    usleep(DURATION);
 }
 
 void print_won_game(WINDOW *game){
@@ -311,5 +319,5 @@ void print_won_game(WINDOW *game){
     wattroff(game, COLOR_PAIR(COLOR_WRT_WON_GAME_ID) | A_BOLD | A_BLINK );
 
     wrefresh(game);
-    usleep(3200000);
+    usleep(DURATION);
 }

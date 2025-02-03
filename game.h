@@ -7,7 +7,8 @@
 #define MANCHES 5
 #define SCORE 0
 #define TIME 60
-#define LIFES MANCHES
+#define LIFES (MANCHES)
+#define N_MAX_BULLETS 3
 #define N_DENS 5
 #define N_STREAM 8
 #define MAX_N_CROCODILE_PER_STREAM 3
@@ -31,6 +32,7 @@
 #define TIME_IS_UP_OUTCOME 20
 
 // Functions Prototypes
+Game_var initialize_gameVar();
 void randomize_streams_speed(int *streams_speed);
 void randomize_streams_direction(int *stream_speed);
 void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar);

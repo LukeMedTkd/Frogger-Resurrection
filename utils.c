@@ -107,8 +107,8 @@ void center_game(WINDOW *score, WINDOW *game){
     mvwin(game, start_y + 1, start_x);
 }
 
-int rand_range(int max0, int min0){
-    return rand() % (max0 - min0 + 1) + min0;
+int rand_range(int max, int min){
+    return rand() % (max - min + 1) + min;
 }
 
 void debuglog(char *message, int arg){

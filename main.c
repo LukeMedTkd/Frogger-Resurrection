@@ -3,16 +3,16 @@
 
 int main(){
 
-    // Init screen
+    // Inits screen
     init_screen();
-    // Create two game windows
+    // Creates two game windows
     WINDOW *score = newwin(SCORE_HEIGHT, GAME_WIDTH, 0, 0);
     WINDOW *game = newwin(GAME_HEIGHT, GAME_WIDTH, GAME_START, 0);
 
-    // Center entire screen
+    // Centers entire screen
     center_game(score, game);
 
-    //set colors
+    // Sets colors
     init_colors();
 
     start_game(score, game);

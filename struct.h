@@ -24,6 +24,7 @@ typedef struct
     int score;   
     int lifes;
     int outcome;
+    int n_max_bullets;
     int streams_speed[N_STREAM];
     int spawn_delays[N_STREAM]; 
     bool dens[N_DENS];

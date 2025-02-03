@@ -9,9 +9,8 @@ void set_outcome(Game_var *gameVar, bool *manche_ended){
         return;
     }
 
-    // Set TIME_IS_UP_OUTCOME to gameVar.outcome if gameVar.time == 0
+    // Set manche_ended = TRUE if time==0
     if(gameVar->time == 0){
-        gameVar->outcome = TIME_IS_UP_OUTCOME;
         *manche_ended = TRUE;
         return;
     }
@@ -25,6 +24,17 @@ void set_outcome(Game_var *gameVar, bool *manche_ended){
     }
     gameVar->outcome = WINNER_OUTCOME;
     *manche_ended = TRUE;
+}
+
+void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_var *gameVar, bool *manche_ended){
+    if(gameVar->time == 0){
+        gameVar->lifes--;
+        gameVar->manche--;
+        *manche_ended = TRUE;
+        kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        //print_time_is_up(game);
+    }
 }
 
 void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
@@ -69,7 +79,6 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
             }
         }
     }
-    
 }
 
 void frog_bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){

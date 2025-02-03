@@ -27,9 +27,13 @@
 #define CROCODILE_OFFLINE 0
 
 // Entities Bullets
+#define BULLET_OFFSET_ID 50
 #define LEFT_FROG_BULLET_ID 50
 #define RIGHT_FROG_BULLET_ID 51
-#define BULLET_SPEED 45000
+#define MAX_BULLET_SPEED 33500
+#define MIN_BULLET_SPEED 19500
+#define MAX_BULLET_SPAWN 18000
+#define MIN_BULLET_SPAWN 15000
 #define ACTIVE 1
 #define DEACTIVE 0
 
@@ -44,6 +48,7 @@ void right_frog_bullet_process(int pipe_write, int* args);
 void reset_frog_bullet_position(Character *Entities, Character *Bullets);
 void crocodile_process(int pipe_write, int* args);
 void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar);
+void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index);
 void reset_timer(Game_var *gameVar);
 void timer_process(int pipe_write, int* args);
 void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar);
