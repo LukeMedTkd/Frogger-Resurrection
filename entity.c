@@ -105,7 +105,7 @@ void crocodile_process(int pipe_write, int* args){
     msg.id = args[3];
     msg.x = CROCODILE_MOVE_X * direction;
     msg.y = 0;
-    msg.sig = CROCODILE_ONLINE; // Set message signal to check if the crocodile is on game
+
 
     // The spawn time is delayed
     usleep(spawn_delay);
@@ -126,10 +126,9 @@ void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_va
 void crocodile_bullet_process(int pipe_write, int* args){
     // args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
     Msg msg;
-    msg.x = (args[1] == 1 ? 1 : -1);
+    msg.x = (args[1] > 0 ? 1 : -1);
     msg.id = args[3];
     
-    usleep(args[2]);
     while(TRUE){
         write_msg(pipe_write, msg);
         usleep(abs(args[1]));
@@ -175,7 +174,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
 
     // Manche Loop
     while(!manche_ended){
-
+        
         // Read msg from the pipes
         msg = read_msg(fds[PIPE_READ]);
 
@@ -212,13 +211,13 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
             // Msg from some FROG BULLET process
             // ***********************************
             case LEFT_FROG_BULLET_ID:
-                // Set Bullet
+                // Set LEFT Bullet SIG
                 Bullets[FROG_ID].sig = ((Bullets[FROG_ID].x >= 0) ? ACTIVE : DEACTIVE);
 
-                // If bullet is ACTIVE
+                // If LEFT bullet is ACTIVE
                 if(Bullets[FROG_ID].sig == ACTIVE) Bullets[FROG_ID].x += msg.x;
 
-                // If bullet is DEACTIVE
+                // If LEFT bullet is DEACTIVE
                 else{ 
                     kill(Bullets[FROG_ID].pid, SIGKILL);
                     waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
@@ -228,13 +227,13 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
 
 
             case RIGHT_FROG_BULLET_ID:
-                // Set Bullet SIG
+                // Set RIGHT Bullet SIG
                 Bullets[FROG_ID + 1].sig = ((Bullets[FROG_ID + 1].x <= GAME_WIDTH) ? ACTIVE : DEACTIVE);
 
-                // If bullet is ACTIVE
+                // If RIGHT bullet is ACTIVE
                 if(Bullets[FROG_ID + 1].sig == ACTIVE) Bullets[FROG_ID + 1].x += msg.x;
 
-                // If bullet is DEACTIVE
+                // If RIGHT bullet is DEACTIVE
                 else{ 
                     kill(Bullets[FROG_ID + 1].pid, SIGKILL);
                     waitpid(Bullets[FROG_ID + 1].pid, NULL, WNOHANG);
@@ -249,24 +248,33 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
             case FIRST_CROCODILE ... LAST_CROCODILE:
                 // Check if this crocodille is online or is offline
                 Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
-                
+
                 // Update the crocodile position only if the crocodile signal is ONLINE, else reset crocodile positin
                 if(Entities[msg.id].sig == CROCODILE_ONLINE){
                     Entities[msg.id].x += msg.x;  
                 }
-                
+
                 else{
                     // If some crocodile is OFFLINE -> reset his position
                     reset_crocodile_position(&(Entities[msg.id]), get_nStream_based_on_id(msg.id), gameVar);
                 }
                 break;
 
-
             // ************************************ 
             // Msg from some CROCODILE processes
             // ************************************  
             case (FIRST_CROCODILE + BULLET_OFFSET_ID) ... (LAST_CROCODILE + BULLET_OFFSET_ID):
-                // TO DO
+                // Set Bullet SIG
+                Bullets[msg.id - BULLET_OFFSET_ID].sig = ((Bullets[msg.id - BULLET_OFFSET_ID].x > 0 || Bullets[msg.id - BULLET_OFFSET_ID].x < GAME_WIDTH) ? ACTIVE : DEACTIVE);
+
+                // If bullet is ACTIVE
+                if(Bullets[msg.id - BULLET_OFFSET_ID].sig == ACTIVE) Bullets[msg.id - BULLET_OFFSET_ID].x += msg.x;
+
+                // If bullet is DEACTIVE
+                else{
+                    kill(Bullets[msg.id - BULLET_OFFSET_ID].pid, SIGKILL);
+                    waitpid(Bullets[msg.id - BULLET_OFFSET_ID].pid, NULL, WNOHANG);
+                }
                 break;
             
 
@@ -288,8 +296,46 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
         //frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
         frog_bullets_collision(Entities, Bullets, &manche_ended);  
+        crocodile_bullets_collsion(Entities, Bullets, &manche_ended);
         set_outcome(gameVar, &manche_ended);
-        
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        int crocodile_ready_to_shot, n_fired_bullets = 0, fired_bullets[N_BULLETS], args[4] = {0};
+
+        // Generate 3 new bullets if this condition is true
+        if(gameVar->n_max_bullets > 0){
+            
+            // Generate random index
+            crocodile_ready_to_shot = rand_range(LAST_CROCODILE, FIRST_CROCODILE);
+
+            // Checks if 'crocodile_ready_to_shot' it's not in the bullets_fired array yet and if the crocodile is in the game area
+            if((!already_generated(crocodile_ready_to_shot, fired_bullets, N_MAX_BULLETS)) && Entities[crocodile_ready_to_shot].x > 0 && Entities[crocodile_ready_to_shot].x < GAME_HEIGHT - CROCODILE_DIM_X){
+                fired_bullets[n_fired_bullets] = crocodile_ready_to_shot;
+                n_fired_bullets++;
+
+                // Reset bullet position
+                reset_crocodile_bullet_position(Entities, Bullets, gameVar, crocodile_ready_to_shot);
+
+                // Get stream based on index
+                int n_stream = get_nStream_based_on_id(crocodile_ready_to_shot);
+                // Get the stream dir -> crocodile bullet orientation
+                int dir = (gameVar->streams_speed[n_stream] > 0 ? 1 : -1);
+
+                // Set args for crocodile bullet process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+                args[0] = n_stream; 
+                args[1] = rand_range(MAX_BULLET_SPEED, MIN_BULLET_SPEED) * dir;
+                args[2] = rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
+                args[3] = crocodile_ready_to_shot + BULLET_OFFSET_ID;
+
+                // Create BULLET process and run his routine
+                create_process(fds, Bullets, crocodile_ready_to_shot, crocodile_ready_to_shot + BULLET_OFFSET_ID, &crocodile_bullet_process, args);
+                gameVar->n_max_bullets--;
+
+            } // end if: condition to shot
+        } // end if: n_max_bullets
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes
         print_lifes(score, gameVar->lifes);
@@ -311,6 +357,9 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
 
         // Print Frog Bullets
         print_frog_bullets(game, Bullets);
+
+        // Print Crocodile Bullets
+        print_crocodiles_bullets(game, Bullets);
 
         // Refresh the game and the score screen
         wrefresh(game);

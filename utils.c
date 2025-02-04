@@ -10,7 +10,7 @@ void init_screen(){
     cbreak(); // Don't wait ENTER in getch()
     keypad(stdscr, TRUE); // Enable function keys listener
     nodelay(stdscr, TRUE);
-    srand(time(0));
+    srand(time(NULL));
 }
 
 void init_colors(){
@@ -109,6 +109,13 @@ void center_game(WINDOW *score, WINDOW *game){
 
 int rand_range(int max, int min){
     return rand() % (max - min + 1) + min;
+}
+
+int already_generated(int n, int *numbers, int numbers_size){
+    for (int i = 0; i < numbers_size; i++) {
+        if (numbers[i] == n) return 1;
+    }
+    return 0;
 }
 
 void debuglog(char *message, int arg){

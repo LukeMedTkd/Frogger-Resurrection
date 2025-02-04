@@ -250,9 +250,11 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
 void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
     for(int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
         // Print the bullet
-        wattron(game, COLOR_PAIR(COLOR_DENS_ID));
-        mvwprintw(game, Bullets[i].y, Bullets[i].x, " ");
-        wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+        if(Bullets[i].sig == ACTIVE){
+            wattron(game, COLOR_PAIR(COLOR_DENS_ID));
+            mvwprintw(game, Bullets[i].y, Bullets[i].x, " ");
+            wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+        }
     }
 }
 

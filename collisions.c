@@ -33,7 +33,7 @@ void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_va
         *manche_ended = TRUE;
         kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
         wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
-        //print_time_is_up(game);
+        print_time_is_up(game);
     }
 }
 
@@ -90,6 +90,17 @@ void frog_bullets_collision(Character *Entities, Character *Bullets, bool *manch
         waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
         kill(Bullets[FROG_ID + 1].pid, SIGKILL);
         waitpid(Bullets[FROG_ID + 1].pid, NULL, WNOHANG);
+    }
+}
+
+void crocodile_bullets_collsion(Character *Entities, Character *Bullets, bool *manche_ended){
+    // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
+    for(int i = 0; i < N_BULLETS; i++){
+        if(Bullets[i].sig == ACTIVE && *manche_ended){
+            Bullets[i].sig = DEACTIVE;
+            kill(Bullets[i].pid, SIGKILL);
+            waitpid(Bullets[i].pid, NULL, WNOHANG);
+        }
     }
 }
 

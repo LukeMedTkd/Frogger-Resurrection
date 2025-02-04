@@ -105,4 +105,5 @@ void init_screen();
 void init_colors();
 void center_game(WINDOW *score, WINDOW *game);
 int rand_range(int max, int min);
+int already_generated(int n, int *numbers, int numbers_size);
 void debuglog(char *message, int arg);
