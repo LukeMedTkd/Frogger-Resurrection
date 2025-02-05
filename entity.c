@@ -295,8 +295,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
         dens_collision(Entities, gameVar, &manche_ended);
         //frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
-        frog_bullets_collision(Entities, Bullets, &manche_ended);  
-        crocodile_bullets_collsion(Entities, Bullets, &manche_ended);
+        bullets_collsion(Entities, Bullets, &manche_ended);
         set_outcome(gameVar, &manche_ended);
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

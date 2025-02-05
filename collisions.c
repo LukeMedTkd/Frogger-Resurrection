@@ -81,19 +81,7 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
     }
 }
 
-void frog_bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){
-    // If frog_bullets are ACTVIE and the manche ends, the bullets are set to DEACTIVE and are killed
-    if(Bullets[FROG_ID].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && *manche_ended){
-        Bullets[FROG_ID].sig = DEACTIVE;
-        Bullets[FROG_ID+1].sig = DEACTIVE;
-        kill(Bullets[FROG_ID].pid, SIGKILL);
-        waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
-        kill(Bullets[FROG_ID + 1].pid, SIGKILL);
-        waitpid(Bullets[FROG_ID + 1].pid, NULL, WNOHANG);
-    }
-}
-
-void crocodile_bullets_collsion(Character *Entities, Character *Bullets, bool *manche_ended){
+void bullets_collsion(Character *Entities, Character *Bullets, bool *manche_ended){
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
