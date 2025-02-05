@@ -293,47 +293,10 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
         /*------------------------ Check some collisions ----------------------*/
         // Check all the dens
         dens_collision(Entities, gameVar, &manche_ended);
-        //frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
+        frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
         bullets_collsion(Entities, Bullets, &manche_ended);
         set_outcome(gameVar, &manche_ended);
-
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        int crocodile_ready_to_shot, n_fired_bullets = 0, fired_bullets[N_BULLETS], args[4] = {0};
-
-        // Generate 3 new bullets if this condition is true
-        if(gameVar->n_max_bullets > 0){
-            
-            // Generate random index
-            crocodile_ready_to_shot = rand_range(LAST_CROCODILE, FIRST_CROCODILE);
-
-            // Checks if 'crocodile_ready_to_shot' it's not in the bullets_fired array yet and if the crocodile is in the game area
-            if((!already_generated(crocodile_ready_to_shot, fired_bullets, N_MAX_BULLETS)) && Entities[crocodile_ready_to_shot].x > 0 && Entities[crocodile_ready_to_shot].x < GAME_HEIGHT - CROCODILE_DIM_X){
-                fired_bullets[n_fired_bullets] = crocodile_ready_to_shot;
-                n_fired_bullets++;
-
-                // Reset bullet position
-                reset_crocodile_bullet_position(Entities, Bullets, gameVar, crocodile_ready_to_shot);
-
-                // Get stream based on index
-                int n_stream = get_nStream_based_on_id(crocodile_ready_to_shot);
-                // Get the stream dir -> crocodile bullet orientation
-                int dir = (gameVar->streams_speed[n_stream] > 0 ? 1 : -1);
-
-                // Set args for crocodile bullet process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
-                args[0] = n_stream; 
-                args[1] = rand_range(MAX_BULLET_SPEED, MIN_BULLET_SPEED) * dir;
-                args[2] = rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
-                args[3] = crocodile_ready_to_shot + BULLET_OFFSET_ID;
-
-                // Create BULLET process and run his routine
-                create_process(fds, Bullets, crocodile_ready_to_shot, crocodile_ready_to_shot + BULLET_OFFSET_ID, &crocodile_bullet_process, args);
-                gameVar->n_max_bullets--;
-
-            } // end if: condition to shot
-        } // end if: n_max_bullets
-
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes

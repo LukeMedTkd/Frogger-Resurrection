@@ -52,7 +52,7 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
             // The den is still open: update the score
             else{
                 gameVar->dens[i] = FALSE;
-                gameVar->score += (100 * (TIME - gameVar->time)) / TIME;
+                gameVar->score += (100 * (gameVar->time)) / TIME;
             }
             *(manche_ended) = TRUE;
         }
@@ -92,104 +92,90 @@ void bullets_collsion(Character *Entities, Character *Bullets, bool *manche_ende
     }
 }
 
-void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
-
+void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended) {
     bool frog_on_crocodile = FALSE;
-    int direction, crocodile_index, current_stream = 0;
+    static int last_crocodile_index, frog_offset_x, last_frog_x;
+    int current_crocodile_index, direction, current_stream = 0;
 
     // Check if the FROG is on the RIVER area
-    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END){
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
 
-        // Get index of th current stream
+        // Get index of the current stream
         while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
         // Get stream direction based on n_stream and frog.y
         direction = ((gameVar->streams_speed[current_stream] > 0) ? 1 : -1);
 
         // Check 3 crocodiles at once
-        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
-            crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
+            current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
 
             // Crocodiles from LEFT to RIGHT
-            if(direction == 1){
-
+            if (direction == 1) {
                 // Check if the FROG is on the crocodile
-                if((Entities[FROG_ID].x >= (Entities[crocodile_index].x + CROCODILE_TAIL_OFFSET)) && 
-                ((Entities[FROG_ID].x <= (Entities[crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))){
+                if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET)) &&
+                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))) {
                     frog_on_crocodile = TRUE;
-                    break;  
+                    break;
                 }
             }
 
             // Crocodiles from RIGHT to LEFT
-            if(direction == -1){
-
+            if (direction == -1) {
                 // Check if the FROG is on the crocodile
-                if((Entities[FROG_ID].x >= (Entities[crocodile_index].x + CROCODILE_HEAD_OFFSET)) && 
-                ((Entities[FROG_ID].x <= (Entities[crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))){
+                if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)) &&
+                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))) {
                     frog_on_crocodile = TRUE;
-                    break;  
+                    break;
                 }
-            }   
+            }
         }
 
-        // Check if the FROG has fallen on the river -> She lose one life and one manche
-        if(frog_on_crocodile == FALSE){
+        // Checks if the FROG has fallen on the river -> She lose 1 life and 1 manche
+        if(frog_on_crocodile == FALSE) {
             gameVar->manche--;
             gameVar->lifes--;
             *manche_ended = TRUE;
-        }
-
-        else{
-            if(Entities[FROG_ID].x >= 0 && Entities[FROG_ID].x <= (GAME_WIDTH - FROG_DIM_X)){
-                switch (direction){
-                case 1:
-                    Entities[FROG_ID].x = Entities[crocodile_index].x + CROCODILE_TAIL_OFFSET + 1;
-                    break;
-                
-                case -1:
-                    Entities[FROG_ID].x = Entities[crocodile_index].x + CROCODILE_HEAD_OFFSET + (CROCODILE_HEAD_OFFSET);
-                    break;
-
-                default:
-                    break;
-                }
-            }
+            return;
         } 
-    }
+        
+        // frog_on_crocodile == TRUE
+        else {
+            
+            // Checks if the FROG has changed crocodile
+            if (current_crocodile_index != last_crocodile_index) {
+                // Compute the FROG offset between the previous crocodile and the current one and update the last_crocodile_index
+                frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;
+                last_crocodile_index = current_crocodile_index;  
+            }
 
+            // If the FROG is moving, update the frog_offset_x
+            if (Entities[FROG_ID].x != last_frog_x) 
+                frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;    
 
+            // If the FROG is NOT moving - CHECK if the FROG is in the game area
+            else if(Entities[FROG_ID].x >= 0 && Entities[FROG_ID].x <= (GAME_WIDTH - FROG_DIM_X))
+                Entities[FROG_ID].x = Entities[current_crocodile_index].x + frog_offset_x;
 
-    // ***************************
-    // CORRA
-    // ***************************
-/*
-    //FROG falls into the RIVER
-    int direction, stream_index;
+            // Store the last FROG position
+            last_frog_x = Entities[FROG_ID].x;
 
-    // Check if the FROG is on the RIVER area
-    if (Entities[FROG_ID].y < GRASS_Y_INF_START && (Entities[FROG_ID].y > RIVER_Y_START)){
-        int frog_on_crocodile = 0;
-        for (int i = 0; i < N_STREAM; i++){
+            // Checks if the FROG is in the crocodile area
+            if (direction == 1) {
+                if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET) 
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET;
 
-            if (Entities[FROG_ID].y == CROCODILE_OFFSET_Y + (CROCODILE_DIM_Y * i)){
-                stream_index = i;
-                for(int j = FIRST_CROCODILE + (3 * i); j < (3 * i) + 5; j++){
-                    
-                    if(Entities[FROG_ID].y == Entities[j].y && Entities[FROG_ID].x + FROG_DIM_X >= Entities[j].x && Entities[FROG_ID].x <= Entities[j].x + CROCODILE_DIM_X){
-                        frog_on_crocodile = j;
-                        break;
-                    }
-                }
+                else if (Entities[FROG_ID].x > Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X;
+
+            } 
+            
+            else if (direction == -1) {
+                if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET;
+
+                else if (Entities[FROG_ID].x > Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X;
             }
         }
-        if(frog_on_crocodile != 0){
-            //int direction = (gameVar->streams_speed[stream_index] > 0) ? 1 : -1;
-            Entities[FROG_ID].x = Entities[frog_on_crocodile].x ;
-            
-        }else{
-            gameVar->lifes--;
-            *(manche_ended) = TRUE;//FROG falls in the WATER
-        }
     }
-*/
 }

@@ -113,10 +113,7 @@ void start_game(WINDOW *score, WINDOW *game){
    /******************************************************************/
    /************************* Manche Loop ***************************/
     while(gameVar.manche > 0 && gameVar.outcome == NO_OUTCOME){
-        
-        // Reset n_max_bullets
-        gameVar.n_max_bullets = N_MAX_BULLETS;
-        
+
         // Reset the timer
         reset_timer(&gameVar);
 
