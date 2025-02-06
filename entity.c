@@ -68,7 +68,7 @@ void left_frog_bullet_process(int pipe_write, int* args){
 
     while(TRUE){
         write_msg(pipe_write, msg);
-        usleep(MAX_BULLET_SPEED);
+        usleep(FROG_BULLET_SPEED);
     }
 }
 
@@ -79,7 +79,7 @@ void right_frog_bullet_process(int pipe_write, int* args){
 
     while(TRUE){
         write_msg(pipe_write, msg);
-        usleep(MAX_BULLET_SPEED);
+        usleep(FROG_BULLET_SPEED);
     }    
 }
 
@@ -129,6 +129,7 @@ void crocodile_bullet_process(int pipe_write, int* args){
     msg.x = (args[1] > 0 ? 1 : -1);
     msg.id = args[3];
     
+    usleep(abs(args[2]));
     while(TRUE){
         write_msg(pipe_write, msg);
         usleep(abs(args[1]));
@@ -169,12 +170,13 @@ void timer_process(int pipe_write, int* args){
 /*-------------------- Parent Process --------------------*/
 void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar){
 
+    int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store pipe message
 
     // Manche Loop
     while(!manche_ended){
-        
+
         // Read msg from the pipes
         msg = read_msg(fds[PIPE_READ]);
 
@@ -249,9 +251,15 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
                 // Check if this crocodille is online or is offline
                 Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
 
-                // Update the crocodile position only if the crocodile signal is ONLINE, else reset crocodile positin
+                // Generate a random_shot value
+                random_shot = rand_range(MAX_RANDOM_SHOT, MIN_RANDOM_SHOT);
+
+                // Updates the crocodile position only if the crocodile signal is ONLINE, else resets crocodile positin
                 if(Entities[msg.id].sig == CROCODILE_ONLINE){
-                    Entities[msg.id].x += msg.x;  
+                    Entities[msg.id].x += msg.x;
+
+                    // If the crocodile is ONLINE, It can shot - The crocodile shot based on random_shot VALUE
+                    generate_bullets(fds, Entities, Bullets, gameVar, &msg, &random_shot, &crocodile_bullet_process); 
                 }
 
                 else{
@@ -264,17 +272,23 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
             // Msg from some CROCODILE processes
             // ************************************  
             case (FIRST_CROCODILE + BULLET_OFFSET_ID) ... (LAST_CROCODILE + BULLET_OFFSET_ID):
-                // Set Bullet SIG
-                Bullets[msg.id - BULLET_OFFSET_ID].sig = ((Bullets[msg.id - BULLET_OFFSET_ID].x > 0 || Bullets[msg.id - BULLET_OFFSET_ID].x < GAME_WIDTH) ? ACTIVE : DEACTIVE);
+                
+                // Current Bullet id
+                current_bullet_id = msg.id - BULLET_OFFSET_ID;
 
                 // If bullet is ACTIVE
-                if(Bullets[msg.id - BULLET_OFFSET_ID].sig == ACTIVE) Bullets[msg.id - BULLET_OFFSET_ID].x += msg.x;
+                if(Bullets[current_bullet_id ].sig == ACTIVE) Bullets[current_bullet_id ].x += msg.x;
 
-                // If bullet is DEACTIVE
-                else{
-                    kill(Bullets[msg.id - BULLET_OFFSET_ID].pid, SIGKILL);
-                    waitpid(Bullets[msg.id - BULLET_OFFSET_ID].pid, NULL, WNOHANG);
-                }
+                // Check if a bullet is out of the GAME
+                deactive_bullets_out_game(Bullets, &current_bullet_id, &msg);
+
+                // Checks if some CROCODILE BULLETS kill the FROG
+                frog_killed(Entities, Bullets, gameVar, &manche_ended, &current_bullet_id);
+
+                // Checks if some FROG Bullets neutralize some CROCODILE Bullets
+                bullets_neutralization(Entities, Bullets, &msg, &current_bullet_id);
+                
+
                 break;
             
 
@@ -295,7 +309,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
         dens_collision(Entities, gameVar, &manche_ended);
         frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
-        bullets_collsion(Entities, Bullets, &manche_ended);
+        bullets_collision(Entities, Bullets, &manche_ended);
         set_outcome(gameVar, &manche_ended);
 
         /*------------------------ Update the scene --------------------------*/

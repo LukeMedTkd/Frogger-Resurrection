@@ -81,7 +81,83 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
     }
 }
 
-void bullets_collsion(Character *Entities, Character *Bullets, bool *manche_ended){
+void generate_bullets(int *fds, Character *Entities, Character *Bullets, Game_var *gameVar, Msg *msg, int *random_shot, void (* crocodile_bullet_process)){
+
+    // If the CROCODILE is ready to shot
+    if(Bullets[msg->id].sig == DEACTIVE && *random_shot == 3){
+        int args[4] = {0};
+
+        // Get stream based on index
+            int n_stream = get_nStream_based_on_id(msg->id);
+
+        // Get the stream dir -> crocodile bullet orientation
+        int dir = (msg->x == 1 ? 1 : -1);
+
+        // Set args for crocodile bullet process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+        args[1] = (abs(gameVar->streams_speed[n_stream]) - (abs(gameVar->streams_speed[n_stream]) * rand_range(MAX_BULLET_SPEED_INCREASE, MIN_BULLET_SPEED_INCREASE) / 100)) * dir;
+        args[2] = rand_range(MAX_BULLET_SPAWN, MIN_BULLET_SPAWN);
+        args[3] = msg->id + BULLET_OFFSET_ID;
+
+        // Create BULLET process and run his routine
+        create_process(fds, Bullets, msg->id, msg->id + BULLET_OFFSET_ID, crocodile_bullet_process, args);
+
+        // Reset bullet position
+        reset_crocodile_bullet_position(Entities, Bullets, gameVar, msg->id);
+
+        Bullets[msg->id].sig = ACTIVE;
+
+    }
+}
+
+void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
+    // If a RIGHT to LEFT bullet is ACTIVE but It's out of the GAME
+    if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x < 0 && msg->x == -1){
+            kill(Bullets[*current_bullet_id].pid, SIGKILL);
+            waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
+            Bullets[*current_bullet_id].sig = DEACTIVE;
+    } 
+    
+    // If a LEFT to RIGHT bullet is ACTIVE but It's out of the GAME
+    else if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x > GAME_WIDTH && msg->x == 1){
+        kill(Bullets[*current_bullet_id].pid, SIGKILL);
+        waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
+        Bullets[*current_bullet_id].sig = DEACTIVE;
+    }
+}
+
+void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended, int *current_bullet_id){
+
+    // Checks if BULLET.y MATCHS with FROG.y
+    if(Bullets[*current_bullet_id].sig == ACTIVE && (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+
+        // Checks if BULLET.x MATCHS with FROG.x
+        if(Bullets[*current_bullet_id].x == Entities[FROG_ID].x || Bullets[*current_bullet_id].x == Entities[FROG_ID].x + FROG_DIM_X - 1){
+            gameVar->lifes--;
+            gameVar->manche--;
+            *manche_ended = TRUE;
+            return;
+        }
+    }
+}
+
+void bullets_neutralization(Character *Entities, Character *Bullets, Msg *msg, int *current_bullet_id){
+    
+    // Checks if BULLET.y MATCHS with FROG.y
+    if(Bullets[*current_bullet_id].sig == ACTIVE && (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+
+        // Checks if a RIGHT to LEFT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
+        if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && msg->x == -1 && (Bullets[*current_bullet_id].x == Bullets[FROG_ID+1].x)){
+            kill(Bullets[*current_bullet_id].pid, SIGKILL);
+            waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
+            Bullets[*current_bullet_id].sig = DEACTIVE;
+            kill(Bullets[FROG_ID+1].pid, SIGKILL);
+            waitpid(Bullets[FROG_ID+1].pid, NULL, WNOHANG);
+            Bullets[FROG_ID+1].sig = DEACTIVE;
+        }
+    }
+}
+
+void bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){

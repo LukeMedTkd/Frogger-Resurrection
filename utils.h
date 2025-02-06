@@ -9,6 +9,7 @@
 #include "game.h"
 
 #define DEBUG_FILE_NAME "log.txt"
+#define MICRO 1000000
 
 // Defined Color_Id
 #define COLOR_FROG 100
