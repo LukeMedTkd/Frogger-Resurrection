@@ -51,7 +51,7 @@ void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar)
                 // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
                 args[0] = i;
                 args[1] = gameVar->streams_speed[i];
-                args[2] += rand_range(MAX_SPAWN_TIME, MIN_SPAWN_TIME);
+                args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X/2));
                 args[3] = crocodile_index;
                 
                 // Reset the Crocodilles Position - Modify the characters structs

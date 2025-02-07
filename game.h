@@ -21,9 +21,7 @@
 #define STREAM_DIRECTION ((rand() % 2) * 2 - 1) // Return 1 or -1
 #define INVERT_DIRECTION -1
 #define MAX_STREAM_SPEED 100000
-#define MIN_STREAM_SPEED 30000
-#define MAX_SPAWN_TIME 5000000
-#define MIN_SPAWN_TIME 3000000
+#define MIN_STREAM_SPEED 40000
 
 // Outcomes
 #define NO_OUTCOME -1

@@ -140,46 +140,53 @@ void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, boo
     }
 }
 
-void bullets_neutralization(Character *Entities, Character *Bullets, Msg *msg, int *current_bullet_id){
-    
-    int bullet_width = 2;
-
-    // Checks if BULLET.y MATCHS with FROG.y
-    if(Bullets[*current_bullet_id].sig == ACTIVE && 
-    (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && 
-    Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
-
-        // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
-        if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[FROG_ID+1].x - Bullets[*current_bullet_id].x >= -1) && (Bullets[FROG_ID+1].x - Bullets[*current_bullet_id].x <= 1))){
-            kill(Bullets[*current_bullet_id].pid, SIGKILL);
-            waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
-            Bullets[*current_bullet_id].sig = DEACTIVE;
-
-            kill(Bullets[FROG_ID+1].pid, SIGKILL);
-            waitpid(Bullets[FROG_ID+1].pid, NULL, WNOHANG);
-            Bullets[FROG_ID+1].sig = DEACTIVE;
-        }
-
-        // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
-        if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[FROG_ID].x - Bullets[*current_bullet_id].x >= -1) && (Bullets[FROG_ID].x - Bullets[*current_bullet_id].x <= 1))){
-            kill(Bullets[*current_bullet_id].pid, SIGKILL);
-            waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
-            Bullets[*current_bullet_id].sig = DEACTIVE;
-
-            kill(Bullets[FROG_ID].pid, SIGKILL);
-            waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
-            Bullets[FROG_ID].sig = DEACTIVE;
-        }
-    }
-}
-
-void bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){
+void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended){
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
             Bullets[i].sig = DEACTIVE;
             kill(Bullets[i].pid, SIGKILL);
             waitpid(Bullets[i].pid, NULL, WNOHANG);
+        }
+    }
+
+    // Checks if some FROG Bullets neutralize some CROCODILE Bullets
+    int current_crocodile_index, current_stream = 0;
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
+        // Get index of the current stream
+        while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
+
+        // Check 3 crocodiles bullets at once
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
+            current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
+
+            // Checks if BULLET.y MATCHS with FROG.y
+            if(Bullets[current_crocodile_index].sig == ACTIVE && 
+            (Bullets[current_crocodile_index].y > Entities[FROG_ID].y && 
+            Bullets[current_crocodile_index].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+
+                // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
+                if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x <= 1))){
+                    kill(Bullets[FROG_ID+1].pid, SIGKILL);
+                    waitpid(Bullets[FROG_ID+1].pid, NULL, WNOHANG);
+                    Bullets[FROG_ID+1].sig = DEACTIVE;
+                    
+                    kill(Bullets[current_crocodile_index].pid, SIGKILL);
+                    waitpid(Bullets[current_crocodile_index].pid, NULL, WNOHANG);
+                    Bullets[current_crocodile_index].sig = DEACTIVE;
+                }
+
+                // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
+                if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID].x <= 1))){
+                    kill(Bullets[FROG_ID].pid, SIGKILL);
+                    waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
+                    Bullets[FROG_ID].sig = DEACTIVE;
+
+                    kill(Bullets[current_crocodile_index].pid, SIGKILL);
+                    waitpid(Bullets[current_crocodile_index].pid, NULL, WNOHANG);
+                    Bullets[current_crocodile_index].sig = DEACTIVE;
+                }
+            }
         }
     }
 }

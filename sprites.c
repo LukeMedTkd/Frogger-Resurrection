@@ -122,7 +122,7 @@ void print_game_area(WINDOW *game, bool *dens){
 
 /*---------------------------------------------*/
 /*-------------- Entities prints --------------*/
-void print_frog(WINDOW *game, Character frog_entity) {
+void print_frog(WINDOW *game, Character frog_entity){
     // Defined Frog Sprite
     static const char* frog[FROG_DIM_Y][FROG_DIM_X] = {
        {"▄", "█", "", "▀", "▌", "▐", "▀", "", "█", "▄"},
@@ -251,9 +251,9 @@ void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
     for(int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
         // Print the bullet
         if(Bullets[i].sig == ACTIVE){
-            wattron(game, COLOR_PAIR(COLOR_DENS_ID));
+            wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
             mvwprintw(game, Bullets[i].y, Bullets[i].x, " ");
-            wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
+            wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
         }
     }
 }

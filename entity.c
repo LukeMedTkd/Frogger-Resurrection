@@ -285,9 +285,6 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
                 // Checks if some CROCODILE BULLETS kill the FROG
                 frog_killed(Entities, Bullets, gameVar, &manche_ended, &current_bullet_id);
 
-                // Checks if some FROG Bullets neutralize some CROCODILE Bullets
-                bullets_neutralization(Entities, Bullets, &msg, &current_bullet_id);
-                
 
                 break;
             
@@ -309,7 +306,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
         dens_collision(Entities, gameVar, &manche_ended);
         frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
-        bullets_collision(Entities, Bullets, &manche_ended);
+        bullets_collision(Entities, Bullets, gameVar, &manche_ended);
         set_outcome(gameVar, &manche_ended);
 
         /*------------------------ Update the scene --------------------------*/

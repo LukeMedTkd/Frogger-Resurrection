@@ -111,13 +111,6 @@ int rand_range(int max, int min){
     return rand() % (max - min + 1) + min;
 }
 
-int already_generated(int n, int *numbers, int numbers_size){
-    for (int i = 0; i < numbers_size; i++) {
-        if (numbers[i] == n) return 1;
-    }
-    return 0;
-}
-
 void debuglog(char *message, int arg){
     FILE *f = fopen(DEBUG_FILE_NAME, "a");
     if (f == NULL)
