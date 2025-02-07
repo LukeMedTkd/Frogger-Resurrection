@@ -3,7 +3,7 @@
 
 #define CROCODILE_TAIL_OFFSET 0
 #define CROCODILE_HEAD_OFFSET 0
-
+#define GRID_SIZE 5
 
 // Functions Prototypes
 void set_outcome(Game_var *gameVar, bool *manche_ended);

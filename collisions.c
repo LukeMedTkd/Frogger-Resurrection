@@ -142,17 +142,33 @@ void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, boo
 
 void bullets_neutralization(Character *Entities, Character *Bullets, Msg *msg, int *current_bullet_id){
     
-    // Checks if BULLET.y MATCHS with FROG.y
-    if(Bullets[*current_bullet_id].sig == ACTIVE && (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+    int bullet_width = 2;
 
-        // Checks if a RIGHT to LEFT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
-        if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && msg->x == -1 && (Bullets[*current_bullet_id].x == Bullets[FROG_ID+1].x)){
+    // Checks if BULLET.y MATCHS with FROG.y
+    if(Bullets[*current_bullet_id].sig == ACTIVE && 
+    (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && 
+    Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+
+        // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
+        if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[FROG_ID+1].x - Bullets[*current_bullet_id].x >= -1) && (Bullets[FROG_ID+1].x - Bullets[*current_bullet_id].x <= 1))){
             kill(Bullets[*current_bullet_id].pid, SIGKILL);
             waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
             Bullets[*current_bullet_id].sig = DEACTIVE;
+
             kill(Bullets[FROG_ID+1].pid, SIGKILL);
             waitpid(Bullets[FROG_ID+1].pid, NULL, WNOHANG);
             Bullets[FROG_ID+1].sig = DEACTIVE;
+        }
+
+        // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
+        if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[FROG_ID].x - Bullets[*current_bullet_id].x >= -1) && (Bullets[FROG_ID].x - Bullets[*current_bullet_id].x <= 1))){
+            kill(Bullets[*current_bullet_id].pid, SIGKILL);
+            waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
+            Bullets[*current_bullet_id].sig = DEACTIVE;
+
+            kill(Bullets[FROG_ID].pid, SIGKILL);
+            waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
+            Bullets[FROG_ID].sig = DEACTIVE;
         }
     }
 }
