@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall 
 
 # Libraries
 LIBS = -lncursesw -lm
