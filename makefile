@@ -3,10 +3,10 @@ CC = gcc
 CFLAGS = -Wall 
 
 # Libraries
-LIBS = -lncursesw -lm
+LIBS = -lncursesw -lm -pthread
 
 # Source files and target
-SRC = main.c game.c process.c entity.c sprites.c utils.c collisions.c
+SRC = main.c game.c thread.c entity.c sprites.c utils.c collisions.c
 OBJ = ${SRC:.c=.o}
 TARGET = output
 

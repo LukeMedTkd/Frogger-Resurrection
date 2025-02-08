@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdbool.h>
-#include "process.h"
+#include "thread.h"
 #include "utils.h"
 #include "sprites.h"
 
@@ -46,14 +46,14 @@
 #define TIME_ID 1
 
 // Functions Prototypes
-void frog_process(int pipe_write, int* args);
+void *frog_thread(void *args);
+void *left_frog_bullet_thread(void *args);
+void *right_frog_bullet_thread(void *args);
 void reset_frog_position(Character *frog_entity);
-void left_frog_bullet_process(int pipe_write, int* args);
-void right_frog_bullet_process(int pipe_write, int* args);
 void reset_frog_bullet_position(Character *Entities, Character *Bullets);
-void crocodile_process(int pipe_write, int* args);
-void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar);
-void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index);
+// void crocodile_process(int pipe_write, int* args);
+// void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar);
+// void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index);
 void reset_timer(Game_var *gameVar);
-void timer_process(int pipe_write, int* args);
-void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar);
+void *timer_thread(void *args);
+void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar);

@@ -37,34 +37,35 @@ void randomize_streams_direction(int *stream_speed){
     }
 }
 
-void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar){
-        // Variables Statement
-        int args[4] = {0}, crocodile_index;
+//++++++++++++++++++++++++++++++++
+// void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar){
+//         // Variables Statement
+//         int args[4] = {0}, crocodile_index;
 
-        // Set the streams direction to generate a new original scene
-        randomize_streams_direction(gameVar->streams_speed);
+//         // Set the streams direction to generate a new original scene
+//         randomize_streams_direction(gameVar->streams_speed);
         
-        // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
-        for (int i = 0; i < N_STREAM; i++){
-            for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
-                // Get crocodile index through i and j
-                crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
-                // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
-                args[0] = i;
-                args[1] = gameVar->streams_speed[i];
-                args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X/2));
-                args[3] = crocodile_index;
+//         // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
+//         for (int i = 0; i < N_STREAM; i++){
+//             for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
+//                 // Get crocodile index through i and j
+//                 crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
+//                 // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+//                 args[0] = i;
+//                 args[1] = gameVar->streams_speed[i];
+//                 args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X/2));
+//                 args[3] = crocodile_index;
                 
-                // Reset the Crocodilles Position - Modify the characters structs
-                reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
+//                 // Reset the Crocodilles Position - Modify the characters structs
+//                 reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
 
-                // Create CROCODILE process and run his routine
-                create_process(fds, Entities, crocodile_index, crocodile_index, &crocodile_process, args);  
-            }
-            args[2] = 0;
-        }
-        crocodiles_creation = TRUE;
-}
+//                 // Create CROCODILE process and run his routine
+//                 create_process(fds, Entities, crocodile_index, crocodile_index, &crocodile_process, args);  
+//             }
+//             args[2] = 0;
+//         }
+//         crocodiles_creation = TRUE;
+// }
 
 int get_nStream_based_on_id(int id){
     return (id - FIRST_CROCODILE) / MAX_N_CROCODILE_PER_STREAM;
@@ -91,6 +92,9 @@ void outcome(WINDOW *game, Game_var *gameVar){
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
 
+    // Variables Statements
+    void **args = malloc(1 * sizeof(void*));
+
     //set game variables
     Game_var gameVar = initialize_gameVar();
 
@@ -99,20 +103,21 @@ void start_game(WINDOW *score, WINDOW *game){
     Character *Bullets = malloc(N_BULLETS * sizeof(Character));
 
     // Reset Bullets SIGNAL
-    reset_bullets_signal(Bullets);
+    //reset_bullets_signal(Bullets);
 
-    // Define fds array and Pipe Creation
-    int fds[2];
-    if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
+    // Define and Initialize SHARED BUFFER
+    Buffer buf;
+    buffer_init(&buf);
 
     // Create FROG process and run his routine
-    create_process(fds, Entities, FROG_ID, FROG_ID, &frog_process, NULL);
+    args[0] = &buf;
+    create_thread(&buf, Entities, FROG_ID, FROG_ID, frog_thread, *args);
 
     // Create TIME process and run his routine
-    create_process(fds, Entities, TIME_ID, TIME_ID, &timer_process, NULL);
+    create_thread(&buf, Entities, TIME_ID, TIME_ID, timer_thread, *args);
 
     // Set the streams speed, fixed for the whole game
-    randomize_streams_speed(gameVar.streams_speed);
+    // randomize_streams_speed(gameVar.streams_speed);
      
 
    /******************************************************************/
@@ -126,14 +131,14 @@ void start_game(WINDOW *score, WINDOW *game){
         reset_frog_position(&Entities[FROG_ID]);
 
         // Create the crocodiles on the streams
-        set_crocodiles_on_streams(Entities, fds, &gameVar);
+        // set_crocodiles_on_streams(Entities, fds, &gameVar);
 
         // Parent Process
-        parent_process(game, score, fds, Entities, Bullets, &gameVar);
+        parent_process(game, score, &buf, Entities, Bullets, &gameVar);
 
         // Kill all the crocodile processes and their bullets to generate a new original scene
-        kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
-        wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        // kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        // wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
           
     }   
 
@@ -141,19 +146,15 @@ void start_game(WINDOW *score, WINDOW *game){
     outcome(game, &gameVar);
 
     // Kill Processes in the array.
-    kill_processes(Entities, 0, N_ENTITIES);
-    wait_children(Entities, 0, N_ENTITIES);
-    kill_processes(Bullets, 0, N_BULLETS);
-    wait_children(Bullets, 0, N_BULLETS);
+    // kill_processes(Entities, 0, N_ENTITIES);
+    // wait_children(Entities, 0, N_ENTITIES);
+    // kill_processes(Bullets, 0, N_BULLETS);
+    // wait_children(Bullets, 0, N_BULLETS);
 
 
     // Free the allocated memeory
     free(Entities);
     free(Bullets);
-
-    // Close file descriptors
-    close(fds[PIPE_READ]);
-    close(fds[PIPE_WRITE]);
 
     // Delete the previous GAME windows
     delwin(game);
