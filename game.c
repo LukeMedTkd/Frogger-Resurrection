@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "utils.h"
 #include "sprites.h"
+#include "collisions.h"
 
 bool crocodiles_creation = false;
 
@@ -89,12 +90,16 @@ void outcome(WINDOW *game, Game_var *gameVar){
 
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
+
     //set game variables
     Game_var gameVar = initialize_gameVar();
 
     // Dynamic allocation 
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));
     Character *Bullets = malloc(N_BULLETS * sizeof(Character));
+
+    // Reset Bullets SIGNAL
+    reset_bullets_signal(Bullets);
 
     // Define fds array and Pipe Creation
     int fds[2];
@@ -126,7 +131,7 @@ void start_game(WINDOW *score, WINDOW *game){
         // Parent Process
         parent_process(game, score, fds, Entities, Bullets, &gameVar);
 
-        // Kill all the crocodile processes to generate a new original scene
+        // Kill all the crocodile processes and their bullets to generate a new original scene
         kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
         wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
           
@@ -135,9 +140,12 @@ void start_game(WINDOW *score, WINDOW *game){
     // Print OUTCOME
     outcome(game, &gameVar);
 
-    // Kill Processes in the array. Parent process wait all the children
+    // Kill Processes in the array.
     kill_processes(Entities, 0, N_ENTITIES);
     wait_children(Entities, 0, N_ENTITIES);
+    kill_processes(Bullets, 0, N_BULLETS);
+    wait_children(Bullets, 0, N_BULLETS);
+
 
     // Free the allocated memeory
     free(Entities);
@@ -147,7 +155,9 @@ void start_game(WINDOW *score, WINDOW *game){
     close(fds[PIPE_READ]);
     close(fds[PIPE_WRITE]);
 
-    endwin();
+    // Delete the previous GAME windows
+    delwin(game);
+    delwin(score);
 
     return;
 }

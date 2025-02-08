@@ -1,3 +1,4 @@
+#include <math.h>
 #include "sprites.h"
 #include "utils.h"
 #include "entity.h"
@@ -322,4 +323,53 @@ void print_won_game(WINDOW *game){
 
     wrefresh(game);
     usleep(DURATION);
+}
+
+void print_demo(WINDOW *menu) {
+
+    // Variables statements
+    int delay, frogger_start_y = 0, resurrection_start_y = GAME_HEIGHT - 6, center_y = (GAME_HEIGHT / 2) - 6;
+    double A = (DURATION_MAX - DURATION_MIN);  
+    double B = 10.0 / center_y;  // Adjusts the curvature of the logarithm
+
+    for (int i = 0; i <= center_y; i++) {
+        wclear(menu);
+
+        // Print Background
+        wattron(menu, COLOR_PAIR(COLOR_BKG_DEMO_ID));
+        for (int j = 0; j < GAME_HEIGHT; j++) {
+            mvwhline(menu, j, 0, ' ', GAME_WIDTH);
+        }
+        wattroff(menu, COLOR_PAIR(COLOR_BKG_DEMO_ID));
+
+        // Print FROGGER
+        wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+        mvwprintw(menu, frogger_start_y + i, (GAME_WIDTH / 2) - (61 / 2), "███████╗██████╗  ██████╗  ██████╗  ██████╗ ███████╗██████╗ ");
+        mvwprintw(menu, frogger_start_y + i + 1, (GAME_WIDTH / 2) - (61 / 2), "██╔════╝██╔══██╗██╔═══██╗██╔════╝ ██╔════╝ ██╔════╝██╔══██╗");
+        mvwprintw(menu, frogger_start_y + i + 2, (GAME_WIDTH / 2) - (61 / 2), "█████╗  ██████╔╝██║   ██║██║  ███╗██║  ███╗█████╗  ██████╔╝");
+        mvwprintw(menu, frogger_start_y + i + 3, (GAME_WIDTH / 2) - (61 / 2), "██╔══╝  ██╔══██╗██║   ██║██║   ██║██║   ██║██╔══╝  ██╔══██╗");
+        mvwprintw(menu, frogger_start_y + i + 4, (GAME_WIDTH / 2) - (61 / 2), "██║     ██║  ██║╚██████╔╝╚██████╔╝╚██████╔╝███████╗██║  ██║");
+        mvwprintw(menu, frogger_start_y + i + 5, (GAME_WIDTH / 2) - (61 / 2), "╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝");
+
+        // Print "RESURRECTION"
+        mvwprintw(menu, resurrection_start_y - i, (GAME_WIDTH / 2) - (97 / 2), "██████╗ ███████╗███████╗██╗   ██╗██████╗ ██████╗ ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗");
+        mvwprintw(menu, resurrection_start_y - i + 1, (GAME_WIDTH / 2) - (97 / 2), "██╔══██╗██╔════╝██╔════╝██║   ██║██╔══██╗██╔══██╗██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║");
+        mvwprintw(menu, resurrection_start_y - i + 2, (GAME_WIDTH / 2) - (97 / 2), "██████╔╝█████╗  ███████╗██║   ██║██████╔╝██████╔╝█████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║");
+        mvwprintw(menu, resurrection_start_y - i + 3, (GAME_WIDTH / 2) - (97 / 2), "██╔══██╗██╔══╝  ╚════██║██║   ██║██╔══██╗██╔══██╗██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║");
+        mvwprintw(menu, resurrection_start_y - i + 4, (GAME_WIDTH / 2) - (97 / 2), "██║  ██║███████╗███████║╚██████╔╝██║  ██║██║  ██║███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║");
+        mvwprintw(menu, resurrection_start_y - i + 5, (GAME_WIDTH / 2) - (97 / 2), "╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝");
+        wattroff(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+
+        // Refresh MENU
+        wrefresh(menu);
+
+        // Use a logarithmic function to calculate the delay
+        delay = (int)(DURATION_MIN + A * (log(B * (i + 1) + 1)));
+        usleep(delay);
+    }
+    usleep(DEMO_DURATION);
+
+    // Pulisce la finestra
+    wclear(menu);
+    wrefresh(menu);
 }

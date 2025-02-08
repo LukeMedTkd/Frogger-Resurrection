@@ -84,7 +84,7 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 void generate_bullets(int *fds, Character *Entities, Character *Bullets, Game_var *gameVar, Msg *msg, int *random_shot, void (* crocodile_bullet_process)){
 
     // If the CROCODILE is ready to shot
-    if(Bullets[msg->id].sig == DEACTIVE && *random_shot == 3){
+    if(Bullets[msg->id].sig == DEACTIVE && *random_shot == 3 && gameVar->outcome == NO_OUTCOME){
         int args[4] = {0};
 
         // Get stream based on index
@@ -107,6 +107,10 @@ void generate_bullets(int *fds, Character *Entities, Character *Bullets, Game_va
         Bullets[msg->id].sig = ACTIVE;
 
     }
+}
+
+void reset_bullets_signal(Character *Bullets){
+    for(int i=0; i<N_BULLETS; i++) Bullets[i].sig = DEACTIVE;
 }
 
 void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
@@ -144,9 +148,9 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
+            if(Entities[i].pid != 0) kill(Bullets[i].pid, SIGKILL);
+            if(Entities[i].pid != 0) waitpid(Bullets[i].pid, NULL, WNOHANG);
             Bullets[i].sig = DEACTIVE;
-            kill(Bullets[i].pid, SIGKILL);
-            waitpid(Bullets[i].pid, NULL, WNOHANG);
         }
     }
 

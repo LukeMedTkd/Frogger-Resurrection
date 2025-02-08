@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall
 
 # Libraries
-LIBS = -lncursesw
+LIBS = -lncursesw -lm
 
 # Source files and target
 SRC = main.c game.c process.c entity.c sprites.c utils.c collisions.c

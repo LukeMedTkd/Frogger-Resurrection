@@ -57,6 +57,11 @@ void init_colors(){
     init_color(COLOR_WRT_TIME_IS_UP, 839, 149, 211);
     init_color(COLOR_BKG_LOST_GAME, 192, 62, 101);
     init_color(COLOR_WRT_LOST_GAME, 611, 192, 129);
+    init_color(COLOR_BKG_DEMO, 607, 690, 223);
+    init_color(COLOR_WRT_DEMO, 945, 282, 207);
+    init_color(COLOR_BKG_WRT_DEMO, 454, 231, 160);
+    init_color(COLOR_BKG_TERM, 125, 67, 67);
+    init_color(COLOR_WRT_TERM, 921, 882, 882);
 
 
     // Time Colors
@@ -75,6 +80,7 @@ void init_colors(){
     init_pair(COLOR_TIME13_ID, COLOR_TIME13, COLOR_BLACK);
     init_pair(COLOR_TIME14_ID, COLOR_TIME14, COLOR_BLACK);
     init_pair(COLOR_TIME15_ID, COLOR_TIME15, COLOR_BLACK);
+    init_pair(COLOR_TERM_ID, COLOR_WRT_TERM, COLOR_BKG_TERM);
     
 
     // Background Colors
@@ -89,6 +95,8 @@ void init_colors(){
     init_pair(COLOR_WRT_TIME_IS_UP_ID, COLOR_WRT_TIME_IS_UP, COLOR_BKG_TIME_IS_UP);
     init_pair(COLOR_BKG_WON_GAME_ID, COLOR_BKG_WON_GAME, COLOR_BKG_WON_GAME);
     init_pair(COLOR_WRT_WON_GAME_ID, COLOR_WRT_WON_GAME, COLOR_BKG_WON_GAME);
+    init_pair(COLOR_BKG_DEMO_ID, COLOR_BKG_DEMO, COLOR_BKG_DEMO);
+    init_pair(COLOR_WRT_DEMO_ID, COLOR_WRT_DEMO, COLOR_BKG_DEMO);
 
     // Entities Colors 
     init_pair(COLOR_FROG_ID, COLOR_FROG, COLOR_LEGS);
@@ -105,6 +113,28 @@ void center_game(WINDOW *score, WINDOW *game){
     int start_x = (COLS - GAME_WIDTH) / 2;
     mvwin(score, start_y, start_x);
     mvwin(game, start_y + 1, start_x);
+}
+
+void check_terminal_size(){
+    if(LINES < GAME_HEIGHT || COLS < GAME_WIDTH){
+        WINDOW *resize_term = newwin(0,0,0,0);
+        wbkgd(resize_term, COLOR_PAIR(COLOR_TERM_ID));
+        while( LINES < GAME_HEIGHT || COLS < GAME_WIDTH){
+            wattron(resize_term ,A_BOLD);
+            mvwprintw(resize_term, 1, 3, "RULES FOR A GOOD GAMING EXPERIENCE");
+            wattroff(resize_term ,A_BOLD);
+            mvwprintw(resize_term, 3, 3, "Make sure that full screen is enabled");
+            mvwprintw(resize_term, 6, 5, "The window is too small for playing");
+            mvwprintw(resize_term, 7, 5, "Minimum size allowed; %d x %d", GAME_WIDTH, GAME_HEIGHT);
+            mvwprintw(resize_term, 8, 5, "Current Size; %d x %d", COLS, LINES);
+            mvwprintw(resize_term, 9, 5, "If the full screen is too small, click on 'Ctrl -'");
+            wrefresh(resize_term);
+        }
+        delwin(resize_term);
+        clear();
+        refresh();
+    }
+    return;
 }
 
 int rand_range(int max, int min){

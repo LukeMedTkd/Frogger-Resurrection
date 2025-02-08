@@ -42,6 +42,11 @@
 #define COLOR_WRT_TIME_IS_UP 172
 #define COLOR_BKG_WON_GAME 173
 #define COLOR_WRT_WON_GAME 174
+#define COLOR_BKG_DEMO 175
+#define COLOR_WRT_DEMO 176
+#define COLOR_BKG_WRT_DEMO 177
+#define COLOR_BKG_TERM 178
+#define COLOR_WRT_TERM 179
 
 
 // Defined Color_Pair_Id
@@ -77,6 +82,10 @@
 #define COLOR_WRT_TIME_IS_UP_ID 229
 #define COLOR_BKG_WON_GAME_ID 230
 #define COLOR_WRT_WON_GAME_ID 231
+#define COLOR_BKG_DEMO_ID 232
+#define COLOR_WRT_DEMO_ID 233
+#define COLOR_BKG_WRT_DEMO_ID 234
+#define COLOR_TERM_ID 235
 
 
 // Defined sizes of game area
@@ -104,5 +113,6 @@
 void init_screen();
 void init_colors();
 void center_game(WINDOW *score, WINDOW *game);
+void check_terminal_size();
 int rand_range(int max, int min);
 void debuglog(char *message, int arg);

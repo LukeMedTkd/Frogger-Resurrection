@@ -20,8 +20,13 @@ extern bool crocodiles_creation;
 #define DENS4_START 95
 #define DENS5_START 120
 
-// Animation's Duration
+// Animation's OUTCOME Duration
 #define DURATION 3200000
+
+// DEMO costants
+#define DURATION_MAX 50000 
+#define DURATION_MIN 5000
+#define DEMO_DURATION 145000
 
 // Functions Prototypes
 void print_timer(WINDOW *score, int timer);
@@ -35,3 +40,4 @@ void print_crocodiles_bullets(WINDOW *game, Character *Bullets);
 void print_lost_game(WINDOW *game);
 void print_time_is_up(WINDOW *game);
 void print_won_game(WINDOW *game);
+void print_demo(WINDOW *menu);
