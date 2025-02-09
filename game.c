@@ -134,7 +134,7 @@ void start_game(WINDOW *score, WINDOW *game){
         // set_crocodiles_on_streams(Entities, fds, &gameVar);
 
         // Parent Process
-        parent_process(game, score, &buf, Entities, Bullets, &gameVar);
+        parent_thread(game, score, &buf, Entities, Bullets, &gameVar);
 
         // Kill all the crocodile processes and their bullets to generate a new original scene
         // kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);

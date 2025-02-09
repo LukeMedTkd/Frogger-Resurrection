@@ -1,6 +1,5 @@
 #include <unistd.h>
 #include <sys/types.h>
-#include <stdbool.h>
 #include "thread.h"
 #include "utils.h"
 #include "sprites.h"
@@ -56,4 +55,4 @@ void reset_frog_bullet_position(Character *Entities, Character *Bullets);
 // void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index);
 void reset_timer(Game_var *gameVar);
 void *timer_thread(void *args);
-void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar);
+void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar);

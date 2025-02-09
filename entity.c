@@ -9,6 +9,9 @@
 /*------------------ Frog Entity -------------------*/
 void *frog_thread(void *args){
 
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
+
     // Unpacking args
     Buffer *buf = (Buffer*)args;
 
@@ -48,7 +51,7 @@ void *frog_thread(void *args){
 
         // Check if a message needs to be sent
         if(msg_to_send) {
-            write_msg(buf, msg); // Write message on pipe
+            write_msg(buf, msg); // Write message on buffer
 
             // Reset Defaults
             direction = 1;
@@ -65,12 +68,12 @@ void reset_frog_position(Character *frog_entity){
 }
 
 void *left_frog_bullet_thread(void *args){
-    pthread_testcancel();
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
     // Unpacking args
     Buffer *buf = (Buffer*)args;
+
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
     Msg msg;
     msg.x = -1;
@@ -83,12 +86,12 @@ void *left_frog_bullet_thread(void *args){
 }
 
 void *right_frog_bullet_thread(void *args){
-    pthread_testcancel();
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
     // Unpacking args
     Buffer *buf = (Buffer*)args;
+
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
     Msg msg;
     msg.x = 1;
@@ -188,26 +191,29 @@ void *timer_thread(void *args){
 
 
 /*--------------------------------------------------------*/
-/*-------------------- Parent Process --------------------*/
-void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar){
+/*-------------------- Parent thread --------------------*/
+void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar){
+
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
     // Variables Statements
     void **args = malloc(1 * sizeof(void*));
 
     int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
-    Msg msg; // Define msg to store pipe message
+    Msg msg; // Define msg to store buffer message
 
     // Manche Loop
     while(!manche_ended){
 
-        // Read msg from the pipes
+        // Read msg from the buffer
         msg = read_msg(buf);
 
         switch (msg.id){
             
             // ************************** 
-            // Msg from FROG process
+            // Msg from FROG thread
             // **************************
             case FROG_ID:
 
@@ -225,7 +231,7 @@ void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entitie
                         // Initialize the bullets position
                         reset_frog_bullet_position(Entities, Bullets);
                         
-                        // Create BULLETS processes and run their routine
+                        // Create BULLETS threads and run their routine
                         args[0] = buf;
                         create_thread(buf, Bullets, FROG_ID, LEFT_FROG_BULLET_ID, left_frog_bullet_thread, *args);
                         create_thread(buf, Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, right_frog_bullet_thread, *args);
@@ -235,7 +241,7 @@ void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entitie
 
 
             // ***********************************
-            // Msg from some FROG BULLET process
+            // Msg from some FROG BULLET thread
             // ***********************************
             case LEFT_FROG_BULLET_ID:
                 // Set LEFT Bullet SIG
@@ -246,6 +252,7 @@ void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entitie
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
+                    pthread_testcancel();
                     pthread_cancel(Bullets[FROG_ID].tid);
                     pthread_join(Bullets[FROG_ID].tid, NULL);
                 }
@@ -262,6 +269,7 @@ void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entitie
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
+                    pthread_testcancel();
                     pthread_cancel(Bullets[FROG_ID+1].tid);
                     pthread_join(Bullets[FROG_ID+1].tid, NULL);
                 }
@@ -270,7 +278,7 @@ void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entitie
 
 
             // // ************************************ 
-            // // Msg from some CROCODILE processes
+            // // Msg from some CROCODILE threads
             // // ************************************  
             // case FIRST_CROCODILE ... LAST_CROCODILE:
             //     // Check if this crocodille is online or is offline
@@ -294,7 +302,7 @@ void parent_process(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entitie
             //     break;
 
             // // ************************************ 
-            // // Msg from some CROCODILE processes
+            // // Msg from some CROCODILE threads
             // // ************************************  
             // case (FIRST_CROCODILE + BULLET_OFFSET_ID) ... (LAST_CROCODILE + BULLET_OFFSET_ID):
                 

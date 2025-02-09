@@ -14,7 +14,6 @@ void create_thread(Buffer *buf,  Character *Entities, int index, int id, void *(
         pthread_t tid;
         // If pthread_create failed
         if(pthread_create(&tid, NULL, func_thread, func_params) > 0){
-            // KILL, WAIT and destroy SEMAPHORE
             return;
         }
 
@@ -35,17 +34,52 @@ void create_thread(Buffer *buf,  Character *Entities, int index, int id, void *(
 //     }
 // }
 
-void write_msg(Buffer *buf, Msg msg){
-    sem_wait(&(buf->sem_busy_spaces));              
-    buf->buffer[buf->in] = msg;         
-    buf->in = (buf->in + 1) % BUFFER_SIZE; 
-    sem_post(&(buf->sem_free_spaces));         
-}   
+
+void cleanup_release_sem(void *arg){
+    sem_t *sem = (sem_t *) arg;
+    sem_post(sem);
+}
+
+void write_msg(Buffer *buf, Msg msg) {
+    // The sem_wait is a cancellation point
+    if (sem_wait(&(buf->sem_busy_spaces)) == -1){
+        perror("sem_wait");
+        exit(-1);
+    }
+    
+    // If the thread has the sem and is deleted, it will safely free the sem
+    pthread_cleanup_push(cleanup_release_sem, (void *)&(buf->sem_busy_spaces));
+    
+    // Race condition: writing to the buffer
+    buf->buffer[buf->in] = msg;
+    buf->in = (buf->in + 1) % BUFFER_SIZE;
+    
+    // Release the sem
+    sem_post(&(buf->sem_free_spaces));
+    
+    // Remove cleanup handler
+    pthread_cleanup_pop(0);
+}
 
 Msg read_msg(Buffer *buf){
-    sem_wait(&(buf->sem_free_spaces));            
-    Msg msg = buf->buffer[buf->out];       
-    buf->out = (buf->out + 1) % BUFFER_SIZE; 
+    Msg msg;
+
+    if (sem_wait(&(buf->sem_free_spaces)) == -1) {
+        perror("sem_wait");
+        exit(-1);
+    }
+    
+    pthread_cleanup_push(cleanup_release_sem, (void *)&(buf->sem_free_spaces));
+    
+     // Race condition: reading from the buffer
+    msg = buf->buffer[buf->out];
+    buf->out = (buf->out + 1) % BUFFER_SIZE;
+    
+    // Release the sem
     sem_post(&(buf->sem_busy_spaces));
+    
+    // Remove cleanup handler
+    pthread_cleanup_pop(0);
+    
     return msg;
 }
