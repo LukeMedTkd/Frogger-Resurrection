@@ -40,6 +40,7 @@
 #define MIN_BULLET_SPAWN 100000
 #define ACTIVE 1
 #define DEACTIVE 0
+#define DEAD 2
 
 // Time costants
 #define TIME_ID 1

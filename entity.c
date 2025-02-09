@@ -5,6 +5,7 @@
 #include "collisions.h"
 #include "utils.h"
 
+
 /*--------------------------------------------------*/
 /*------------------ Frog Entity -------------------*/
 void *frog_thread(void *args){
@@ -217,7 +218,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                         // Initialize the bullets position
                         reset_frog_bullet_position(Entities, Bullets);
-                        
+            
                         // Create BULLETS threads and run their routine
                         args[0] = buf;
                         create_thread(buf, Bullets, FROG_ID, LEFT_FROG_BULLET_ID, left_frog_bullet_thread, *args);
@@ -239,12 +240,10 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
-                    if(Bullets[msg.id - BULLET_OFFSET_ID].tid != -1){
-                        pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
-                        pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
-                        Bullets[msg.id - BULLET_OFFSET_ID].tid = -1;
-                    }
+                    pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
+                    pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
                 }
+                
                 
                 break;
 
@@ -258,11 +257,8 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
-                    if(Bullets[msg.id - BULLET_OFFSET_ID].tid != -1){
-                        pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
-                        pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
-                        Bullets[msg.id - BULLET_OFFSET_ID].tid = -1;
-                    }
+                    pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
+                    pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
                 }
 
                 break;

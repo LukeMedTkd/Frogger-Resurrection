@@ -1,9 +1,9 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall 
+CFLAGS = -Wall -Wextra
 
 # Libraries
-LIBS = -lncursesw -lm -pthread -fsanitize=address -g
+LIBS = -lncursesw -lm -pthread
 
 # Source files and target
 SRC = main.c game.c thread.c entity.c sprites.c utils.c collisions.c

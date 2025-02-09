@@ -6,6 +6,7 @@
 #include "collisions.h"
 
 bool crocodiles_creation = false;
+Buffer buf;
 
 Game_var initialize_gameVar(){
     Game_var gameVar;
@@ -88,7 +89,6 @@ void outcome(WINDOW *game, Game_var *gameVar){
     }
 }
 
-
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
 
@@ -103,16 +103,15 @@ void start_game(WINDOW *score, WINDOW *game){
     Character *Bullets = malloc(N_BULLETS * sizeof(Character));
 
     // Reset Bullets SIGNAL
-    //reset_bullets_signal(Bullets);
+    reset_bullets_signal(Bullets);
 
     // Define and Initialize SHARED BUFFER
-    Buffer buf;
     buffer_init(&buf);
 
     // Create FROG process and run his routine
-    args[0] = &buf;
+    args[0] = (void*)&buf;
     create_thread(&buf, Entities, FROG_ID, FROG_ID, frog_thread, *args);
-
+    
     // Create TIME process and run his routine
     create_thread(&buf, Entities, TIME_ID, TIME_ID, timer_thread, *args);
 
