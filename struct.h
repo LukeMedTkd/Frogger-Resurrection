@@ -6,7 +6,7 @@
 #ifndef MAX_PLAYERS
 #define N_STREAM 8
 #define N_DENS 5
-#define BUFFER_SIZE 1000
+#define BUFFER_SIZE 100
 #endif
 
 #ifndef STRUCT_H
@@ -49,6 +49,7 @@ typedef struct {
     int in, out;
     sem_t sem_busy_spaces;    // Semaforo per gli spazi liberi
     sem_t sem_free_spaces; // Semaforo per gli elementi disponibili
+    pthread_mutex_t mutex;
 }Buffer;
 
 #endif

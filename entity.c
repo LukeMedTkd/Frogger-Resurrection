@@ -9,9 +9,6 @@
 /*------------------ Frog Entity -------------------*/
 void *frog_thread(void *args){
 
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
-
     // Unpacking args
     Buffer *buf = (Buffer*)args;
 
@@ -72,9 +69,6 @@ void *left_frog_bullet_thread(void *args){
     // Unpacking args
     Buffer *buf = (Buffer*)args;
 
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
-
     Msg msg;
     msg.x = -1;
     msg.id = LEFT_FROG_BULLET_ID;
@@ -90,9 +84,6 @@ void *right_frog_bullet_thread(void *args){
     // Unpacking args
     Buffer *buf = (Buffer*)args;
 
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
-
     Msg msg;
     msg.x = 1;
     msg.id = RIGHT_FROG_BULLET_ID;
@@ -100,7 +91,7 @@ void *right_frog_bullet_thread(void *args){
     while(TRUE){
         write_msg(buf, msg);
         usleep(FROG_BULLET_SPEED);
-    }    
+    }
 }
 
 void reset_frog_bullet_position(Character *Entities, Character *Bullets){
@@ -193,10 +184,6 @@ void *timer_thread(void *args){
 /*--------------------------------------------------------*/
 /*-------------------- Parent thread --------------------*/
 void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar){
-
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
-
     // Variables Statements
     void **args = malloc(1 * sizeof(void*));
 
@@ -252,9 +239,11 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
-                    pthread_testcancel();
-                    pthread_cancel(Bullets[FROG_ID].tid);
-                    pthread_join(Bullets[FROG_ID].tid, NULL);
+                    if(Bullets[msg.id - BULLET_OFFSET_ID].tid != -1){
+                        pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
+                        pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
+                        Bullets[msg.id - BULLET_OFFSET_ID].tid = -1;
+                    }
                 }
                 
                 break;
@@ -269,9 +258,11 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
-                    pthread_testcancel();
-                    pthread_cancel(Bullets[FROG_ID+1].tid);
-                    pthread_join(Bullets[FROG_ID+1].tid, NULL);
+                    if(Bullets[msg.id - BULLET_OFFSET_ID].tid != -1){
+                        pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
+                        pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
+                        Bullets[msg.id - BULLET_OFFSET_ID].tid = -1;
+                    }
                 }
 
                 break;
@@ -341,7 +332,6 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
         //is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
         // bullets_collision(Entities, Bullets, gameVar, &manche_ended);
         set_outcome(gameVar, &manche_ended);
-
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes
         print_lifes(score, gameVar->lifes);
@@ -371,4 +361,6 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
         wrefresh(game);
         wrefresh(score);
     }
+
+    free(args);
 }

@@ -109,9 +109,12 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 //     }
 // }
 
-// void reset_bullets_signal(Character *Bullets){
-//     for(int i=0; i<N_BULLETS; i++) Bullets[i].sig = DEACTIVE;
-// }
+void reset_bullets_signal(Character *Bullets){
+    for(int i=0; i<N_BULLETS; i++){
+        Bullets[i].sig = DEACTIVE;
+        Bullets[i].tid = -1;
+    }
+}
 
 // void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
 //     // If a RIGHT to LEFT bullet is ACTIVE but It's out of the GAME

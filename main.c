@@ -65,7 +65,7 @@ int main(){
     WINDOW *menu = newwin(MENU_HEIGHT, MENU_WIDTH, ((LINES/2)-(MENU_HEIGHT/2)), ((COLS/2)-(MENU_WIDTH/2)));
 
     // Menu LOOP
-    while (1) {
+    while (TRUE){
 
         // Print demo
         print_demo(menu);
