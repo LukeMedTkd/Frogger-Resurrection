@@ -18,6 +18,8 @@ int start_menu(WINDOW *menu) {
         // Print background
         wbkgd(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID));
 
+        draw_von_neumann_machine(menu, ((LINES/2)-(26/2)), ((COLS/2)-(125/2)));
+
         // Print TITLE
         wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
         mvwprintw(menu, (MENU_HEIGHT/2) - ((MENU_OPTIONS + SPACE_BETWEEN_OPTIONS + SPACE_BETWEEN_TITLE + 1)/2), ((GAME_WIDTH/2) - (20 / 2)), "%s", "FROGGER RESURRECTION");

@@ -252,9 +252,9 @@ void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
     for(int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
         // Print the bullet
         if(Bullets[i].sig == ACTIVE){
-            wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
+            wattron(game, COLOR_PAIR(COLOR_CROCODILE_BULLETS_ID));
             mvwprintw(game, Bullets[i].y, Bullets[i].x, " ");
-            wattroff(game, COLOR_PAIR(COLOR_GRASS_ID));
+            wattroff(game, COLOR_PAIR(COLOR_CROCODILE_BULLETS_ID));
         }
     }
 }
@@ -325,6 +325,8 @@ void print_won_game(WINDOW *game){
     usleep(DURATION);
 }
 
+/*---------------------------------------------*/
+/*---------..----- Menu prints ----------------*/
 void print_demo(WINDOW *menu) {
 
     // Variables statements
@@ -372,4 +374,40 @@ void print_demo(WINDOW *menu) {
     // Pulisce la finestra
     wclear(menu);
     wrefresh(menu);
+}
+
+void draw_von_neumann_machine(WINDOW *menu, int start_y, int start_x){
+    const char *sprite[] = {
+        "            ╔═══════════════════════════════════════════════╗            ",
+        "            ║                        ◯                      ║            ",
+        "            ║ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "            ║ ┃                                           ┃ ║            ",
+        "     ┏━━━━━━║ ┃                                           ┃ ║━━━━━━┓     ",
+        "     ┃      ║ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ║      ┃     ",
+        "     ┃      ║   ๏ ◌ ๏                               ● ◾ ┉  ║      ┃     ",
+        "     ┃      ╚═══════════════════════════════════════════════╝      ┃     ",
+        "     ┃                                                             ┃     ",
+        "     ┃                                                             ┃     ",
+        "     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛     "
+    };
+
+    int rows = sizeof(sprite) / sizeof(sprite[0]);
+
+    wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+    for (int i = 0; i < rows; i++) mvwprintw(menu, start_y + i, start_x, "%s", sprite[i]);
+    wattroff(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+
 }

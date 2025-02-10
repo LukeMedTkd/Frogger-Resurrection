@@ -26,14 +26,15 @@ void init_colors(){
     init_color(COLOR_BLUE, 0, 0, 255);
     init_color(COLOR_MAGENTA, 255, 0, 255);
     init_color(COLOR_CYAN, 0, 255, 255);
-    init_color(COLOR_FROG, 70, 350, 70);
-    init_color(COLOR_LEGS, 58, 392, 19);
+    init_color(COLOR_FROG, 156, 509, 0);
+    init_color(COLOR_LEGS, 120, 470, 55);
     init_color(COLOR_RIVER, 215, 570, 800);
     init_color(COLOR_CROCODILE_BODY, 78, 352, 117);
     init_color(COLOR_CROCODILE_SCALES, 39, 196, 39);
     init_color(COLOR_CROCODILE_EYES, 66, 78, 66);
+    init_color(COLOR_CROCODILE_BULLETS, 274, 235, 392);
     init_color(COLOR_DENS, 568, 250, 205);
-    init_color(COLOR_GRASS, 245, 570, 200);
+    init_color(COLOR_GRASS, 167, 570, 200);
     init_color(COLOR_SCORE, 745, 78, 78);
     init_color(COLOR_LIFES, 717, 815, 98);
     init_color(COLOR_TIME1, 717, 765, 98);
@@ -105,6 +106,7 @@ void init_colors(){
     init_pair(COLOR_CROCODILE_BODY_ID, COLOR_CROCODILE_BODY, COLOR_RIVER);
     init_pair(COLOR_CROCODILE_SCALES_ID, COLOR_CROCODILE_SCALES, COLOR_CROCODILE_BODY);
     init_pair(COLOR_CROCODILE_EYES_ID, COLOR_CROCODILE_EYES, COLOR_CROCODILE_BODY);
+    init_pair(COLOR_CROCODILE_BULLETS_ID, COLOR_CROCODILE_BULLETS, COLOR_CROCODILE_BULLETS);
 
 }
 

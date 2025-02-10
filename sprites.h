@@ -41,3 +41,4 @@ void print_lost_game(WINDOW *game);
 void print_time_is_up(WINDOW *game);
 void print_won_game(WINDOW *game);
 void print_demo(WINDOW *menu);
+void draw_von_neumann_machine(WINDOW *menu, int start_y, int start_x);
