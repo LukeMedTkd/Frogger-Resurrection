@@ -112,7 +112,7 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 void reset_bullets_signal(Character *Bullets){
     for(int i=0; i<N_BULLETS; i++){
         Bullets[i].sig = DEACTIVE;
-        Bullets[i].tid = -1;
+        Bullets[i].tid = 0;
     }
 }
 
@@ -147,15 +147,18 @@ void reset_bullets_signal(Character *Bullets){
 //     }
 // }
 
-// void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended){
-//     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
-//     for(int i = 0; i < N_BULLETS; i++){
-//         if(Bullets[i].sig == ACTIVE && *manche_ended){
-//             if(Entities[i].pid != 0) kill(Bullets[i].pid, SIGKILL);
-//             if(Entities[i].pid != 0) waitpid(Bullets[i].pid, NULL, WNOHANG);
-//             Bullets[i].sig = DEACTIVE;
-//         }
-//     }
+void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended){
+    // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
+    for(int i = 0; i < N_BULLETS; i++){
+        if(Bullets[i].sig == ACTIVE && *manche_ended){
+            if(Entities[i].tid != 0){
+                pthread_cancel(Bullets[i].tid);
+                pthread_join(Bullets[i].tid, NULL);
+                Bullets[i].sig = DEACTIVE;
+            }
+        }
+    }
+}
 
 //     // Checks if some FROG Bullets neutralize some CROCODILE Bullets
 //     int current_crocodile_index, current_stream = 0;
@@ -198,90 +201,90 @@ void reset_bullets_signal(Character *Bullets){
 //     }
 // }
 
-// void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended) {
-//     bool frog_on_crocodile = FALSE;
-//     static int last_crocodile_index, frog_offset_x, last_frog_x;
-//     int current_crocodile_index, direction, current_stream = 0;
+void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended) {
+    bool frog_on_crocodile = FALSE;
+    static int last_crocodile_index, frog_offset_x, last_frog_x;
+    int current_crocodile_index, direction, current_stream = 0;
 
-//     // Check if the FROG is on the RIVER area
-//     if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
+    // Check if the FROG is on the RIVER area
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
 
-//         // Get index of the current stream
-//         while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
-//         // Get stream direction based on n_stream and frog.y
-//         direction = ((gameVar->streams_speed[current_stream] > 0) ? 1 : -1);
+        // Get index of the current stream
+        while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
+        // Get stream direction based on n_stream and frog.y
+        direction = ((gameVar->streams_speed[current_stream] > 0) ? 1 : -1);
 
-//         // Check 3 crocodiles at once
-//         for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
-//             current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
+        // Check 3 crocodiles at once
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
+            current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
 
-//             // Crocodiles from LEFT to RIGHT
-//             if (direction == 1) {
-//                 // Check if the FROG is on the crocodile
-//                 if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET)) &&
-//                     ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))) {
-//                     frog_on_crocodile = TRUE;
-//                     break;
-//                 }
-//             }
+            // Crocodiles from LEFT to RIGHT
+            if (direction == 1) {
+                // Check if the FROG is on the crocodile
+                if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET)) &&
+                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))) {
+                    frog_on_crocodile = TRUE;
+                    break;
+                }
+            }
 
-//             // Crocodiles from RIGHT to LEFT
-//             if (direction == -1) {
-//                 // Check if the FROG is on the crocodile
-//                 if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)) &&
-//                     ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))) {
-//                     frog_on_crocodile = TRUE;
-//                     break;
-//                 }
-//             }
-//         }
+            // Crocodiles from RIGHT to LEFT
+            if (direction == -1) {
+                // Check if the FROG is on the crocodile
+                if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)) &&
+                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))) {
+                    frog_on_crocodile = TRUE;
+                    break;
+                }
+            }
+        }
 
-//         // Checks if the FROG has fallen on the river -> She lose 1 life and 1 manche
-//         if(frog_on_crocodile == FALSE) {
-//             gameVar->manche--;
-//             gameVar->lifes--;
-//             *manche_ended = TRUE;
-//             return;
-//         } 
+        // Checks if the FROG has fallen on the river -> She lose 1 life and 1 manche
+        if(frog_on_crocodile == FALSE) {
+            gameVar->manche--;
+            gameVar->lifes--;
+            *manche_ended = TRUE;
+            return;
+        } 
         
-//         // frog_on_crocodile == TRUE
-//         else {
+        // frog_on_crocodile == TRUE
+        else {
             
-//             // Checks if the FROG has changed crocodile
-//             if (current_crocodile_index != last_crocodile_index) {
-//                 // Compute the FROG offset between the previous crocodile and the current one and update the last_crocodile_index
-//                 frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;
-//                 last_crocodile_index = current_crocodile_index;  
-//             }
+            // Checks if the FROG has changed crocodile
+            if (current_crocodile_index != last_crocodile_index) {
+                // Compute the FROG offset between the previous crocodile and the current one and update the last_crocodile_index
+                frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;
+                last_crocodile_index = current_crocodile_index;  
+            }
 
-//             // If the FROG is moving, update the frog_offset_x
-//             if (Entities[FROG_ID].x != last_frog_x) 
-//                 frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;    
+            // If the FROG is moving, update the frog_offset_x
+            if (Entities[FROG_ID].x != last_frog_x) 
+                frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;    
 
-//             // If the FROG is NOT moving - CHECK if the FROG is in the game area
-//             else if(Entities[FROG_ID].x >= 0 && Entities[FROG_ID].x <= (GAME_WIDTH - FROG_DIM_X))
-//                 Entities[FROG_ID].x = Entities[current_crocodile_index].x + frog_offset_x;
+            // If the FROG is NOT moving - CHECK if the FROG is in the game area
+            else if(Entities[FROG_ID].x >= 0 && Entities[FROG_ID].x <= (GAME_WIDTH - FROG_DIM_X))
+                Entities[FROG_ID].x = Entities[current_crocodile_index].x + frog_offset_x;
 
-//             // Store the last FROG position
-//             last_frog_x = Entities[FROG_ID].x;
+            // Store the last FROG position
+            last_frog_x = Entities[FROG_ID].x;
 
-//             // Checks if the FROG is in the crocodile area
-//             if (direction == 1) {
-//                 if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET) 
-//                     Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET;
+            // Checks if the FROG is in the crocodile area
+            if (direction == 1) {
+                if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET) 
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET;
 
-//                 else if (Entities[FROG_ID].x > Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)
-//                     Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X;
+                else if (Entities[FROG_ID].x > Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X;
 
-//             } 
+            } 
             
-//             else if (direction == -1) {
-//                 if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)
-//                     Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET;
+            else if (direction == -1) {
+                if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET;
 
-//                 else if (Entities[FROG_ID].x > Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)
-//                     Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X;
-//             }
-//         }
-//     }
-// }
+                else if (Entities[FROG_ID].x > Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)
+                    Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X;
+            }
+        }
+    }
+}

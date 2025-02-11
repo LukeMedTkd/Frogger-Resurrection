@@ -10,9 +10,7 @@
 // Functions Prototypes
 void buffer_init(Buffer *buf);
 void destroy_buffer(Buffer *buf);
-void create_thread(Buffer *buf,  Character *Entities, int index, int id, void *(func_thread)(void *args), int *func_params);
-// void kill_processes(Character *Entities, int start, int end);
-// void wait_children(Character *Entities, int start, int end);
-void cleanup_release_sem(void *arg);
+void create_thread(Character *Entities, int index, int id, void *(func_thread)(void *args), int *func_params);
+void join_threads(Character *Entities, int start, int end);
 void write_msg(Buffer *buf, Msg msg);
 Msg read_msg(Buffer *buf);

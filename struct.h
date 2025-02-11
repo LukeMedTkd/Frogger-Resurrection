@@ -36,7 +36,7 @@ typedef struct
 
 typedef struct
 {
-   int tid;
+   pthread_t tid;
    int id;
    int y;
    int x;

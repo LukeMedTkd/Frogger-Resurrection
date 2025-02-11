@@ -5,13 +5,11 @@
 #include "collisions.h"
 #include "utils.h"
 
+extern Buffer buf;
 
 /*--------------------------------------------------*/
 /*------------------ Frog Entity -------------------*/
 void *frog_thread(void *args){
-
-    // Unpacking args
-    Buffer *buf = (Buffer*)args;
 
     // Init some variables
     int move, direction = 1;
@@ -49,7 +47,7 @@ void *frog_thread(void *args){
 
         // Check if a message needs to be sent
         if(msg_to_send) {
-            write_msg(buf, msg); // Write message on buffer
+            write_msg(&buf, msg); // Write message on buffer
 
             // Reset Defaults
             direction = 1;
@@ -67,30 +65,24 @@ void reset_frog_position(Character *frog_entity){
 
 void *left_frog_bullet_thread(void *args){
 
-    // Unpacking args
-    Buffer *buf = (Buffer*)args;
-
     Msg msg;
     msg.x = -1;
     msg.id = LEFT_FROG_BULLET_ID;
 
     while(TRUE){
-        write_msg(buf, msg);
+        write_msg(&buf, msg);
         usleep(FROG_BULLET_SPEED);
     }
 }
 
 void *right_frog_bullet_thread(void *args){
 
-    // Unpacking args
-    Buffer *buf = (Buffer*)args;
-
     Msg msg;
     msg.x = 1;
     msg.id = RIGHT_FROG_BULLET_ID;
 
     while(TRUE){
-        write_msg(buf, msg);
+        write_msg(&buf, msg);
         usleep(FROG_BULLET_SPEED);
     }
 }
@@ -168,15 +160,12 @@ void reset_timer(Game_var *gameVar){
 
 void *timer_thread(void *args){
 
-    // Unpacking args
-    Buffer *buf = (Buffer*)args;
-
     Msg msg;
     msg.x = -1;
     msg.id = TIME_ID;
 
     while(TRUE){
-        write_msg(buf, msg);
+        write_msg(&buf, msg);
         sleep(1);
     }
 }
@@ -186,7 +175,7 @@ void *timer_thread(void *args){
 /*-------------------- Parent thread --------------------*/
 void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar){
     // Variables Statements
-    void **args = malloc(1 * sizeof(void*));
+    void **args = malloc(2 * sizeof(void*));
 
     int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
@@ -218,11 +207,11 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                         // Initialize the bullets position
                         reset_frog_bullet_position(Entities, Bullets);
-            
+
                         // Create BULLETS threads and run their routine
-                        args[0] = buf;
-                        create_thread(buf, Bullets, FROG_ID, LEFT_FROG_BULLET_ID, left_frog_bullet_thread, *args);
-                        create_thread(buf, Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, right_frog_bullet_thread, *args);
+                        create_thread(Bullets, FROG_ID, LEFT_FROG_BULLET_ID, left_frog_bullet_thread, *args);
+                        create_thread(Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, right_frog_bullet_thread, *args);
+
                     }
                 }
                 break;
@@ -240,8 +229,9 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
-                    pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
-                    pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
+                    pthread_cancel(Bullets[FROG_ID].tid);
+                    pthread_join(Bullets[FROG_ID].tid, NULL);
+                    Bullets[FROG_ID].tid = 0;
                 }
                 
                 
@@ -257,8 +247,9 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
-                    pthread_cancel(Bullets[msg.id - BULLET_OFFSET_ID].tid);
-                    pthread_join(Bullets[msg.id - BULLET_OFFSET_ID].tid, NULL);
+                    pthread_cancel(Bullets[FROG_ID + 1].tid);
+                    pthread_join(Bullets[FROG_ID + 1].tid, NULL);
+                    Bullets[FROG_ID + 1].tid = 0;
                 }
 
                 break;
@@ -323,10 +314,11 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
         /*------------------------ Check some collisions ----------------------*/
         // Check all the dens
+        //join_threads(Bullets, 0, N_BULLETS);
         dens_collision(Entities, gameVar, &manche_ended);
         // frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         //is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
-        // bullets_collision(Entities, Bullets, gameVar, &manche_ended);
+        bullets_collision(Entities, Bullets, gameVar, &manche_ended);
         set_outcome(gameVar, &manche_ended);
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes

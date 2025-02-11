@@ -109,11 +109,10 @@ void start_game(WINDOW *score, WINDOW *game){
     buffer_init(&buf);
 
     // Create FROG process and run his routine
-    args[0] = (void*)&buf;
-    create_thread(&buf, Entities, FROG_ID, FROG_ID, frog_thread, *args);
+    create_thread(Entities, FROG_ID, FROG_ID, frog_thread, NULL);
     
     // Create TIME process and run his routine
-    create_thread(&buf, Entities, TIME_ID, TIME_ID, timer_thread, *args);
+    create_thread(Entities, TIME_ID, TIME_ID, timer_thread, NULL);
 
     // Set the streams speed, fixed for the whole game
     // randomize_streams_speed(gameVar.streams_speed);

@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra
 
 # Libraries
-LIBS = -lncursesw -lm -pthread
+LIBS = -lncursesw -lm -pthread -fsanitize=address 
 
 # Source files and target
 SRC = main.c game.c thread.c entity.c sprites.c utils.c collisions.c
