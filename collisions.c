@@ -81,33 +81,33 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
     }
 }
 
-// void generate_bullets(int *fds, Character *Entities, Character *Bullets, Game_var *gameVar, Msg *msg, int *random_shot, void (* crocodile_bullet_process)){
+void generate_bullets(Character *Entities, Character *Bullets, Game_var *gameVar, Msg *msg, int *random_shot, void (* crocodile_bullet_thread)){
 
-//     // If the CROCODILE is ready to shot
-//     if(Bullets[msg->id].sig == DEACTIVE && *random_shot == 3 && gameVar->outcome == NO_OUTCOME){
-//         int args[4] = {0};
+    // If the CROCODILE is ready to shot
+    if(Bullets[msg->id].sig == DEACTIVE && *random_shot == 3 && gameVar->outcome == NO_OUTCOME){
+        int args[4] = {0};
 
-//         // Get stream based on index
-//             int n_stream = get_nStream_based_on_id(msg->id);
+        // Get stream based on index
+        int n_stream = get_nStream_based_on_id(msg->id);
 
-//         // Get the stream dir -> crocodile bullet orientation
-//         int dir = (msg->x == 1 ? 1 : -1);
+        // Get the stream dir -> crocodile bullet orientation
+        int dir = (msg->x == 1 ? 1 : -1);
 
-//         // Set args for crocodile bullet threads  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
-//         args[1] = (abs(gameVar->streams_speed[n_stream]) - (abs(gameVar->streams_speed[n_stream]) * rand_range(MAX_BULLET_SPEED_INCREASE, MIN_BULLET_SPEED_INCREASE) / 100)) * dir;
-//         args[2] = rand_range(MAX_BULLET_SPAWN, MIN_BULLET_SPAWN);
-//         args[3] = msg->id + BULLET_OFFSET_ID;
+        // Set args for crocodile bullet threads  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+        args[1] = (abs(gameVar->streams_speed[n_stream]) - (abs(gameVar->streams_speed[n_stream]) * rand_range(MAX_BULLET_SPEED_INCREASE, MIN_BULLET_SPEED_INCREASE) / 100)) * dir;
+        args[2] = rand_range(MAX_BULLET_SPAWN, MIN_BULLET_SPAWN);
+        args[3] = msg->id + BULLET_OFFSET_ID;
 
-//         // Create BULLET thread and run his routine
-//         create_process(fds, Bullets, msg->id, msg->id + BULLET_OFFSET_ID, crocodile_bullet_process, args);
+        // Create BULLET thread and run his routine
+        create_thread(Bullets, msg->id, msg->id + BULLET_OFFSET_ID, crocodile_bullet_thread, args);
 
-//         // Reset bullet position
-//         reset_crocodile_bullet_position(Entities, Bullets, gameVar, msg->id);
+        // Reset bullet position
+        reset_crocodile_bullet_position(Entities, Bullets, gameVar, msg->id);
 
-//         Bullets[msg->id].sig = ACTIVE;
+        Bullets[msg->id].sig = ACTIVE;
 
-//     }
-// }
+    }
+}
 
 void reset_bullets_signal(Character *Bullets){
     for(int i=0; i<N_BULLETS; i++){
@@ -116,36 +116,36 @@ void reset_bullets_signal(Character *Bullets){
     }
 }
 
-// void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
-//     // If a RIGHT to LEFT bullet is ACTIVE but It's out of the GAME
-//     if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x < 0 && msg->x == -1){
-//             kill(Bullets[*current_bullet_id].pid, SIGKILL);
-//             waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
-//             Bullets[*current_bullet_id].sig = DEACTIVE;
-//     } 
+void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
+    // If a RIGHT to LEFT bullet is ACTIVE but It's out of the GAME
+    if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x < 0 && msg->x == -1){
+            pthread_cancel(Bullets[*current_bullet_id].tid);
+            pthread_join(Bullets[*current_bullet_id].tid, NULL);
+            Bullets[*current_bullet_id].sig = DEACTIVE;
+    } 
     
-//     // If a LEFT to RIGHT bullet is ACTIVE but It's out of the GAME
-//     else if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x > GAME_WIDTH && msg->x == 1){
-//         kill(Bullets[*current_bullet_id].pid, SIGKILL);
-//         waitpid(Bullets[*current_bullet_id].pid, NULL, WNOHANG);
-//         Bullets[*current_bullet_id].sig = DEACTIVE;
-//     }
-// }
+    // If a LEFT to RIGHT bullet is ACTIVE but It's out of the GAME
+    else if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x > GAME_WIDTH && msg->x == 1){
+        pthread_cancel(Bullets[*current_bullet_id].tid);
+        pthread_join(Bullets[*current_bullet_id].tid, NULL);
+        Bullets[*current_bullet_id].sig = DEACTIVE;
+    }
+}
 
-// void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended, int *current_bullet_id){
+void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended, int *current_bullet_id){
 
-//     // Checks if BULLET.y MATCHS with FROG.y
-//     if(Bullets[*current_bullet_id].sig == ACTIVE && (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+    // Checks if BULLET.y MATCHS with FROG.y
+    if(Bullets[*current_bullet_id].sig == ACTIVE && (Bullets[*current_bullet_id].y > Entities[FROG_ID].y && Bullets[*current_bullet_id].y < Entities[FROG_ID].y + FROG_DIM_Y)){
 
-//         // Checks if BULLET.x MATCHS with FROG.x
-//         if(Bullets[*current_bullet_id].x == Entities[FROG_ID].x || Bullets[*current_bullet_id].x == Entities[FROG_ID].x + FROG_DIM_X - 1){
-//             gameVar->lifes--;
-//             gameVar->manche--;
-//             *manche_ended = TRUE;
-//             return;
-//         }
-//     }
-// }
+        // Checks if BULLET.x MATCHS with FROG.x
+        if(Bullets[*current_bullet_id].x == Entities[FROG_ID].x || Bullets[*current_bullet_id].x == Entities[FROG_ID].x + FROG_DIM_X - 1){
+            gameVar->lifes--;
+            gameVar->manche--;
+            *manche_ended = TRUE;
+            return;
+        }
+    }
+}
 
 void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended){
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
@@ -158,48 +158,47 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
             }
         }
     }
-}
 
-//     // Checks if some FROG Bullets neutralize some CROCODILE Bullets
-//     int current_crocodile_index, current_stream = 0;
-//     if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
-//         // Get index of the current stream
-//         while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
+    // Checks if some FROG Bullets neutralize some CROCODILE Bullets
+    int current_crocodile_index, current_stream = 0;
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
+        // Get index of the current stream
+        while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
 
-//         // Check 3 crocodiles bullets at once
-//         for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
-//             current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
+        // Check 3 crocodiles bullets at once
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
+            current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
 
-//             // Checks if BULLET.y MATCHS with FROG.y
-//             if(Bullets[current_crocodile_index].sig == ACTIVE && 
-//             (Bullets[current_crocodile_index].y > Entities[FROG_ID].y && 
-//             Bullets[current_crocodile_index].y < Entities[FROG_ID].y + FROG_DIM_Y)){
+            // Checks if BULLET.y MATCHS with FROG.y
+            if(Bullets[current_crocodile_index].sig == ACTIVE && 
+            (Bullets[current_crocodile_index].y > Entities[FROG_ID].y && 
+            Bullets[current_crocodile_index].y < Entities[FROG_ID].y + FROG_DIM_Y)){
 
-//                 // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
-//                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x <= 1))){
-//                     kill(Bullets[FROG_ID+1].pid, SIGKILL);
-//                     waitpid(Bullets[FROG_ID+1].pid, NULL, WNOHANG);
-//                     Bullets[FROG_ID+1].sig = DEACTIVE;
+                // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
+                if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x <= 1))){
+                    pthread_cancel(Entities[FROG_ID+1].tid);
+                    pthread_join(Entities[FROG_ID+1].tid, NULL);
+                    Bullets[FROG_ID+1].sig = DEACTIVE;
                     
-//                     kill(Bullets[current_crocodile_index].pid, SIGKILL);
-//                     waitpid(Bullets[current_crocodile_index].pid, NULL, WNOHANG);
-//                     Bullets[current_crocodile_index].sig = DEACTIVE;
-//                 }
+                    pthread_cancel(Entities[current_crocodile_index].tid);
+                    pthread_join(Entities[current_crocodile_index].tid, NULL);
+                    Bullets[current_crocodile_index].sig = DEACTIVE;
+                }
 
-//                 // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
-//                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID].x <= 1))){
-//                     kill(Bullets[FROG_ID].pid, SIGKILL);
-//                     waitpid(Bullets[FROG_ID].pid, NULL, WNOHANG);
-//                     Bullets[FROG_ID].sig = DEACTIVE;
+                // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
+                if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID].x <= 1))){
+                    pthread_cancel(Entities[FROG_ID].tid);
+                    pthread_join(Entities[FROG_ID].tid, NULL);
+                    Bullets[FROG_ID].sig = DEACTIVE;
 
-//                     kill(Bullets[current_crocodile_index].pid, SIGKILL);
-//                     waitpid(Bullets[current_crocodile_index].pid, NULL, WNOHANG);
-//                     Bullets[current_crocodile_index].sig = DEACTIVE;
-//                 }
-//             }
-//         }
-//     }
-// }
+                    pthread_cancel(Entities[current_crocodile_index].tid);
+                    pthread_join(Entities[current_crocodile_index].tid, NULL);
+                    Bullets[current_crocodile_index].sig = DEACTIVE;
+                }
+            }
+        }
+    }
+}
 
 void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended) {
     bool frog_on_crocodile = FALSE;

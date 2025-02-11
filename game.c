@@ -146,7 +146,7 @@ void start_game(WINDOW *score, WINDOW *game){
     kill_threads(Entities, 0, N_ENTITIES);
     wait_threads(Entities, 0, N_ENTITIES);
     kill_threads(Bullets, 0, N_BULLETS);
-    kill_threads(Bullets, 0, N_BULLETS);
+    wait_threads(Bullets, 0, N_BULLETS);
 
     // Destroy the buffer
     destroy_buffer(&buf);

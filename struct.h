@@ -6,7 +6,7 @@
 #ifndef MAX_PLAYERS
 #define N_STREAM 8
 #define N_DENS 5
-#define BUFFER_SIZE 400
+#define BUFFER_SIZE 700
 #endif
 
 #ifndef STRUCT_H
