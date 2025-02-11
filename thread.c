@@ -45,16 +45,60 @@ void wait_threads(Character *Entities, int start, int end){
     }   
 }
 
-void write_msg(Buffer *buf, Msg msg) {
-    sem_wait(&buf->sem_free_spaces);   
-    pthread_mutex_lock(&(buf->mutex)); 
-    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);          
-    buf->buffer[buf->in] = msg;             
-    buf->in = (buf->in + 1) % BUFFER_SIZE;
-    sem_post(&buf->sem_busy_spaces); 
-    pthread_mutex_unlock(&(buf->mutex)); 
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);   
+void cleanup_mutex(void *arg) {
+    pthread_mutex_unlock((pthread_mutex_t *)arg);
 }
+
+void cleanup_sem(void *arg) {
+    Buffer *buf = (Buffer *)arg;
+    sem_post(&buf->sem_free_spaces);
+}
+
+void write_msg(Buffer *buf, Msg msg) {
+
+    sem_wait(&buf->sem_free_spaces);
+
+    // Relase the semaphore resource if an interrup occurs
+    pthread_cleanup_push(cleanup_sem, (void *)buf);
+
+    // Lock the mutex - ensures the mutual exclusion
+    pthread_mutex_lock(&(buf->mutex));
+
+    // Relase the mutex resource if an interrup occurs
+    pthread_cleanup_push(cleanup_mutex, (void *)&buf->mutex);
+
+    // DEACTIVE the cancellation inside the race condition
+    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+
+    // RACE CONDITION - write in the shared buffer
+    buf->buffer[buf->in] = msg;
+    buf->in = (buf->in + 1) % BUFFER_SIZE;
+
+    sem_post(&buf->sem_busy_spaces);
+
+    // REACTIVATE the cancellation outside the race condition
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+
+    // Remove the cleanup handler in reverse order
+    pthread_cleanup_pop(0);
+
+    // Unlock the mutex 
+    pthread_mutex_unlock(&(buf->mutex));
+    
+    pthread_cleanup_pop(0);
+}
+
+
+// void write_msg(Buffer *buf, Msg msg) {
+//     sem_wait(&buf->sem_free_spaces);   
+//     pthread_mutex_lock(&(buf->mutex)); 
+//     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);          
+//     buf->buffer[buf->in] = msg;             
+//     buf->in = (buf->in + 1) % BUFFER_SIZE;
+//     sem_post(&buf->sem_busy_spaces); 
+//     pthread_mutex_unlock(&(buf->mutex)); 
+//     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);   
+// }
 
 Msg read_msg(Buffer *buf){
     sem_wait(&buf->sem_busy_spaces);         

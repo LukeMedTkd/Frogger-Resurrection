@@ -46,13 +46,13 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
     // Set the streams direction to generate a new original scene
     randomize_streams_direction(gameVar->streams_speed);
     
-    // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
+    // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Threads
     for (int i = 0; i < N_STREAM; i++){
         for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
             // Get crocodile index through i and j
             crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
 
-            // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+            // Set args for crocodile thread  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
             args[0] = i;
             args[1] = gameVar->streams_speed[i];
             args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X / 2));
@@ -63,12 +63,6 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
 
             // Create CROCODILE thread and run his routine
             create_thread(Entities, crocodile_index, crocodile_index, crocodile_thread, args);
-
-            debuglog("Index: %d\n", Entities[crocodile_index].id);
-            debuglog("TID: %d\n", Entities[crocodile_index].tid);
-            debuglog("speed: %d\n", args[1]);
-            debuglog("\n", 0);
-
         }
         args[0] = 0, args[1] = 0, args[2] = 0, args[3] = 0;
     }
@@ -113,10 +107,10 @@ void start_game(WINDOW *score, WINDOW *game){
     // Define and Initialize SHARED BUFFER
     buffer_init(&buf);
 
-    // Create FROG process and run his routine
+    // Create FROG thread and run his routine
     create_thread(Entities, FROG_ID, FROG_ID, frog_thread, NULL);
     
-    // Create TIME process and run his routine
+    // Create TIME thread and run his routine
     create_thread(Entities, TIME_ID, TIME_ID, timer_thread, NULL);
 
     // Set the streams speed, fixed for the whole game

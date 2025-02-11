@@ -93,12 +93,12 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 //         // Get the stream dir -> crocodile bullet orientation
 //         int dir = (msg->x == 1 ? 1 : -1);
 
-//         // Set args for crocodile bullet process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+//         // Set args for crocodile bullet threads  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
 //         args[1] = (abs(gameVar->streams_speed[n_stream]) - (abs(gameVar->streams_speed[n_stream]) * rand_range(MAX_BULLET_SPEED_INCREASE, MIN_BULLET_SPEED_INCREASE) / 100)) * dir;
 //         args[2] = rand_range(MAX_BULLET_SPAWN, MIN_BULLET_SPAWN);
 //         args[3] = msg->id + BULLET_OFFSET_ID;
 
-//         // Create BULLET process and run his routine
+//         // Create BULLET thread and run his routine
 //         create_process(fds, Bullets, msg->id, msg->id + BULLET_OFFSET_ID, crocodile_bullet_process, args);
 
 //         // Reset bullet position

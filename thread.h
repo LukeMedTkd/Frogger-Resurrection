@@ -4,9 +4,6 @@
 #include "struct.h"
 #include <errno.h>
 
-// Define Constants
-#define BUFFER_SIZE 300
-
 // Functions Prototypes
 void buffer_init(Buffer *buf);
 void destroy_buffer(Buffer *buf);

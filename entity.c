@@ -260,7 +260,8 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
             // Msg from some CROCODILE threads
             // ************************************  
             case FIRST_CROCODILE ... LAST_CROCODILE:
-
+                debuglog("msg.id: %d\n", msg.id);
+                debuglog("msg.y from msg.id: %d\n", msg.y);
                 // Check if this crocodille is ONLINE or is OFFLINE
                 Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
 
@@ -270,7 +271,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 // Updates the crocodile position only if the crocodile signal is ONLINE, else resets crocodile positin
                 if(Entities[msg.id].sig == CROCODILE_ONLINE){
                     Entities[msg.id].x += msg.x;
-
+                    
                     // If the crocodile is ONLINE, It can shot - The crocodile shot based on random_shot VALUE
                     //generate_bullets(fds, Entities, Bullets, gameVar, &msg, &random_shot, &crocodile_bullet_process); 
                 }
