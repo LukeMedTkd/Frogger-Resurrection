@@ -38,35 +38,43 @@ void randomize_streams_direction(int *stream_speed){
     }
 }
 
-//++++++++++++++++++++++++++++++++
-// void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar){
-//         // Variables Statement
-//         int args[4] = {0}, crocodile_index;
+void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
+    // Variables Statement
+    int *args = malloc(4 * sizeof(int));
+    int crocodile_index;
 
-//         // Set the streams direction to generate a new original scene
-//         randomize_streams_direction(gameVar->streams_speed);
-        
-//         // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
-//         for (int i = 0; i < N_STREAM; i++){
-//             for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
-//                 // Get crocodile index through i and j
-//                 crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
-//                 // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
-//                 args[0] = i;
-//                 args[1] = gameVar->streams_speed[i];
-//                 args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X/2));
-//                 args[3] = crocodile_index;
-                
-//                 // Reset the Crocodilles Position - Modify the characters structs
-//                 reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
+    // Set the streams direction to generate a new original scene
+    randomize_streams_direction(gameVar->streams_speed);
+    
+    // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Processes
+    for (int i = 0; i < N_STREAM; i++){
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
+            // Get crocodile index through i and j
+            crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
 
-//                 // Create CROCODILE process and run his routine
-//                 create_process(fds, Entities, crocodile_index, crocodile_index, &crocodile_process, args);  
-//             }
-//             args[2] = 0;
-//         }
-//         crocodiles_creation = TRUE;
-// }
+            // Set args for crocodile process  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+            args[0] = i;
+            args[1] = gameVar->streams_speed[i];
+            args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X / 2));
+            args[3] = crocodile_index;
+            
+            // Reset the Crocodilles Position - Modify the characters structs
+            reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
+
+            // Create CROCODILE thread and run his routine
+            create_thread(Entities, crocodile_index, crocodile_index, crocodile_thread, args);
+
+            debuglog("Index: %d\n", Entities[crocodile_index].id);
+            debuglog("TID: %d\n", Entities[crocodile_index].tid);
+            debuglog("speed: %d\n", args[1]);
+            debuglog("\n", 0);
+
+        }
+        args[0] = 0, args[1] = 0, args[2] = 0, args[3] = 0;
+    }
+    crocodiles_creation = TRUE;
+    free(args);
+}
 
 int get_nStream_based_on_id(int id){
     return (id - FIRST_CROCODILE) / MAX_N_CROCODILE_PER_STREAM;
@@ -92,9 +100,6 @@ void outcome(WINDOW *game, Game_var *gameVar){
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
 
-    // Variables Statements
-    void **args = malloc(1 * sizeof(void*));
-
     //set game variables
     Game_var gameVar = initialize_gameVar();
 
@@ -115,7 +120,7 @@ void start_game(WINDOW *score, WINDOW *game){
     create_thread(Entities, TIME_ID, TIME_ID, timer_thread, NULL);
 
     // Set the streams speed, fixed for the whole game
-    // randomize_streams_speed(gameVar.streams_speed);
+    randomize_streams_speed(gameVar.streams_speed);
      
 
    /******************************************************************/
@@ -129,26 +134,28 @@ void start_game(WINDOW *score, WINDOW *game){
         reset_frog_position(&Entities[FROG_ID]);
 
         // Create the crocodiles on the streams
-        // set_crocodiles_on_streams(Entities, fds, &gameVar);
+        set_crocodiles_on_streams(Entities, &gameVar);
 
-        // Parent Process
+        // Parent Thread
         parent_thread(game, score, &buf, Entities, Bullets, &gameVar);
 
-        // Kill all the crocodile processes and their bullets to generate a new original scene
-        // kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
-        // wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        // Kill all the crocodile threads to generate a new original scene
+        kill_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        wait_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);
           
     }   
 
     // Print OUTCOME
     outcome(game, &gameVar);
 
-    // Kill Processes in the array.
-    // kill_processes(Entities, 0, N_ENTITIES);
-    // wait_children(Entities, 0, N_ENTITIES);
-    // kill_processes(Bullets, 0, N_BULLETS);
-    // wait_children(Bullets, 0, N_BULLETS);
+    // Kill threads in the array.
+    kill_threads(Entities, 0, N_ENTITIES);
+    wait_threads(Entities, 0, N_ENTITIES);
+    kill_threads(Bullets, 0, N_BULLETS);
+    kill_threads(Bullets, 0, N_BULLETS);
 
+    // Destroy the buffer
+    destroy_buffer(&buf);
 
     // Free the allocated memeory
     free(Entities);

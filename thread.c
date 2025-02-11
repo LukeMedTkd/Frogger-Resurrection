@@ -17,7 +17,7 @@ void destroy_buffer(Buffer *buf){
     pthread_mutex_destroy(&buf->mutex);
 }
 
-void create_thread(Character *Entities, int index, int id, void *(func_thread)(void *args), int *func_params){
+void create_thread(Character *Entities, int index, int id, void *(func_thread), void *func_params){
         pthread_t tid;
         // If pthread_create failed
         if(pthread_create(&tid, NULL, func_thread, func_params) != 0){
@@ -30,9 +30,18 @@ void create_thread(Character *Entities, int index, int id, void *(func_thread)(v
         Entities[index].tid = tid;
 }
 
-void join_threads(Character *Entities, int start, int end){
+void kill_threads(Character *Entities, int start, int end){
     for (int i = start; i < end; i++){
-        if(Entities[i].tid != 0) pthread_join(Entities[i].tid, NULL);
+        if(Entities[i].tid != 0) pthread_cancel(Entities[i].tid);
+    } 
+}
+
+void wait_threads(Character *Entities, int start, int end){
+    for (int i = start; i < end; i++){
+        if(Entities[i].tid != 0){
+            pthread_join(Entities[i].tid, NULL);
+            Entities[i].tid = 0;
+        }
     }   
 }
 
@@ -55,4 +64,3 @@ Msg read_msg(Buffer *buf){
     
     return msg;
 }
-

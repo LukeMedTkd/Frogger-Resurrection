@@ -26,16 +26,16 @@ void set_outcome(Game_var *gameVar, bool *manche_ended){
     *manche_ended = TRUE;
 }
 
-// void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_var *gameVar, bool *manche_ended){
-//     if(gameVar->time == 0){
-//         gameVar->lifes--;
-//         gameVar->manche--;
-//         *manche_ended = TRUE;
-//         kill_processes(Entities, FIRST_CROCODILE, LAST_CROCODILE);
-//         wait_children(Entities, FIRST_CROCODILE, LAST_CROCODILE);
-//         print_time_is_up(game);
-//     }
-// }
+void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_var *gameVar, bool *manche_ended){
+    if(gameVar->time == 0){
+        gameVar->lifes--;
+        gameVar->manche--;
+        *manche_ended = TRUE;
+        kill_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        wait_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        print_time_is_up(game);
+    }
+}
 
 void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 
@@ -151,7 +151,7 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
-            if(Entities[i].tid != 0){
+            if(Bullets[i].tid != 0){
                 pthread_cancel(Bullets[i].tid);
                 pthread_join(Bullets[i].tid, NULL);
                 Bullets[i].sig = DEACTIVE;

@@ -33,7 +33,7 @@
 Game_var initialize_gameVar();
 void randomize_streams_speed(int *stream_speed);
 void randomize_streams_direction(int *stream_speed);
-void set_crocodiles_on_streams(Character *Entities, int *fds, Game_var *gameVar);
+void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar);
 int get_nStream_based_on_id(int id);
 void outcome(WINDOW *game, Game_var *gameVar);
 void start_game(WINDOW *score, WINDOW *game);
