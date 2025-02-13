@@ -18,7 +18,7 @@ int start_menu(WINDOW *menu) {
         // Print background
         wbkgd(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID));
 
-        draw_von_neumann_machine(menu, ((LINES/2)-(26/2)), ((COLS/2)-(125/2)));
+        draw_von_neumann_machine(menu);
 
         // Print TITLE
         wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);

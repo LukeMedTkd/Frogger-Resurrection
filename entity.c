@@ -121,7 +121,7 @@ void *crocodile_thread(void* args){
         usleep(stream_speed);
     }
 
-    free(arg);
+    free(args);
     
 }
 

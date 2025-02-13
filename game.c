@@ -39,8 +39,8 @@ void randomize_streams_direction(int *stream_speed){
 }
 
 void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
+
     // Variables Statement
-    int *args = malloc(4 * sizeof(int));
     int crocodile_index;
 
     // Set the streams direction to generate a new original scene
@@ -48,14 +48,22 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
     
     // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Threads
     for (int i = 0; i < N_STREAM; i++){
+
+        // variables statements
+        int cumulative_delay = 0;
+
         for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
             // Get crocodile index through i and j
             crocodile_index = FIRST_CROCODILE + (i * MAX_N_CROCODILE_PER_STREAM) + j;
 
+            // Allocate args for each thread
+            int *args = malloc(4 * sizeof(int));
+
             // Set args for crocodile thread  -  args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
             args[0] = i;
             args[1] = gameVar->streams_speed[i];
-            args[2] += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X / 2));
+            cumulative_delay += rand_range(2 * (abs(args[1]) * CROCODILE_DIM_X), (abs(args[1]) * CROCODILE_DIM_X) + (abs(args[1]) * CROCODILE_DIM_X / 2));
+            args[2] = cumulative_delay;
             args[3] = crocodile_index;
             
             // Reset the Crocodilles Position - Modify the characters structs
@@ -63,11 +71,11 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
 
             // Create CROCODILE thread and run his routine
             create_thread(Entities, crocodile_index, crocodile_index, crocodile_thread, args);
+
+            // The free function is called by crocodile_thread to allow him to read all arguments
         }
-        args[0] = 0, args[1] = 0, args[2] = 0, args[3] = 0;
     }
     crocodiles_creation = TRUE;
-    free(args);
 }
 
 int get_nStream_based_on_id(int id){
