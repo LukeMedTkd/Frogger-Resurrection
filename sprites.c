@@ -406,9 +406,9 @@ void draw_von_neumann_machine(WINDOW *menu){
     };
 
     int rows = 24;
-    int cols = 73;
+    int cols = 74;
     int start_y =( (GAME_HEIGHT / 2) - (rows / 2) + 2);
-    int start_x = (GAME_WIDTH / 2) - ((cols / 2) + 1) ;
+    int start_x = (GAME_WIDTH / 2) - ((cols / 2)) ;
     
     wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
     for (int i = 0; i < rows; i++) mvwprintw(menu, start_y + i, start_x, "%s", sprite[i]);
