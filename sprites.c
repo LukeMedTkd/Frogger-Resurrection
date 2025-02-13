@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 #include "sprites.h"
 #include "utils.h"
 #include "entity.h"
@@ -376,10 +377,10 @@ void print_demo(WINDOW *menu) {
     wrefresh(menu);
 }
 
-void draw_von_neumann_machine(WINDOW *menu, int start_y, int start_x){
+void draw_von_neumann_machine(WINDOW *menu){
     const char *sprite[] = {
         "            ╔═══════════════════════════════════════════════╗            ",
-        "            ║                        ◯                      ║            ",
+        "            ║                       ◯                       ║            ",
         "            ║ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ ║            ",
         "            ║ ┃                                           ┃ ║            ",
         "            ║ ┃                                           ┃ ║            ",
@@ -397,17 +398,21 @@ void draw_von_neumann_machine(WINDOW *menu, int start_y, int start_x){
         "            ║ ┃                                           ┃ ║            ",
         "     ┏━━━━━━║ ┃                                           ┃ ║━━━━━━┓     ",
         "     ┃      ║ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ║      ┃     ",
-        "     ┃      ║   ๏ ◌ ๏                               ● ◾ ┉  ║      ┃     ",
+        "     ┃      ║   ๏ ◌  ๏                                ┉ ●   ║      ┃     ",
         "     ┃      ╚═══════════════════════════════════════════════╝      ┃     ",
         "     ┃                                                             ┃     ",
         "     ┃                                                             ┃     ",
         "     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛     "
     };
 
-    int rows = sizeof(sprite) / sizeof(sprite[0]);
-
+    int rows = 24;
+    int cols = 73;
+    int start_y = (GAME_HEIGHT / 2) - (rows / 2);
+    int start_x = (GAME_WIDTH / 2) - ((cols / 2) + 1) ;
+    
     wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
     for (int i = 0; i < rows; i++) mvwprintw(menu, start_y + i, start_x, "%s", sprite[i]);
     wattroff(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+    
 
 }
