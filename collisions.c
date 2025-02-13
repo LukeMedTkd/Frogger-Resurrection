@@ -33,6 +33,8 @@ void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_va
         *manche_ended = TRUE;
         kill_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);
         wait_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);
+        kill_threads(Bullets, 0, N_BULLETS);
+        wait_threads(Bullets, 0, N_BULLETS);
         print_time_is_up(game);
     }
 }
@@ -111,9 +113,13 @@ void generate_bullets(Character *Entities, Character *Bullets, Game_var *gameVar
 }
 
 void reset_bullets_signal(Character *Bullets){
-    for(int i=0; i<N_BULLETS; i++){
-        Bullets[i].sig = DEACTIVE;
+    for(int i = 0; i < N_BULLETS; i++) Bullets[i].sig = DEACTIVE;
+}
+
+void reset_entities_tid(Character *Entities, Character *Bullets){
+    for(int i = 0; i < N_ENTITIES; i++){
         Bullets[i].tid = 0;
+        Entities[i].tid = 0;
     }
 }
 
@@ -123,6 +129,7 @@ void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg 
             pthread_cancel(Bullets[*current_bullet_id].tid);
             pthread_join(Bullets[*current_bullet_id].tid, NULL);
             Bullets[*current_bullet_id].sig = DEACTIVE;
+            Bullets[*current_bullet_id].tid = 0; // Set tid = 0 to show the thread has been killed
     } 
     
     // If a LEFT to RIGHT bullet is ACTIVE but It's out of the GAME
@@ -130,6 +137,7 @@ void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg 
         pthread_cancel(Bullets[*current_bullet_id].tid);
         pthread_join(Bullets[*current_bullet_id].tid, NULL);
         Bullets[*current_bullet_id].sig = DEACTIVE;
+        Bullets[*current_bullet_id].tid = 0; // Set tid = 0 to show the thread has been killed
     }
 }
 
@@ -148,7 +156,7 @@ void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, boo
     }
 }
 
-void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended){
+void bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
@@ -156,6 +164,7 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
                 pthread_cancel(Bullets[i].tid);
                 pthread_join(Bullets[i].tid, NULL);
                 Bullets[i].sig = DEACTIVE;
+                Bullets[i].tid = 0;
             }
         }
     }
@@ -179,11 +188,13 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x <= 1))){
                     pthread_cancel(Bullets[FROG_ID+1].tid);
                     pthread_join(Bullets[FROG_ID+1].tid, NULL);
-                    Bullets[FROG_ID+1].sig = DEACTIVE;
+                    Bullets[FROG_ID + 1].sig = DEACTIVE;
+                    Bullets[FROG_ID + 1].tid = 0; // Set tid = 0 to show the thread has been killed
                     
                     pthread_cancel(Bullets[current_crocodile_index].tid);
                     pthread_join(Bullets[current_crocodile_index].tid, NULL);
                     Bullets[current_crocodile_index].sig = DEACTIVE;
+                    Bullets[current_crocodile_index].tid = 0; // Set tid = 0 to show the thread has been killed
                 }
 
                 // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
@@ -191,10 +202,12 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
                     pthread_cancel(Bullets[FROG_ID].tid);
                     pthread_join(Bullets[FROG_ID].tid, NULL);
                     Bullets[FROG_ID].sig = DEACTIVE;
+                    Bullets[FROG_ID].tid = 0; // Set tid = 0 to show the thread has been killed
 
                     pthread_cancel(Bullets[current_crocodile_index].tid);
                     pthread_join(Bullets[current_crocodile_index].tid, NULL);
                     Bullets[current_crocodile_index].sig = DEACTIVE;
+                    Bullets[current_crocodile_index].tid = 0; // Set tid = 0 to show the thread has been killed
                 }
             }
         }

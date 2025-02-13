@@ -52,7 +52,7 @@ void *right_frog_bullet_thread(void *args);
 void reset_frog_position(Character *frog_entity);
 void reset_frog_bullet_position(Character *Entities, Character *Bullets);
 void *crocodile_thread(void* args);
-void *crocodile_bullet_thred(int* args);
+void *crocodile_bullet_thred(void* args);
 void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar);
 void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index);
 void reset_timer(Game_var *gameVar);

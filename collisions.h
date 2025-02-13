@@ -11,7 +11,8 @@ void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_va
 void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended);
 void generate_bullets(Character *Entities, Character *Bullets, Game_var *gameVar, Msg *msg, int *random_shot, void (* crocodile_bullet_thread));
 void reset_bullets_signal(Character *Bullets);
-void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended);
+void reset_entities_tid(Character *Entities, Character *Bullets);
+void bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended);
 void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg);
 void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, bool *manche_ended, int *current_bullet_id);
 void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended);

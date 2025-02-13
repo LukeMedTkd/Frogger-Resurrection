@@ -1,4 +1,5 @@
 #include <string.h>
+#include <signal.h>
 #include "utils.h"
 #include "game.h"
 #include "sprites.h"
@@ -9,7 +10,7 @@
 #define SPACE_BETWEEN_OPTIONS 2
 #define SPACE_BETWEEN_TITLE 3
 
-int start_menu(WINDOW *menu) {
+int start_menu(WINDOW *menu){
     keypad(menu, TRUE);
     int key, choice = 0;
     const char *options[MENU_OPTIONS] = {" START ", " QUIT "};

@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wimplicit-fallthrough=0
+CFLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wimplicit-fallthrough=0 -fsanitize=address
 
 # Libraries
 LIBS = -lncursesw -lm -pthread

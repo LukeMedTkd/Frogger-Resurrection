@@ -113,6 +113,9 @@ void *crocodile_thread(void* args){
     msg.x = CROCODILE_MOVE_X * direction;
     msg.y = 0;
 
+    // Free the allocated memory
+    free(args);
+
     // The spawn time is delayed
     usleep(spawn_delay);
 
@@ -120,23 +123,29 @@ void *crocodile_thread(void* args){
         write_msg(&buf, msg);
         usleep(stream_speed);
     }
-
-    free(args);
-    
 }
 
-void *crocodile_bullet_thred(int* args){
+void *crocodile_bullet_thred(void* args){
+
+    int *arg = (void *)args;
+
     // args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+    int stream_speed = abs(arg[1]);
+    int spawn_delay = arg[2];
+
     Msg msg;
-    msg.x = (args[1] > 0 ? 1 : -1);
-    msg.id = args[3];
-    
-    usleep(abs(args[2]));
+    msg.x = (arg[1] > 0 ? 1 : -1);
+    msg.id = arg[3];
+
+    // Free the allocated memory
+    free(args);
+
+    usleep(spawn_delay);
+
     while(TRUE){
         write_msg(&buf, msg);
-        usleep(abs(args[1]));
+        usleep(abs(stream_speed));
     } 
-    free(args);
 }
 
 void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar){
@@ -183,6 +192,9 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
     int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
     Msg msg; // Define msg to store buffer message
+
+    // Reset Bullets SIGNAL
+    reset_bullets_signal(Bullets);
 
     // Manche Loop
     while(!manche_ended){
@@ -234,6 +246,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 else{ 
                     pthread_cancel(Bullets[FROG_ID].tid);
                     pthread_join(Bullets[FROG_ID].tid, NULL);
+                    Bullets[FROG_ID].tid = 0; // Set tid = 0 to show the thread has been killed
                 }
                 
                 
@@ -252,6 +265,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 else{ 
                     pthread_cancel(Bullets[FROG_ID + 1].tid);
                     pthread_join(Bullets[FROG_ID + 1].tid, NULL);
+                    Bullets[FROG_ID + 1].tid = 0; // Set tid = 0 to show the thread has been killed
                 }
 
                 break;
@@ -320,7 +334,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
         dens_collision(Entities, gameVar, &manche_ended);
         frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
-        bullets_collision(Entities, Bullets, gameVar, &manche_ended);
+        bullets_collision(Entities, Bullets, &manche_ended);
         set_outcome(gameVar, &manche_ended);
         /*------------------------ Update the scene --------------------------*/
         // Print Lifes

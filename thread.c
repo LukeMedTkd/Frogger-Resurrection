@@ -33,7 +33,7 @@ void create_thread(Character *Entities, int index, int id, void *(func_thread), 
 void kill_threads(Character *Entities, int start, int end){
     for (int i = start; i < end; i++){
         if(Entities[i].tid != 0) pthread_cancel(Entities[i].tid);
-    } 
+    }
 }
 
 void wait_threads(Character *Entities, int start, int end){

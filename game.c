@@ -109,6 +109,9 @@ void start_game(WINDOW *score, WINDOW *game){
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));
     Character *Bullets = malloc(N_BULLETS * sizeof(Character));
 
+    // Intialize Entities TID
+    reset_entities_tid(Entities, Bullets);
+
     // Reset Bullets SIGNAL
     reset_bullets_signal(Bullets);
 
@@ -153,8 +156,8 @@ void start_game(WINDOW *score, WINDOW *game){
     // Kill threads in the array.
     kill_threads(Entities, 0, N_ENTITIES);
     wait_threads(Entities, 0, N_ENTITIES);
-    kill_threads(Bullets, 0, N_BULLETS);
-    wait_threads(Bullets, 0, N_BULLETS);
+    kill_threads(Bullets, FIRST_CROCODILE, LAST_CROCODILE);
+    wait_threads(Bullets, FIRST_CROCODILE, LAST_CROCODILE);
 
     // Destroy the buffer
     destroy_buffer(&buf);
