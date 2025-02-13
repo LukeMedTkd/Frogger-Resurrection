@@ -85,7 +85,8 @@ void generate_bullets(Character *Entities, Character *Bullets, Game_var *gameVar
 
     // If the CROCODILE is ready to shot
     if(Bullets[msg->id].sig == DEACTIVE && *random_shot == 3 && gameVar->outcome == NO_OUTCOME){
-        int args[4] = {0};
+        // Allocate args for each thread
+        int *args = malloc(4 * sizeof(int));
 
         // Get stream based on index
         int n_stream = get_nStream_based_on_id(msg->id);
@@ -98,11 +99,11 @@ void generate_bullets(Character *Entities, Character *Bullets, Game_var *gameVar
         args[2] = rand_range(MAX_BULLET_SPAWN, MIN_BULLET_SPAWN);
         args[3] = msg->id + BULLET_OFFSET_ID;
 
-        // Create BULLET thread and run his routine
-        create_thread(Bullets, msg->id, msg->id + BULLET_OFFSET_ID, crocodile_bullet_thread, args);
-
         // Reset bullet position
         reset_crocodile_bullet_position(Entities, Bullets, gameVar, msg->id);
+
+        // Create BULLET thread and run his routine
+        create_thread(Bullets, msg->id, msg->id + BULLET_OFFSET_ID, crocodile_bullet_thread, args);
 
         Bullets[msg->id].sig = ACTIVE;
 
@@ -176,23 +177,23 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
 
                 // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x <= 1))){
-                    pthread_cancel(Entities[FROG_ID+1].tid);
-                    pthread_join(Entities[FROG_ID+1].tid, NULL);
+                    pthread_cancel(Bullets[FROG_ID+1].tid);
+                    pthread_join(Bullets[FROG_ID+1].tid, NULL);
                     Bullets[FROG_ID+1].sig = DEACTIVE;
                     
-                    pthread_cancel(Entities[current_crocodile_index].tid);
-                    pthread_join(Entities[current_crocodile_index].tid, NULL);
+                    pthread_cancel(Bullets[current_crocodile_index].tid);
+                    pthread_join(Bullets[current_crocodile_index].tid, NULL);
                     Bullets[current_crocodile_index].sig = DEACTIVE;
                 }
 
                 // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID].x <= 1))){
-                    pthread_cancel(Entities[FROG_ID].tid);
-                    pthread_join(Entities[FROG_ID].tid, NULL);
+                    pthread_cancel(Bullets[FROG_ID].tid);
+                    pthread_join(Bullets[FROG_ID].tid, NULL);
                     Bullets[FROG_ID].sig = DEACTIVE;
 
-                    pthread_cancel(Entities[current_crocodile_index].tid);
-                    pthread_join(Entities[current_crocodile_index].tid, NULL);
+                    pthread_cancel(Bullets[current_crocodile_index].tid);
+                    pthread_join(Bullets[current_crocodile_index].tid, NULL);
                     Bullets[current_crocodile_index].sig = DEACTIVE;
                 }
             }

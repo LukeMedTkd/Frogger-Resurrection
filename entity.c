@@ -136,6 +136,7 @@ void *crocodile_bullet_thred(int* args){
         write_msg(&buf, msg);
         usleep(abs(args[1]));
     } 
+    free(args);
 }
 
 void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar){
@@ -272,7 +273,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                     Entities[msg.id].x += msg.x;
                     
                     // If the crocodile is ONLINE, It can shot - The crocodile shot based on random_shot VALUE
-                    //generate_bullets(Entities, Bullets, gameVar, &msg, &random_shot, crocodile_bullet_thred); 
+                    generate_bullets(Entities, Bullets, gameVar, &msg, &random_shot, crocodile_bullet_thred); 
                 }
 
                 else{
