@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <sys/types.h>
+#include "miniaudio.h"
 
 #ifndef MAX_PLAYERS
 #define N_STREAM 8
@@ -8,6 +9,11 @@
 
 #ifndef STRUCT_H
 #define STRUCT_H
+
+typedef struct{
+    char *filename;
+    ma_sound sound;
+}Sound;
 
 typedef struct
 {
