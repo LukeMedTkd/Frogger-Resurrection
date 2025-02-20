@@ -140,8 +140,6 @@ void *crocodile_bullet_thred(void* args){
     // Free the allocated memory
     free(args);
 
-    usleep(spawn_delay);
-
     while(TRUE){
         write_msg(&buf, msg);
         usleep(abs(stream_speed));
