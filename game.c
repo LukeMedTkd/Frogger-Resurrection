@@ -4,9 +4,11 @@
 #include "utils.h"
 #include "sprites.h"
 #include "collisions.h"
+#include "sound.h"
 
 bool crocodiles_creation = false;
 Buffer buf;
+extern Sound sounds[N_SOUND];
 
 Game_var initialize_gameVar(){
     Game_var gameVar;
@@ -87,11 +89,14 @@ void outcome(WINDOW *game, Game_var *gameVar){
     switch (gameVar->outcome){
 
         case WINNER_OUTCOME:
+            play_sound(&sounds[WON].sound);
             print_won_game(game);
             break;
 
         case LOSER_OUTCOME:
+            play_sound(&sounds[LOST].sound);
             print_lost_game(game);
+            stop_sound(&sounds[LOST].sound);
             break;
         
         case NO_OUTCOME:
@@ -141,8 +146,14 @@ void start_game(WINDOW *score, WINDOW *game){
         // Create the crocodiles on the streams
         set_crocodiles_on_streams(Entities, &gameVar);
 
+        // Play the manche soundtrack
+        play_sound(&sounds[MANCHE].sound);
+
         // Parent Thread
         parent_thread(game, score, &buf, Entities, Bullets, &gameVar);
+
+        // Stop the manche soundtrack
+        stop_sound(&sounds[MANCHE].sound);
 
         // Kill all the crocodile threads to generate a new original scene
         kill_threads(Entities, FIRST_CROCODILE, LAST_CROCODILE);

@@ -1,12 +1,12 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wimplicit-fallthrough=0 -fsanitize=address -g
+CFLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wimplicit-fallthrough=0
 
 # Libraries
-LIBS = -lncursesw -lm -pthread 
+LIBS = -lncursesw -lm -pthread
 
 # Source files and target
-SRC = main.c game.c thread.c entity.c sprites.c utils.c collisions.c
+SRC = main.c game.c thread.c entity.c sprites.c utils.c sound.c collisions.c
 OBJ = ${SRC:.c=.o}
 TARGET = output
 

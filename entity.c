@@ -4,6 +4,9 @@
 #include "sprites.h"
 #include "collisions.h"
 #include "utils.h"
+#include "sound.h"
+
+extern Sound sounds[N_SOUND];
 
 extern Buffer buf;
 

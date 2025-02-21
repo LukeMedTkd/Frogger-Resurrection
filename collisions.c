@@ -1,6 +1,9 @@
 #include "struct.h"
 #include "entity.h"
 #include "collisions.h"
+#include "sound.h"
+
+extern Sound sounds[N_SOUND];
 
 void set_outcome(Game_var *gameVar, bool *manche_ended){
     // Set LOSER_OUTCOME to gameVar.outcome if manche == 0
@@ -53,6 +56,7 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
             }
             // The den is still open: update the score
             else{
+                play_sound(&sounds[DEN].sound);
                 gameVar->dens[i] = FALSE;
                 gameVar->score += (100 * (gameVar->time)) / TIME;
             }
@@ -152,6 +156,7 @@ void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, boo
 
         // Checks if BULLET.x MATCHS with FROG.x
         if(Bullets[*current_bullet_id].x == Entities[FROG_ID].x || Bullets[*current_bullet_id].x == Entities[FROG_ID].x + FROG_DIM_X - 1){
+            play_sound(&sounds[DEAD_FROG].sound);
             gameVar->lifes--;
             gameVar->manche--;
             *manche_ended = TRUE;
@@ -258,6 +263,7 @@ void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *m
 
         // Checks if the FROG has fallen on the river -> She lose 1 life and 1 manche
         if(frog_on_crocodile == FALSE) {
+            play_sound(&sounds[FALL].sound);
             gameVar->manche--;
             gameVar->lifes--;
             *manche_ended = TRUE;
@@ -269,6 +275,7 @@ void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *m
             
             // Checks if the FROG has changed crocodile
             if (current_crocodile_index != last_crocodile_index) {
+                play_sound(&sounds[JUMP].sound);
                 // Compute the FROG offset between the previous crocodile and the current one and update the last_crocodile_index
                 frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;
                 last_crocodile_index = current_crocodile_index;  

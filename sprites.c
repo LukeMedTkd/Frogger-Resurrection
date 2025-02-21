@@ -3,6 +3,9 @@
 #include "sprites.h"
 #include "utils.h"
 #include "entity.h"
+#include "sound.h"
+
+extern Sound sounds[N_SOUND];
 
 /*---------------------------------------------*/
 /*--------------- Game’s Prints ---------------*/
@@ -282,6 +285,7 @@ void print_lost_game(WINDOW *game){
 
     wrefresh(game);
     usleep(DURATION);
+    
 }
 
 void print_time_is_up(WINDOW *game){
@@ -306,7 +310,8 @@ void print_time_is_up(WINDOW *game){
 }
 
 void print_won_game(WINDOW *game){
-        // Print background
+
+    // Print background
     wattron(game, COLOR_PAIR(COLOR_BKG_WON_GAME_ID));
     for (int i = 0; i < GAME_HEIGHT; i++){
         mvwhline(game, i, 0, ' ', GAME_WIDTH);
@@ -324,6 +329,9 @@ void print_won_game(WINDOW *game){
 
     wrefresh(game);
     usleep(DURATION);
+
+    // Stop Won Sound
+    stop_sound(&sounds[WON].sound);
 }
 
 /*---------------------------------------------*/

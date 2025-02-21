@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "game.h"
 #include "sprites.h"
+#include "sound.h"
 
 #define MENU_HEIGHT 46
 #define MENU_WIDTH 150
@@ -10,7 +11,9 @@
 #define SPACE_BETWEEN_OPTIONS 2
 #define SPACE_BETWEEN_TITLE 3
 
-int start_menu(WINDOW *menu){
+extern Sound sounds[N_SOUND];
+
+int start_menu(WINDOW *menu) {
     keypad(menu, TRUE);
     int key, choice = 0;
     const char *options[MENU_OPTIONS] = {" START ", " QUIT "};
@@ -67,11 +70,20 @@ int main(){
     // Create MENU window
     WINDOW *menu = newwin(MENU_HEIGHT, MENU_WIDTH, ((LINES/2)-(MENU_HEIGHT/2)), ((COLS/2)-(MENU_WIDTH/2)));
 
+    // Initialize miniaudio engine
+    init_ma_engine(sounds);
+    
     // Menu LOOP
     while (TRUE){
-
+        
+        // Play DEMO Sound
+        play_sound(&sounds[DEMO].sound);
+        
         // Print demo
         print_demo(menu);
+
+        // Stop DEMO Sound
+        stop_sound(&sounds[DEMO].sound);
 
         if(!start_menu(menu)) break; // If the USER click QUIT, break
 
