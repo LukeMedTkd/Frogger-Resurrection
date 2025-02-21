@@ -1,9 +1,9 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wimplicit-fallthrough=0 -fsanitize=address
+CFLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wimplicit-fallthrough=0 -fsanitize=address -g
 
 # Libraries
-LIBS = -lncursesw -lm -pthread
+LIBS = -lncursesw -lm -pthread 
 
 # Source files and target
 SRC = main.c game.c thread.c entity.c sprites.c utils.c collisions.c
