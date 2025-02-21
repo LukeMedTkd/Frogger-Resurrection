@@ -242,9 +242,11 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
-                    pthread_cancel(Bullets[FROG_ID].tid);
-                    pthread_join(Bullets[FROG_ID].tid, NULL);
-                    Bullets[FROG_ID].tid = 0; // Set tid = 0 to show the thread has been killed
+                    if(Bullets[FROG_ID].tid != 0){
+                        pthread_cancel(Bullets[FROG_ID].tid);
+                        pthread_join(Bullets[FROG_ID].tid, NULL);
+                        Bullets[FROG_ID].tid = 0; // Set tid = 0 to show the thread has been killed
+                    }
                 }
                 
                 
@@ -261,9 +263,11 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
-                    pthread_cancel(Bullets[FROG_ID + 1].tid);
-                    pthread_join(Bullets[FROG_ID + 1].tid, NULL);
-                    Bullets[FROG_ID + 1].tid = 0; // Set tid = 0 to show the thread has been killed
+                    if(Bullets[FROG_ID + 1].tid != 0){
+                        pthread_cancel(Bullets[FROG_ID + 1].tid);
+                        pthread_join(Bullets[FROG_ID + 1].tid, NULL);
+                        Bullets[FROG_ID + 1].tid = 0; // Set tid = 0 to show the thread has been killed
+                    }
                 }
 
                 break;

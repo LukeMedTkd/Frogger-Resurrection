@@ -126,18 +126,22 @@ void reset_entities_tid(Character *Entities, Character *Bullets){
 void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
     // If a RIGHT to LEFT bullet is ACTIVE but It's out of the GAME
     if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x < 0 && msg->x == -1){
-            pthread_cancel(Bullets[*current_bullet_id].tid);
-            pthread_join(Bullets[*current_bullet_id].tid, NULL);
-            Bullets[*current_bullet_id].sig = DEACTIVE;
-            Bullets[*current_bullet_id].tid = 0; // Set tid = 0 to show the thread has been killed
+            if(Bullets[*current_bullet_id].tid != 0){
+                pthread_cancel(Bullets[*current_bullet_id].tid);
+                pthread_join(Bullets[*current_bullet_id].tid, NULL);
+                Bullets[*current_bullet_id].sig = DEACTIVE;
+                Bullets[*current_bullet_id].tid = 0; // Set tid = 0 to show the thread has been killed
+            }
     } 
     
     // If a LEFT to RIGHT bullet is ACTIVE but It's out of the GAME
     else if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x > GAME_WIDTH && msg->x == 1){
-        pthread_cancel(Bullets[*current_bullet_id].tid);
-        pthread_join(Bullets[*current_bullet_id].tid, NULL);
-        Bullets[*current_bullet_id].sig = DEACTIVE;
-        Bullets[*current_bullet_id].tid = 0; // Set tid = 0 to show the thread has been killed
+        if(Bullets[*current_bullet_id].tid != 0){
+            pthread_cancel(Bullets[*current_bullet_id].tid);
+            pthread_join(Bullets[*current_bullet_id].tid, NULL);
+            Bullets[*current_bullet_id].sig = DEACTIVE;
+            Bullets[*current_bullet_id].tid = 0; // Set tid = 0 to show the thread has been killed
+        }
     }
 }
 
