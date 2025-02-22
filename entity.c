@@ -48,7 +48,9 @@ void frog_process(int pipe_write, int* args){
 
         // Check if a message needs to be sent
         if(msg_to_send) {
-            write_msg(pipe_write, msg); // Write message on pipe
+
+            // Send msg to the server (Parent Process)
+            
 
             // Reset Defaults
             direction = 1;
@@ -171,46 +173,49 @@ void timer_process(int pipe_write, int* args){
 
 /*--------------------------------------------------------*/
 /*-------------------- Parent Process --------------------*/
-void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar){
+void parent_process(WINDOW *game, WINDOW *score, int *fds, int client_fd, Character *Entities, Character *Bullets, Game_var *gameVar){
 
     int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
-    Msg msg; // Define msg to store pipe message
+    Msg pipe_msg; // Define pipe_msg to store pipe message
+    Msg socket_msg; // Define socket_msg to store socket message
 
     // Manche Loop
     while(!manche_ended){
-        // Read msg from the pipes
-        msg = read_msg(fds[PIPE_READ]);
 
-        switch (msg.id){
+        // ************************** 
+        // Msg from FROG process
+        // **************************
+
+        socket_msg = receive_msg(client_fd);
+
+        // FROG has moved - Update POSITION
+        if(socket_msg.sig == FROG_POSITION_SIG){
+            Entities[FROG_ID].y += ((Entities[FROG_ID].y + socket_msg.y >= 0) && (Entities[FROG_ID].y + socket_msg.y < GAME_HEIGHT)) ? socket_msg.y : 0;
+            Entities[FROG_ID].x += ((Entities[FROG_ID].x + socket_msg.x >= 0) && (Entities[FROG_ID].x + FROG_DIM_X + socket_msg.x <= GAME_WIDTH)) ? socket_msg.x : 0;
+        }
+
+        // FROG has shotted
+        if(socket_msg.sig == FROG_SHOT_SIG){
+
+            if(Bullets[FROG_ID].sig == DEACTIVE && Bullets[FROG_ID+1].sig == DEACTIVE){
+
+                // Initialize the bullets position
+                reset_frog_bullet_position(Entities, Bullets);
+                
+                // Create BULLETS processes and run their routine
+                create_process(fds, Bullets, FROG_ID, LEFT_FROG_BULLET_ID, &left_frog_bullet_process, NULL);
+                create_process(fds, Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, &right_frog_bullet_process, NULL);
+            }
+        }
+        break;
+
+
+        // Read msg from the pipe
+        pipe_msg = read_msg(fds[PIPE_READ]);
+
+        switch (pipe_msg.id){
             
-            // ************************** 
-            // Msg from FROG process
-            // **************************
-            case FROG_ID:
-
-                // FROG has moved - Update POSITION
-                if(msg.sig == FROG_POSITION_SIG){
-                    Entities[FROG_ID].y += ((Entities[FROG_ID].y + msg.y >= 0) && (Entities[FROG_ID].y + msg.y < GAME_HEIGHT)) ? msg.y : 0;
-                    Entities[FROG_ID].x += ((Entities[FROG_ID].x + msg.x >= 0) && (Entities[FROG_ID].x + FROG_DIM_X + msg.x <= GAME_WIDTH)) ? msg.x : 0;
-                }
-
-                // FROG has shotted
-                if(msg.sig == FROG_SHOT_SIG){
-
-                    if(Bullets[FROG_ID].sig == DEACTIVE && Bullets[FROG_ID+1].sig == DEACTIVE){
-
-                        // Initialize the bullets position
-                        reset_frog_bullet_position(Entities, Bullets);
-                        
-                        // Create BULLETS processes and run their routine
-                        create_process(fds, Bullets, FROG_ID, LEFT_FROG_BULLET_ID, &left_frog_bullet_process, NULL);
-                        create_process(fds, Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, &right_frog_bullet_process, NULL);
-                    }
-                }
-                break;
-
-
             // ***********************************
             // Msg from some FROG BULLET process
             // ***********************************
@@ -219,7 +224,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
                 Bullets[FROG_ID].sig = ((Bullets[FROG_ID].x >= 0) ? ACTIVE : DEACTIVE);
 
                 // If LEFT bullet is ACTIVE
-                if(Bullets[FROG_ID].sig == ACTIVE) Bullets[FROG_ID].x += msg.x;
+                if(Bullets[FROG_ID].sig == ACTIVE) Bullets[FROG_ID].x += pipe_msg.x;
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
@@ -235,7 +240,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
                 Bullets[FROG_ID + 1].sig = ((Bullets[FROG_ID + 1].x <= GAME_WIDTH) ? ACTIVE : DEACTIVE);
 
                 // If RIGHT bullet is ACTIVE
-                if(Bullets[FROG_ID + 1].sig == ACTIVE) Bullets[FROG_ID + 1].x += msg.x;
+                if(Bullets[FROG_ID + 1].sig == ACTIVE) Bullets[FROG_ID + 1].x += pipe_msg.x;
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
@@ -251,22 +256,22 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
             // ************************************  
             case FIRST_CROCODILE ... LAST_CROCODILE:
                 // Check if this crocodille is online or is offline
-                Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
+                Entities[pipe_msg.id].sig = ((Entities[pipe_msg.id].x + pipe_msg.x > GAME_WIDTH) || (Entities[pipe_msg.id].x + pipe_msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
 
                 // Generate a random_shot value
                 random_shot = rand_range(MAX_RANDOM_SHOT, MIN_RANDOM_SHOT);
 
                 // Updates the crocodile position only if the crocodile signal is ONLINE, else resets crocodile positin
-                if(Entities[msg.id].sig == CROCODILE_ONLINE){
-                    Entities[msg.id].x += msg.x;
+                if(Entities[pipe_msg.id].sig == CROCODILE_ONLINE){
+                    Entities[pipe_msg.id].x += pipe_msg.x;
 
                     // If the crocodile is ONLINE, It can shot - The crocodile shot based on random_shot VALUE
-                    generate_bullets(fds, Entities, Bullets, gameVar, &msg, &random_shot, &crocodile_bullet_process); 
+                    generate_bullets(fds, Entities, Bullets, gameVar, &pipe_msg, &random_shot, &crocodile_bullet_process); 
                 }
 
                 else{
                     // If some crocodile is OFFLINE -> reset his position
-                    reset_crocodile_position(&(Entities[msg.id]), get_nStream_based_on_id(msg.id), gameVar);
+                    reset_crocodile_position(&(Entities[pipe_msg.id]), get_nStream_based_on_id(pipe_msg.id), gameVar);
                 }
                 break;
 
@@ -276,13 +281,13 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
             case (FIRST_CROCODILE + BULLET_OFFSET_ID) ... (LAST_CROCODILE + BULLET_OFFSET_ID):
                 
                 // Current Bullet id
-                current_bullet_id = msg.id - BULLET_OFFSET_ID;
+                current_bullet_id = pipe_msg.id - BULLET_OFFSET_ID;
 
                 // If bullet is ACTIVE
-                if(Bullets[current_bullet_id ].sig == ACTIVE) Bullets[current_bullet_id ].x += msg.x;
+                if(Bullets[current_bullet_id ].sig == ACTIVE){ Bullets[current_bullet_id ].x += pipe_msg.x; }
 
                 // Check if a bullet is out of the GAME
-                deactive_bullets_out_game(Bullets, &current_bullet_id, &msg);
+                deactive_bullets_out_game(Bullets, &current_bullet_id, &pipe_msg);
 
                 // Checks if some CROCODILE BULLETS kill the FROG
                 frog_killed(Entities, Bullets, gameVar, &manche_ended, &current_bullet_id);
@@ -296,7 +301,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
             // Msg from TIME
             // **************************
             case TIME_ID:
-                gameVar->time += msg.x;
+                gameVar->time += pipe_msg.x;
         
 
             default:

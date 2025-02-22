@@ -8,6 +8,9 @@
 #define TRUE 1
 #define FALSE 0 
 
+// Sosket Costants
+#define SOCKET_PATH "/tmp/mysocket"
+
 // Frog constants
 #define FROG_ID 0
 #define FROG_MOVE_Y FROG_DIM_Y
@@ -56,4 +59,4 @@ void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_va
 void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index);
 void reset_timer(Game_var *gameVar);
 void timer_process(int pipe_write, int* args);
-void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar);
+void parent_process(WINDOW *game, WINDOW *score, int *fds, int server_fd, Character *Entities, Character *Bullets, Game_var *gameVar);

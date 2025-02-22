@@ -17,7 +17,7 @@ Game_var initialize_gameVar(){
     gameVar.lifes = LIFES;
     gameVar.outcome = NO_OUTCOME;
     gameVar.n_max_bullets = N_MAX_BULLETS;
-    for (int i = 0; i < N_DENS; i++) gameVar.dens[i] = TRUE;
+    for (int i = 0; i < N_DENS; i++){ gameVar.dens[i] = TRUE; }
 
     return gameVar;
 }
@@ -110,8 +110,16 @@ void start_game(WINDOW *score, WINDOW *game){
     int fds[2];
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
+    // Create Server and Client Socket
+    int server_fd = create_socket();
+    int client_fd = create_socket(); 
+
+    // Server Socket Bind
+    bind_socket(server_fd);
+ 
     // Create FROG process and run his routine
-    create_process(fds, Entities, FROG_ID, FROG_ID, &frog_process, NULL);
+    int args[1]; args[0] = client_fd;
+    create_process(fds, Entities, FROG_ID, FROG_ID, &frog_process, args);
 
     // Create TIME process and run his routine
     create_process(fds, Entities, TIME_ID, TIME_ID, &timer_process, NULL);
@@ -137,7 +145,7 @@ void start_game(WINDOW *score, WINDOW *game){
         play_sound(&sounds[MANCHE].sound);
 
         // Parent Process
-        parent_process(game, score, fds, Entities, Bullets, &gameVar);
+        parent_process(game, score, fds, new_conn_fd, Entities, Bullets, &gameVar);
 
         // Stop the manche soundtrack
         stop_sound(&sounds[MANCHE].sound);
@@ -165,6 +173,11 @@ void start_game(WINDOW *score, WINDOW *game){
     // Close file descriptors
     close(fds[PIPE_READ]);
     close(fds[PIPE_WRITE]);
+
+    // Close the sockets
+    close(client_fd);
+    close(server_fd);
+    unlink(SOCKET_PATH);
 
     // Delete the previous GAME windows
     delwin(game);
