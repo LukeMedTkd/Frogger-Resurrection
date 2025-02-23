@@ -12,6 +12,8 @@ extern Sound sounds[N_SOUND];
 /*------------------ Frog Entity -------------------*/
 void frog_process(int pipe_write, int* args){
 
+   int client_fd = args[0]; // Get the client_fd
+    
     // Init some variables
     int move, direction = 1;
     bool msg_to_send = TRUE; // avoid writing no movements
@@ -50,8 +52,7 @@ void frog_process(int pipe_write, int* args){
         if(msg_to_send) {
 
             // Send msg to the server (Parent Process)
-            
-
+            send_msg(client_fd, msg);
             // Reset Defaults
             direction = 1;
             msg.id = FROG_ID;
@@ -173,7 +174,7 @@ void timer_process(int pipe_write, int* args){
 
 /*--------------------------------------------------------*/
 /*-------------------- Parent Process --------------------*/
-void parent_process(WINDOW *game, WINDOW *score, int *fds, int client_fd, Character *Entities, Character *Bullets, Game_var *gameVar){
+void parent_process(WINDOW *game, WINDOW *score, int *fds, int server_fd, Character *Entities, Character *Bullets, Game_var *gameVar){
 
     int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
@@ -187,8 +188,8 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, int client_fd, Charac
         // Msg from FROG process
         // **************************
 
-        socket_msg = receive_msg(client_fd);
-
+        socket_msg = receive_msg(server_fd);
+      
         // FROG has moved - Update POSITION
         if(socket_msg.sig == FROG_POSITION_SIG){
             Entities[FROG_ID].y += ((Entities[FROG_ID].y + socket_msg.y >= 0) && (Entities[FROG_ID].y + socket_msg.y < GAME_HEIGHT)) ? socket_msg.y : 0;
@@ -208,9 +209,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, int client_fd, Charac
                 create_process(fds, Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, &right_frog_bullet_process, NULL);
             }
         }
-        break;
-
-
+       
         // Read msg from the pipe
         pipe_msg = read_msg(fds[PIPE_READ]);
 
