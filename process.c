@@ -51,7 +51,7 @@ Msg read_msg(int pipe_read){
 int create_socket(){
     int sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sockfd == -1) {
-        perror("socket");
+        perror("socket() failed");
         return -1;
     }
     return sockfd;
@@ -64,9 +64,6 @@ struct sockaddr_un initialize_socket_address(){
     address.sun_family = AF_UNIX;
     strncpy(address.sun_path, SOCKET_PATH, sizeof(address.sun_path) - 1);
     
-    // If the socket file already exists, delete it
-    unlink(SOCKET_PATH);
-
     return address;
 }
 
@@ -83,7 +80,6 @@ void bind_socket(int sockfd, struct sockaddr_un address){
     }
 }
 
-
 int accept_new_connection_from_client(int sockfd){
 
     int server_fd = accept(sockfd, NULL, NULL);
@@ -95,9 +91,10 @@ int accept_new_connection_from_client(int sockfd){
     // No error - return the server_fd
     return server_fd;
 }
-void set_socket_nonblock(int server_fd){
-    int flags = fcntl(server_fd, F_GETFL, 0);
-    fcntl(server_fd, F_SETFL, flags | O_NONBLOCK);
+
+void set_socket_nonblock(int sock_fd){
+    int flags = fcntl(sock_fd, F_GETFL, 0);
+    fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK);
 }
 
 void connect_to_server(int client_fd, struct sockaddr_un server_addr){
@@ -111,8 +108,7 @@ void connect_to_server(int client_fd, struct sockaddr_un server_addr){
 
 void send_msg(int client_fd, Msg msg){
     if (send(client_fd, &msg, sizeof(msg), 0) < 0){
-        perror("Send Error");
-        //close(client_fd);
+        perror("send() failed");
         return;
     }
 }
@@ -120,7 +116,8 @@ void send_msg(int client_fd, Msg msg){
 Msg receive_msg(int server_fd){
     Msg msg;
     int bytes_recv = recv(server_fd, &msg, sizeof(msg), 0);
-    if (bytes_recv > 0){
-        return msg;
+    if (bytes_recv < 0){
+        perror("recv() failed");
     }
+    return msg;
 }

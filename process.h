@@ -27,7 +27,7 @@ int create_socket();
 struct sockaddr_un initialize_socket_address();
 void bind_socket(int sockfd, struct sockaddr_un address);
 int accept_new_connection_from_client(int sockfd);
-void set_socket_nonblock(int server_fd);
+void set_socket_nonblock(int sock_fd);
 void connect_to_server(int client_fd, struct sockaddr_un server_addr);
 void send_msg(int client_fd, Msg msg);
 Msg receive_msg(int server_fd);

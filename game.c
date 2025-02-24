@@ -119,6 +119,7 @@ void start_game(WINDOW *score, WINDOW *game){
     set_socket_nonblock(client_fd);
 
     // Initialize the socket address
+    unlink(SOCKET_PATH);
     struct sockaddr_un address = initialize_socket_address();
     
     // Server Socket Bind
