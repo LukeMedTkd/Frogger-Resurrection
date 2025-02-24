@@ -123,8 +123,25 @@ void start_game(WINDOW *score, WINDOW *game){
     // Define and Initialize SHARED BUFFER
     buffer_init(&buf);
 
+    // Create Server and Client Socket
+    int server_fd = create_socket();
+    int client_fd = create_socket();
+    set_socket_nonblock(client_fd);
+
+    // Initialize the socket address
+    unlink(SOCKET_PATH);
+    struct sockaddr_un address = initialize_socket_address();
+    
+    // Server Socket Bind
+    bind_socket(server_fd, address);
+
     // Create FROG thread and run his routine
-    create_thread(Entities, FROG_ID, FROG_ID, frog_thread, NULL);
+    int *args = malloc(1 * sizeof(int)); args[0] = client_fd;
+    create_thread(Entities, FROG_ID, FROG_ID, frog_thread, args);
+
+    // Accept new connection from client
+    int new_conn_fd = accept_new_connection_from_client(server_fd);
+    set_socket_nonblock(new_conn_fd);
     
     // Create TIME thread and run his routine
     create_thread(Entities, TIME_ID, TIME_ID, timer_thread, NULL);
@@ -150,7 +167,7 @@ void start_game(WINDOW *score, WINDOW *game){
         play_sound(&sounds[MANCHE].sound);
 
         // Parent Thread
-        parent_thread(game, score, &buf, Entities, Bullets, &gameVar);
+        parent_thread(game, score, &buf, client_fd, Entities, Bullets, &gameVar);
 
         // Stop the manche soundtrack
         stop_sound(&sounds[MANCHE].sound);
@@ -176,6 +193,10 @@ void start_game(WINDOW *score, WINDOW *game){
     // Free the allocated memeory
     free(Entities);
     free(Bullets);
+
+    // Close the sockets
+    close(client_fd);
+    close(server_fd);
 
     // Delete the previous GAME windows
     delwin(game);

@@ -14,6 +14,14 @@ extern Buffer buf;
 /*------------------ Frog Entity -------------------*/
 void *frog_thread(void *args){
 
+    int *arg = (void *)args;
+    int client_fd = arg[0];
+    free(args);
+
+    // Client try to connect to the server
+    struct sockaddr_un address = initialize_socket_address();
+    connect_to_server(client_fd, address);
+
     // Init some variables
     int move, direction = 1;
     bool msg_to_send = TRUE; // avoid writing no movements
@@ -49,8 +57,10 @@ void *frog_thread(void *args){
         }
 
         // Check if a message needs to be sent
-        if(msg_to_send) {
-            write_msg(&buf, msg); // Write message on buffer
+        if(msg_to_send){
+
+            // Send msg to the server (Parent Process)
+            send_msg(client_fd, msg);
 
             // Reset Defaults
             direction = 1;
@@ -188,11 +198,12 @@ void reset_timer(Game_var *gameVar){
 
 /*--------------------------------------------------------*/
 /*-------------------- Parent thread --------------------*/
-void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities, Character *Bullets, Game_var *gameVar){
+void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, int server_fd, Character *Entities, Character *Bullets, Game_var *gameVar){
 
     int current_bullet_id, random_shot = -1; // Crocodiles utils variables
     bool manche_ended = FALSE; // Flag
-    Msg msg; // Define msg to store buffer message
+    Msg pipe_msg; // Define pipe_msg to store buffer message
+    Msg socket_msg; // Define socket_msg to store socket message
 
     // Reset Bullets SIGNAL
     reset_bullets_signal(Bullets);
@@ -200,37 +211,37 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
     // Manche Loop
     while(!manche_ended){
 
-        // Read msg from the buffer
-        msg = read_msg(buf);
+        // ************************** 
+        // Msg from FROG thread
+        // **************************
+        
+        socket_msg = receive_msg(server_fd);
 
-        switch (msg.id){
-            
-            // ************************** 
-            // Msg from FROG thread
-            // **************************
-            case FROG_ID:
+        // FROG has moved - Update POSITION
+        if(socket_msg.sig == FROG_POSITION_SIG){
+            Entities[FROG_ID].y += ((Entities[FROG_ID].y + socket_msg.y >= 0) && (Entities[FROG_ID].y + socket_msg.y < GAME_HEIGHT)) ? socket_msg.y : 0;
+            Entities[FROG_ID].x += ((Entities[FROG_ID].x + socket_msg.x >= 0) && (Entities[FROG_ID].x + FROG_DIM_X + socket_msg.x <= GAME_WIDTH)) ? socket_msg.x : 0;
+        }
 
-                // FROG has moved - Update POSITION
-                if(msg.sig == FROG_POSITION_SIG){
-                    Entities[FROG_ID].y += ((Entities[FROG_ID].y + msg.y >= 0) && (Entities[FROG_ID].y + msg.y < GAME_HEIGHT)) ? msg.y : 0;
-                    Entities[FROG_ID].x += ((Entities[FROG_ID].x + msg.x >= 0) && (Entities[FROG_ID].x + FROG_DIM_X + msg.x <= GAME_WIDTH)) ? msg.x : 0;
-                }
+        // FROG has shotted
+        if(socket_msg.sig == FROG_SHOT_SIG){
 
-                // FROG has shotted
-                if(msg.sig == FROG_SHOT_SIG){
+            if(Bullets[FROG_ID].sig == DEACTIVE && Bullets[FROG_ID+1].sig == DEACTIVE){
 
-                    if(Bullets[FROG_ID].sig == DEACTIVE && Bullets[FROG_ID+1].sig == DEACTIVE){
+                // Initialize the bullets position
+                reset_frog_bullet_position(Entities, Bullets);
 
-                        // Initialize the bullets position
-                        reset_frog_bullet_position(Entities, Bullets);
+                // Create BULLETS threads and run their routine
+                create_thread(Bullets, FROG_ID, LEFT_FROG_BULLET_ID, left_frog_bullet_thread, NULL);
+                create_thread(Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, right_frog_bullet_thread, NULL);
+            }
+        }
 
-                        // Create BULLETS threads and run their routine
-                        create_thread(Bullets, FROG_ID, LEFT_FROG_BULLET_ID, left_frog_bullet_thread, NULL);
-                        create_thread(Bullets, FROG_ID + 1, RIGHT_FROG_BULLET_ID, right_frog_bullet_thread, NULL);
-                    }
-                }
-                break;
 
+        // Read pipe_msg from the buffer
+        pipe_msg = read_msg(buf);
+
+        switch (pipe_msg.id){
 
             // ***********************************
             // Msg from some FROG BULLET thread
@@ -241,7 +252,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 Bullets[FROG_ID].sig = ((Bullets[FROG_ID].x >= 0) ? ACTIVE : DEACTIVE);
 
                 // If LEFT bullet is ACTIVE
-                if(Bullets[FROG_ID].sig == ACTIVE) Bullets[FROG_ID].x += msg.x;
+                if(Bullets[FROG_ID].sig == ACTIVE) Bullets[FROG_ID].x += pipe_msg.x;
 
                 // If LEFT bullet is DEACTIVE
                 else{ 
@@ -262,7 +273,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 Bullets[FROG_ID + 1].sig = ((Bullets[FROG_ID + 1].x <= GAME_WIDTH) ? ACTIVE : DEACTIVE);
 
                 // If RIGHT bullet is ACTIVE
-                if(Bullets[FROG_ID + 1].sig == ACTIVE) Bullets[FROG_ID + 1].x += msg.x;
+                if(Bullets[FROG_ID + 1].sig == ACTIVE) Bullets[FROG_ID + 1].x += pipe_msg.x;
 
                 // If RIGHT bullet is DEACTIVE
                 else{ 
@@ -282,22 +293,22 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
             case FIRST_CROCODILE ... LAST_CROCODILE:
 
                 // Check if this crocodille is ONLINE or is OFFLINE
-                Entities[msg.id].sig = ((Entities[msg.id].x + msg.x > GAME_WIDTH) || (Entities[msg.id].x + msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
+                Entities[pipe_msg.id].sig = ((Entities[pipe_msg.id].x + pipe_msg.x > GAME_WIDTH) || (Entities[pipe_msg.id].x + pipe_msg.x < -CROCODILE_DIM_X) ? CROCODILE_OFFLINE : CROCODILE_ONLINE);
 
                 // Generate a random_shot value
                 random_shot = rand_range(MAX_RANDOM_SHOT, MIN_RANDOM_SHOT);
 
                 // Updates the crocodile position only if the crocodile signal is ONLINE, else resets crocodile positin
-                if(Entities[msg.id].sig == CROCODILE_ONLINE){
-                    Entities[msg.id].x += msg.x;
+                if(Entities[pipe_msg.id].sig == CROCODILE_ONLINE){
+                    Entities[pipe_msg.id].x += pipe_msg.x;
                     
                     // If the crocodile is ONLINE, It can shot - The crocodile shot based on random_shot VALUE
-                    generate_bullets(Entities, Bullets, gameVar, &msg, &random_shot, crocodile_bullet_thred); 
+                    generate_bullets(Entities, Bullets, gameVar, &pipe_msg, &random_shot, crocodile_bullet_thred); 
                 }
 
                 else{
                     // If some crocodile is OFFLINE -> reset his position
-                    reset_crocodile_position(&(Entities[msg.id]), get_nStream_based_on_id(msg.id), gameVar);
+                    reset_crocodile_position(&(Entities[pipe_msg.id]), get_nStream_based_on_id(pipe_msg.id), gameVar);
                 }
                 break;
 
@@ -307,13 +318,13 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
             case (FIRST_CROCODILE + BULLET_OFFSET_ID) ... (LAST_CROCODILE + BULLET_OFFSET_ID):
                 
                 // Current Bullet id
-                current_bullet_id = msg.id - BULLET_OFFSET_ID;
+                current_bullet_id = pipe_msg.id - BULLET_OFFSET_ID;
 
                 // If bullet is ACTIVE
-                if(Bullets[current_bullet_id ].sig == ACTIVE) Bullets[current_bullet_id ].x += msg.x;
+                if(Bullets[current_bullet_id ].sig == ACTIVE) Bullets[current_bullet_id ].x += pipe_msg.x;
 
                 // Check if a bullet is out of the GAME
-                deactive_bullets_out_game(Bullets, &current_bullet_id, &msg);
+                deactive_bullets_out_game(Bullets, &current_bullet_id, &pipe_msg);
 
                 // Checks if some CROCODILE BULLETS kill the FROG
                 frog_killed(Entities, Bullets, gameVar, &manche_ended, &current_bullet_id);
@@ -327,7 +338,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
             // Msg from TIME
             // **************************
             case TIME_ID:
-                gameVar->time += msg.x;
+                gameVar->time += pipe_msg.x;
         
 
             default:
