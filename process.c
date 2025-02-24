@@ -98,26 +98,30 @@ void set_socket_nonblock(int sock_fd){
 }
 
 void connect_to_server(int client_fd, struct sockaddr_un server_addr){
+    if(connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1){
+        perror("connect() failed");
+    };
 
-    int connect_flag = -1;
-    do{
-        connect_flag = connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
-    }while(connect_flag == -1);
     return;
 }
 
 void send_msg(int client_fd, Msg msg){
-    if (send(client_fd, &msg, sizeof(msg), 0) < 0){
-        perror("send() failed");
-        return;
+    int res = send(client_fd, &msg, sizeof(msg), 0);
+
+    if (res < 0){
+        if(errno == EAGAIN || errno == EWOULDBLOCK){
+            perror("send(): socket non pronto, riprova più tardi.\n");
+        } 
+        else {
+            
+            perror("send() failed");
+            return;
+        }
     }
 }
 
 Msg receive_msg(int server_fd){
     Msg msg;
-    int bytes_recv = recv(server_fd, &msg, sizeof(msg), 0);
-    if (bytes_recv < 0){
-        perror("recv() failed");
-    }
+    recv(server_fd, &msg, sizeof(msg), 0);
     return msg;
 }

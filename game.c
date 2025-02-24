@@ -111,11 +111,8 @@ void start_game(WINDOW *score, WINDOW *game){
     if(pipe(fds) == -1) {perror("Pipe call"); exit(1);}
 
     // Create Server and Client Socket
-    int sockfd = create_socket();
+    int server_fd = create_socket();
     int client_fd = create_socket();
-
-    // Set the server_fd to NONBLOCK
-    set_socket_nonblock(sockfd);
     set_socket_nonblock(client_fd);
 
     // Initialize the socket address
@@ -123,23 +120,15 @@ void start_game(WINDOW *score, WINDOW *game){
     struct sockaddr_un address = initialize_socket_address();
     
     // Server Socket Bind
-    bind_socket(sockfd, address);
-
-    // Client Socket Connect
-    connect_to_server(client_fd, address);
-
-    // Accept new connection from client
-    int server_fd = accept_new_connection_from_client(sockfd);
-
-    //Set the server_fd to NONBLOCK
-    set_socket_nonblock(server_fd);
-
-    // Create FROG process and run his routine
-    int args[2];
-    args[0] = client_fd;
+    bind_socket(server_fd, address);
     
     // Create FROG process and run his routine
+    int args[2]; args[0] = client_fd;
     create_process(fds, Entities, FROG_ID, FROG_ID, &frog_process, args);
+
+    // Accept new connection from client
+    int new_conn_fd = accept_new_connection_from_client(server_fd);
+    set_socket_nonblock(new_conn_fd);
 
     // Create TIME process and run his routine
     create_process(fds, Entities, TIME_ID, TIME_ID, &timer_process, NULL);
@@ -165,7 +154,7 @@ void start_game(WINDOW *score, WINDOW *game){
         play_sound(&sounds[MANCHE].sound);
 
         // Parent Process
-        parent_process(game, score, fds, server_fd, Entities, Bullets, &gameVar);
+        parent_process(game, score, fds, new_conn_fd, Entities, Bullets, &gameVar);
 
         // Stop the manche soundtrack
         stop_sound(&sounds[MANCHE].sound);

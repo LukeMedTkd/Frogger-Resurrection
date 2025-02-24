@@ -11,12 +11,15 @@ extern Sound sounds[N_SOUND];
 /*--------------------------------------------------*/
 /*------------------ Frog Entity -------------------*/
 void frog_process(int pipe_write, int* args){
-
-   int client_fd = args[0]; // Get the client_fd
-    
+ 
     // Init some variables
     int move, direction = 1;
     bool msg_to_send = TRUE; // avoid writing no movements
+    int client_fd = args[0]; // Get the client_fd
+
+    // Client try to connect to the server
+    struct sockaddr_un address = initialize_socket_address();
+    connect_to_server(client_fd, address);
 
     // Declare msg and attr
     Msg msg;
@@ -53,6 +56,7 @@ void frog_process(int pipe_write, int* args){
 
             // Send msg to the server (Parent Process)
             send_msg(client_fd, msg);
+
             // Reset Defaults
             direction = 1;
             msg.id = FROG_ID;
@@ -187,7 +191,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, int server_fd, Charac
         // ************************** 
         // Msg from FROG process
         // **************************
-
+      
         socket_msg = receive_msg(server_fd);
       
         // FROG has moved - Update POSITION

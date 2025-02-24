@@ -4,6 +4,7 @@
 #include "process.h"
 #include "utils.h"
 #include "sprites.h"
+#include <sys/select.h>
 
 #define TRUE 1
 #define FALSE 0 
