@@ -30,6 +30,7 @@ extern bool crocodiles_creation;
 
 // Functions Prototypes
 void print_timer(WINDOW *score, int timer);
+void print_countdown(WINDOW *game);
 void print_score(WINDOW *score, int vscore);
 void print_lifes(WINDOW *score, int lifes);
 void print_game_area(WINDOW *game, bool *dens);

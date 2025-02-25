@@ -39,6 +39,54 @@ void print_timer(WINDOW *score, int timer) {
     wattroff(score, COLOR_PAIR(color_id) | A_BOLD);
 }
 
+void print_countdown(WINDOW *game){
+
+    static const char *numbers[3][5] = {
+		
+		{ // 1
+			"   ██╗   ", 
+			"  ███║   ", 
+			"  ╚██║   ", 
+			"   ██║   ", 
+			"   ██║   "
+		},
+
+		{ // 2
+			"██████╗  ", 
+			"╚════██╗ ", 
+			" █████╔╝ ", 
+			"██╔═══╝  ", 
+			"███████╗ "
+		}, 
+
+		{  // 3
+			"██████╗  ", 
+			"╚════██╗ ", 
+			" █████╔╝ ", 
+			" ╚═══██╗ ", 
+			"██████╔╝ "
+		}
+    };
+
+
+    // Print Background
+    wattron(game, COLOR_PAIR(COLOR_BKG_DEMO_ID));
+    for (int j = 0; j < GAME_HEIGHT; j++) {
+        mvwhline(game, j, 0, ' ', GAME_WIDTH);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_BKG_DEMO_ID));
+
+    wattron(game, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+    for(int j = 2; j >= 0; j--){
+        for(int i = 0; i < 5; i++){
+            mvwprintw(game, ((GAME_HEIGHT/2) - (5/2)) + i, ((GAME_WIDTH/2) - (4/2)), "%s", numbers[j][i]);
+        }
+        wrefresh(game);
+        usleep(900000);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+}
+
 void print_score(WINDOW *score, int vscore){
     wattron(score, COLOR_PAIR(COLOR_SCORE_ID) | A_BOLD);
     mvwprintw(score, 0, GAME_WIDTH/3, "SCORE: %d", vscore);
