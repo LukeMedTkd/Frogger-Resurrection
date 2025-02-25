@@ -2,6 +2,7 @@
 #include "utils.h"
 
 void init_screen(){
+
     // Setup screen
     setlocale(LC_ALL, ""); // Enable UTF-8 chars
     initscr(); // Initialize window
@@ -64,7 +65,6 @@ void init_colors(){
     init_color(COLOR_BKG_TERM, 125, 67, 67);
     init_color(COLOR_WRT_TERM, 921, 882, 882);
 
-
     // Time Colors
     init_pair(COLOR_TIME1_ID, COLOR_TIME1, COLOR_BLACK);
     init_pair(COLOR_TIME2_ID, COLOR_TIME2, COLOR_BLACK);
@@ -83,7 +83,6 @@ void init_colors(){
     init_pair(COLOR_TIME15_ID, COLOR_TIME15, COLOR_BLACK);
     init_pair(COLOR_TERM_ID, COLOR_WRT_TERM, COLOR_BKG_TERM);
     
-
     // Background Colors
     init_pair(COLOR_RIVER_ID, COLOR_RIVER, COLOR_RIVER);
     init_pair(COLOR_GRASS_ID, COLOR_GRASS, COLOR_GRASS);    
@@ -107,10 +106,10 @@ void init_colors(){
     init_pair(COLOR_CROCODILE_SCALES_ID, COLOR_CROCODILE_SCALES, COLOR_CROCODILE_BODY);
     init_pair(COLOR_CROCODILE_EYES_ID, COLOR_CROCODILE_EYES, COLOR_CROCODILE_BODY);
     init_pair(COLOR_CROCODILE_BULLETS_ID, COLOR_CROCODILE_BULLETS, COLOR_CROCODILE_BULLETS);
-
 }
 
 void center_game(WINDOW *score, WINDOW *game){
+
     int start_y = (LINES - GAME_HEIGHT) / 2;
     int start_x = (COLS - GAME_WIDTH) / 2;
     mvwin(score, start_y, start_x);
@@ -118,6 +117,7 @@ void center_game(WINDOW *score, WINDOW *game){
 }
 
 void check_terminal_size(){
+
     if(LINES < GAME_HEIGHT || COLS < GAME_WIDTH){
         WINDOW *resize_term = newwin(0,0,0,0);
         wbkgd(resize_term, COLOR_PAIR(COLOR_TERM_ID));
@@ -140,10 +140,12 @@ void check_terminal_size(){
 }
 
 int rand_range(int max, int min){
+
     return rand() % (max - min + 1) + min;
 }
 
 void debuglog(char *message, int arg){
+    
     FILE *f = fopen(DEBUG_FILE_NAME, "a");
     if (f == NULL)
     {

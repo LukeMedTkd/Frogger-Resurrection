@@ -11,6 +11,7 @@ Buffer buf;
 extern Sound sounds[N_SOUND];
 
 Game_var initialize_gameVar(){
+
     Game_var gameVar;
     gameVar.manche = MANCHES;
     gameVar.score = SCORE;
@@ -24,6 +25,7 @@ Game_var initialize_gameVar(){
 }
 
 void randomize_streams_speed(int *streams_speed){
+
     // Randomize STREAMS SPEED: FIXED for each GAME
     for (int i = 0; i < N_STREAM; i++){
         streams_speed[i] = rand_range(MAX_STREAM_SPEED, MIN_STREAM_SPEED);
@@ -31,10 +33,11 @@ void randomize_streams_speed(int *streams_speed){
 }
 
 void randomize_streams_direction(int *stream_speed){
-    // stream_dir takes 1 or -1
+
+    // Stream_dir takes 1 or -1
     int stream_dir = STREAM_DIRECTION;
     for (int i = 0; i < N_STREAM; i++){
-        stream_speed[i] = abs(stream_speed[i]); // invert correctly dir
+        stream_speed[i] = abs(stream_speed[i]); // Invert correctly dir
         stream_speed[i] *= stream_dir;
         stream_dir *= INVERT_DIRECTION;
     }
@@ -51,7 +54,7 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
     // Create (MAX_N_CROCODILE_PER_STREAM * N_STREAM) Crocodile Threads
     for (int i = 0; i < N_STREAM; i++){
 
-        // variables statements
+        // Variables statements
         int cumulative_delay = 0;
 
         for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
@@ -68,7 +71,7 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
             args[2] = cumulative_delay;
             args[3] = crocodile_index;
             
-            // Reset the Crocodilles Position - Modify the characters structs
+            // Reset the Crocodilles Position - Modify Entity struct
             reset_crocodile_position(&(Entities[crocodile_index]), i, gameVar);
 
             // Create CROCODILE thread and run his routine
@@ -81,6 +84,7 @@ void set_crocodiles_on_streams(Character *Entities, Game_var *gameVar){
 }
 
 int get_nStream_based_on_id(int id){
+    
     return (id - FIRST_CROCODILE) / MAX_N_CROCODILE_PER_STREAM;
 }
 
@@ -107,14 +111,14 @@ void outcome(WINDOW *game, Game_var *gameVar){
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
 
-    //set game variables
+    // Set game variables
     Game_var gameVar = initialize_gameVar();
 
     // Dynamic allocation 
     Character *Entities = malloc(N_ENTITIES * sizeof(Character));
     Character *Bullets = malloc(N_BULLETS * sizeof(Character));
 
-    // Intialize Entities TID
+    // Initialize Entities TID
     reset_entities_tid(Entities, Bullets);
 
     // Reset Bullets SIGNAL

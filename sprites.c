@@ -9,7 +9,7 @@ extern Sound sounds[N_SOUND];
 
 /*---------------------------------------------*/
 /*--------------- Game’s Prints ---------------*/
-void print_timer(WINDOW *score, int timer) {
+void print_timer(WINDOW *score, int timer){
 
     for (int j = 0; j <= TIME; j++) mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");
 
@@ -106,6 +106,7 @@ void print_lifes(WINDOW *score, int lifes){
 }
 
 void print_game_area(WINDOW *game, bool *dens){
+
     // Dens
     for (int y = DENS_Y_START; y < DENS_Y_END; y++){
         for (int x = 0; x < GAME_WIDTH; x++){
@@ -150,7 +151,6 @@ void print_game_area(WINDOW *game, bool *dens){
         }
     }
 
-    
     // Upper edge
     wattron(game, COLOR_PAIR(COLOR_GRASS_ID));
     for (int y = GRASS_Y_SUP_START; y < GRASS_Y_SUP_END; y++){
@@ -176,7 +176,8 @@ void print_game_area(WINDOW *game, bool *dens){
 /*---------------------------------------------*/
 /*-------------- Entities prints --------------*/
 void print_frog(WINDOW *game, Character frog_entity){
-    // Defined Frog Sprite
+
+    // Define Frog Sprite
     static const char* frog[FROG_DIM_Y][FROG_DIM_X] = {
        {"▄", "█", "", "▀", "▌", "▐", "▀", "", "█", "▄"},
         {"", "▀", "▄", " ", "▄", " ", " ", "▄", "▀", ""},
@@ -185,28 +186,26 @@ void print_frog(WINDOW *game, Character frog_entity){
 
     };
 
-
-
-    for (int i = 0; i < FROG_DIM_Y; i++) {
-        for (int j = 0; j < FROG_DIM_X; j++) {
-            if (frog[i][j][0] == '\0') {
+    for (int i = 0; i < FROG_DIM_Y; i++){
+        for (int j = 0; j < FROG_DIM_X; j++){
+            if (frog[i][j][0] == '\0'){
                 continue; // Skip the empty positions
             }
 
-            // Gets the color
-            if (i == 0) {
+            // Get the color
+            if (i == 0){
                 wattron(game, COLOR_PAIR(COLOR_EYE_ID));
-            } else if (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5)) {
+            } else if (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5)){
                 wattron(game, COLOR_PAIR(COLOR_LEGS_ID));
             } else {
                 wattron(game, COLOR_PAIR(COLOR_FROG_ID));
             }
 
-            // Prints the character
+            // Print the character
             mvwprintw(game, frog_entity.y + i, frog_entity.x + j, "%s", frog[i][j]);
 
-            // Resets the color
-            if (i == 0 || (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5))) {
+            // Reset the color
+            if (i == 0 || (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5))){
                 wattroff(game, COLOR_PAIR(COLOR_EYE_ID));
                 wattroff(game, COLOR_PAIR(COLOR_LEGS_ID));
             } else {
@@ -301,6 +300,7 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
 }
 
 void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
+    
     for(int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
         // Print the bullet
         if(Bullets[i].sig == ACTIVE){
@@ -314,7 +314,7 @@ void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
 /*---------------------------------------------*/
 /*-------------- Outcomes prints --------------*/
 void print_lost_game(WINDOW *game){
-    
+
     // Print background
     wattron(game, COLOR_PAIR(COLOR_BKG_LOST_GAME_ID));
     for (int i = 0; i < GAME_HEIGHT; i++){
@@ -333,10 +333,10 @@ void print_lost_game(WINDOW *game){
 
     wrefresh(game);
     usleep(DURATION);
-    
 }
 
 void print_time_is_up(WINDOW *game){
+
     // Print background
     wattron(game, COLOR_PAIR(COLOR_BKG_TIME_IS_UP_ID));
     for (int i = 0; i < GAME_HEIGHT; i++){
@@ -384,19 +384,19 @@ void print_won_game(WINDOW *game){
 
 /*---------------------------------------------*/
 /*---------..----- Menu prints ----------------*/
-void print_demo(WINDOW *menu) {
+void print_demo(WINDOW *menu){
 
     // Variables statements
     int delay, frogger_start_y = 0, resurrection_start_y = GAME_HEIGHT - 6, center_y = (GAME_HEIGHT / 2) - 6;
     double A = (DURATION_MAX - DURATION_MIN);  
     double B = 10.0 / center_y;  // Adjusts the curvature of the logarithm
 
-    for (int i = 0; i <= center_y; i++) {
+    for (int i = 0; i <= center_y; i++){
         wclear(menu);
 
         // Print Background
         wattron(menu, COLOR_PAIR(COLOR_BKG_DEMO_ID));
-        for (int j = 0; j < GAME_HEIGHT; j++) {
+        for (int j = 0; j < GAME_HEIGHT; j++){
             mvwhline(menu, j, 0, ' ', GAME_WIDTH);
         }
         wattroff(menu, COLOR_PAIR(COLOR_BKG_DEMO_ID));
@@ -428,12 +428,13 @@ void print_demo(WINDOW *menu) {
     }
     usleep(DEMO_DURATION);
 
-    // Pulisce la finestra
+    // Clear window
     wclear(menu);
     wrefresh(menu);
 }
 
 void draw_von_neumann_machine(WINDOW *menu){
+    
     const char *sprite[] = {
         "            ╔════════════════════════════════════════════════╗            ",
         "            ║                        ◯                       ║            ",
@@ -469,6 +470,4 @@ void draw_von_neumann_machine(WINDOW *menu){
     wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
     for (int i = 0; i < rows; i++) mvwprintw(menu, start_y + i, start_x, "%s", sprite[i]);
     wattroff(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
-    
-
 }

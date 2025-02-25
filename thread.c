@@ -5,6 +5,7 @@
 #include "game.h"
 
 void buffer_init(Buffer *buf){
+
     buf->in = buf->out = 0;
     sem_init(&(buf->sem_free_spaces), 0, BUFFER_SIZE);
     sem_init(&(buf->sem_busy_spaces), 0, 0);
@@ -12,12 +13,14 @@ void buffer_init(Buffer *buf){
 }
 
 void destroy_buffer(Buffer *buf){
+
     sem_destroy(&buf->sem_busy_spaces);
     sem_destroy(&buf->sem_free_spaces);
     pthread_mutex_destroy(&buf->mutex);
 }
 
 void create_thread(Character *Entities, int index, int id, void *(func_thread), void *func_params){
+
     pthread_t tid;
     // If pthread_create failed
     if(pthread_create(&tid, NULL, func_thread, func_params) != 0){
@@ -31,12 +34,14 @@ void create_thread(Character *Entities, int index, int id, void *(func_thread), 
 }
 
 void kill_threads(Character *Entities, int start, int end){
+
     for (int i = start; i < end; i++){
         if(Entities[i].tid != 0) pthread_cancel(Entities[i].tid);
     }
 }
 
 void wait_threads(Character *Entities, int start, int end){
+
     for (int i = start; i < end; i++){
         if(Entities[i].tid != 0){
             pthread_join(Entities[i].tid, NULL);
@@ -45,26 +50,28 @@ void wait_threads(Character *Entities, int start, int end){
     }   
 }
 
-void cleanup_mutex(void *arg) {
+void cleanup_mutex(void *arg){
+
     pthread_mutex_unlock((pthread_mutex_t *)arg);
 }
 
-void cleanup_sem(void *arg) {
+void cleanup_sem(void *arg){
+
     Buffer *buf = (Buffer *)arg;
     sem_post(&buf->sem_free_spaces);
 }
 
-void write_msg(Buffer *buf, Msg msg) {
+void write_msg(Buffer *buf, Msg msg){
 
     sem_wait(&buf->sem_free_spaces);
 
-    // Relase the semaphore resource if an interrup occurs
+    // Relase the semaphore resource if an interrupt occurs
     pthread_cleanup_push(cleanup_sem, (void *)buf);
 
     // Lock the mutex - ensures the mutual exclusion
     pthread_mutex_lock(&(buf->mutex));
 
-    // Relase the mutex resource if an interrup occurs
+    // Relase the mutex resource if an interrupt occurs
     pthread_cleanup_push(cleanup_mutex, (void *)&buf->mutex);
 
     // DEACTIVE the cancellation inside the race condition
@@ -89,6 +96,7 @@ void write_msg(Buffer *buf, Msg msg) {
 }
 
 Msg read_msg(Buffer *buf){
+    
     sem_wait(&buf->sem_busy_spaces);         
     Msg msg = buf->buffer[buf->out];     
     buf->out = (buf->out + 1) % BUFFER_SIZE;
@@ -172,6 +180,6 @@ void send_msg(int client_fd, Msg msg){
 
 Msg receive_msg(int server_fd){
     Msg msg;
-    int bytes_rcv = recv(server_fd, &msg, sizeof(msg), 0);
+    recv(server_fd, &msg, sizeof(msg), 0);
     return msg;
 }

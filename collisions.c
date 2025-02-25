@@ -6,6 +6,7 @@
 extern Sound sounds[N_SOUND];
 
 void set_outcome(Game_var *gameVar, bool *manche_ended){
+
     // Set LOSER_OUTCOME to gameVar.outcome if manche == 0
     if(gameVar->manche == 0){
         gameVar->outcome = LOSER_OUTCOME;
@@ -30,6 +31,7 @@ void set_outcome(Game_var *gameVar, bool *manche_ended){
 }
 
 void is_time_up(WINDOW *game, Character *Entities, Character * Bullets,  Game_var *gameVar, bool *manche_ended){
+ 
     if(gameVar->time == 0){
         gameVar->lifes--;
         gameVar->manche--;
@@ -49,7 +51,7 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
     for (int i = 0; i < N_DENS; i++){
         // Legal AREA
         if((Entities[FROG_ID].y == 1) && (Entities[FROG_ID].x == dens_start[i])){ 
-            // The den already close: lost manche
+            // The den is already close: lost manche
             if (gameVar->dens[i] ==  FALSE){ 
                 gameVar->lifes--;
                 gameVar->manche--;
@@ -67,8 +69,8 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
 
     // Illegal AREA
     if(Entities[FROG_ID].y == 1){
-        // FROG on the dens' edges
-        if (Entities[FROG_ID].x < dens_start[0] || Entities[FROG_ID].x > dens_start[N_DENS - 1]) {
+        // FROG on the dens edges
+        if (Entities[FROG_ID].x < dens_start[0] || Entities[FROG_ID].x > dens_start[N_DENS - 1]){
             gameVar->lifes--;
             gameVar->manche--;
             *manche_ended = TRUE;
@@ -76,8 +78,8 @@ void dens_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
         
         // FROG between two dens
         else{
-            for (int i = 0; i < N_DENS - 1; i++) {
-                if (Entities[FROG_ID].x > dens_start[i] && Entities[FROG_ID].x < dens_start[i + 1]) {
+            for (int i = 0; i < N_DENS - 1; i++){
+                if (Entities[FROG_ID].x > dens_start[i] && Entities[FROG_ID].x < dens_start[i + 1]){
                     gameVar->lifes--;
                     gameVar->manche--;
                     *manche_ended = TRUE;
@@ -117,10 +119,12 @@ void generate_bullets(Character *Entities, Character *Bullets, Game_var *gameVar
 }
 
 void reset_bullets_signal(Character *Bullets){
+
     for(int i = 0; i < N_BULLETS; i++) Bullets[i].sig = DEACTIVE;
 }
 
 void reset_entities_tid(Character *Entities, Character *Bullets){
+
     for(int i = 0; i < N_ENTITIES; i++){
         Bullets[i].tid = 0;
         Entities[i].tid = 0;
@@ -128,7 +132,8 @@ void reset_entities_tid(Character *Entities, Character *Bullets){
 }
 
 void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){
-    // If a RIGHT to LEFT bullet is ACTIVE but It's out of the GAME
+
+    // If a RIGHT to LEFT bullet is ACTIVE but it's out of the GAME
     if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x < 0 && msg->x == -1){
             if(Bullets[*current_bullet_id].tid != 0){
                 pthread_cancel(Bullets[*current_bullet_id].tid);
@@ -138,7 +143,7 @@ void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg 
             }
     } 
     
-    // If a LEFT to RIGHT bullet is ACTIVE but It's out of the GAME
+    // If a LEFT to RIGHT bullet is ACTIVE but it's out of the GAME
     else if(Bullets[*current_bullet_id].sig == ACTIVE && Bullets[*current_bullet_id].x > GAME_WIDTH && msg->x == 1){
         if(Bullets[*current_bullet_id].tid != 0){
             pthread_cancel(Bullets[*current_bullet_id].tid);
@@ -166,6 +171,7 @@ void frog_killed(Character *Entities, Character *Bullets, Game_var *gameVar, boo
 }
 
 void bullets_collision(Character *Entities, Character *Bullets, bool *manche_ended){
+    
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
@@ -178,22 +184,22 @@ void bullets_collision(Character *Entities, Character *Bullets, bool *manche_end
         }
     }
 
-    // Checks if some FROG Bullets neutralize some CROCODILE Bullets
+    // Check if some FROG Bullets neutralize some CROCODILE Bullets
     int current_crocodile_index, current_stream = 0;
-    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END){
         // Get index of the current stream
         while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
 
         // Check 3 crocodiles bullets at once
-        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
             current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
 
-            // Checks if BULLET.y MATCHS with FROG.y
+            // Checks if BULLET.y matchs with FROG.y
             if(Bullets[current_crocodile_index].sig == ACTIVE && 
             (Bullets[current_crocodile_index].y > Entities[FROG_ID].y && 
             Bullets[current_crocodile_index].y < Entities[FROG_ID].y + FROG_DIM_Y)){
 
-                // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matching
+                // Checks if a RIGHT to LEFT bullet is ACTIVE and RIGHT FROG bullet is ACTIVE and their x matchs
                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID+1].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID+1].x <= 1))){
                     pthread_cancel(Bullets[FROG_ID+1].tid);
                     pthread_join(Bullets[FROG_ID+1].tid, NULL);
@@ -206,7 +212,7 @@ void bullets_collision(Character *Entities, Character *Bullets, bool *manche_end
                     Bullets[current_crocodile_index].tid = 0; // Set tid = 0 to show the thread has been killed
                 }
 
-                // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matching
+                // Checks if a LEFT to RIGHT bullet is ACTIVE and LEFT FROG bullet is ACTIVE and their x matchs
                 if(Bullets[current_crocodile_index].sig == ACTIVE && Bullets[FROG_ID].sig == ACTIVE && ((Bullets[current_crocodile_index].x - Bullets[FROG_ID].x >= -1) && (Bullets[current_crocodile_index].x - Bullets[FROG_ID].x <= 1))){
                     pthread_cancel(Bullets[FROG_ID].tid);
                     pthread_join(Bullets[FROG_ID].tid, NULL);
@@ -223,13 +229,14 @@ void bullets_collision(Character *Entities, Character *Bullets, bool *manche_end
     }
 }
 
-void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended) {
+void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *manche_ended){
+    
     bool frog_on_crocodile = FALSE;
     static int last_crocodile_index, frog_offset_x, last_frog_x;
     int current_crocodile_index, direction, current_stream = 0;
 
     // Check if the FROG is on the RIVER area
-    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
+    if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END){
 
         // Get index of the current stream
         while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
@@ -237,32 +244,32 @@ void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *m
         direction = ((gameVar->streams_speed[current_stream] > 0) ? 1 : -1);
 
         // Check 3 crocodiles at once
-        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
+        for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++){
             current_crocodile_index = FIRST_CROCODILE + (current_stream * MAX_N_CROCODILE_PER_STREAM) + j;
 
             // Crocodiles from LEFT to RIGHT
-            if (direction == 1) {
+            if (direction == 1){
                 // Check if the FROG is on the crocodile
                 if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET)) &&
-                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))) {
+                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_HEAD_OFFSET - FROG_DIM_X)))){
                     frog_on_crocodile = TRUE;
                     break;
                 }
             }
 
             // Crocodiles from RIGHT to LEFT
-            if (direction == -1) {
+            if (direction == -1){
                 // Check if the FROG is on the crocodile
                 if ((Entities[FROG_ID].x >= (Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)) &&
-                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))) {
+                    ((Entities[FROG_ID].x <= (Entities[current_crocodile_index].x + CROCODILE_DIM_X - CROCODILE_TAIL_OFFSET - FROG_DIM_X)))){
                     frog_on_crocodile = TRUE;
                     break;
                 }
             }
         }
 
-        // Checks if the FROG has fallen on the river -> She lose 1 life and 1 manche
-        if(frog_on_crocodile == FALSE) {
+        // Check if the frog fell into the river -> She lose 1 life and 1 manche
+        if(frog_on_crocodile == FALSE){
             play_sound(&sounds[FALL].sound);
             gameVar->manche--;
             gameVar->lifes--;
@@ -270,11 +277,11 @@ void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *m
             return;
         } 
         
-        // frog_on_crocodile == TRUE
+        // IF frog_on_crocodile == TRUE
         else {
             
-            // Checks if the FROG has changed crocodile
-            if (current_crocodile_index != last_crocodile_index) {
+            // Checks if the FROG jumped on another crocodile
+            if (current_crocodile_index != last_crocodile_index){
                 play_sound(&sounds[JUMP].sound);
                 // Compute the FROG offset between the previous crocodile and the current one and update the last_crocodile_index
                 frog_offset_x = Entities[FROG_ID].x - Entities[current_crocodile_index].x;
@@ -292,8 +299,8 @@ void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *m
             // Store the last FROG position
             last_frog_x = Entities[FROG_ID].x;
 
-            // Checks if the FROG is in the crocodile area
-            if (direction == 1) {
+            // Check if the FROG is in the crocodile area
+            if (direction == 1){
                 if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET) 
                     Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_TAIL_OFFSET;
 
@@ -302,7 +309,7 @@ void frog_on_crocodile_collision(Character *Entities, Game_var *gameVar, bool *m
 
             } 
             
-            else if (direction == -1) {
+            else if (direction == -1){
                 if (Entities[FROG_ID].x < Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET)
                     Entities[FROG_ID].x = Entities[current_crocodile_index].x + CROCODILE_HEAD_OFFSET;
 
