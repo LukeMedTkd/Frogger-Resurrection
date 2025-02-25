@@ -153,3 +153,36 @@ void debuglog(char *message, int arg){
     fprintf(f, message, arg);
     fclose(f);
 }
+
+void logExecutionTime(){
+    static struct timespec start, end;
+    static int first_call = 1;
+
+    if(first_call){
+        // First Call - Store start time
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        first_call = 0;
+    } 
+    
+    else{
+        // Second Call - Computes execution time and writes it on the file 
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        // Compute the time spent
+        long seconds = end.tv_sec - start.tv_sec;
+        long nanoseconds = end.tv_nsec - start.tv_nsec;
+        double elapsed = seconds + nanoseconds * 1e-9;
+
+        // Writes the outcome on the file
+        FILE *fp = fopen(LOG_TIME_FILE_NAME, "a");
+        if (fp == NULL) {
+            perror("fopen");
+            return;
+        }
+        fprintf(fp, "Tempo di esecuzione: %.9f secondi\n", elapsed);
+        fclose(fp);
+
+        // Resets for the next test
+        first_call = 1;
+    }
+}

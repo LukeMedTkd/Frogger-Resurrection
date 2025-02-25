@@ -9,6 +9,7 @@
 #include "game.h"
 
 #define DEBUG_FILE_NAME "log.txt"
+#define LOG_TIME_FILE_NAME "log_tempi.txt"
 
 // Defined Color_Id
 #define COLOR_FROG 100
@@ -118,3 +119,4 @@ void center_game(WINDOW *score, WINDOW *game);
 void check_terminal_size();
 int rand_range(int max, int min);
 void debuglog(char *message, int arg);
+void logExecutionTime();
