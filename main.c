@@ -13,23 +13,26 @@
 extern Sound sounds[N_SOUND];
 
 int start_menu(WINDOW *menu) {
+
+    // The keypad option enables the keypad of the user's terminal (from the official terminal)
     keypad(menu, TRUE);
     int key, choice = 0;
     const char *options[MENU_OPTIONS] = {" START ", " QUIT "};
 
     while (1){
-        // Print background
+
+        // Print the background
         wbkgd(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID));
 
         draw_von_neumann_machine(menu);
 
-        // Print TITLE
+        // Print the TITLE
         wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
         mvwprintw(menu, (MENU_HEIGHT/2) - ((MENU_OPTIONS + SPACE_BETWEEN_OPTIONS + SPACE_BETWEEN_TITLE + 1)/2), ((GAME_WIDTH/2) - (20 / 2)), "%s", "FROGGER RESURRECTION");
         mvwprintw(menu, (MENU_HEIGHT/2) - ((MENU_OPTIONS + SPACE_BETWEEN_OPTIONS + SPACE_BETWEEN_TITLE)/2), ((GAME_WIDTH/2) - (30 / 2)), "%s", "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾");
         wattroff(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
 
-        // Print 2 OPTIONS
+        // Print the 2 OPTIONS (START or QUIT)
         for (int i = 0; i < MENU_OPTIONS; i++){
             if (i == choice){
                 wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_REVERSE | A_BOLD);
@@ -57,16 +60,16 @@ int start_menu(WINDOW *menu) {
 
 int main(){
 
-    // Inits screen
+    // Init the screen
     init_screen();
 
-    // Sets colors
+    // Set the game colors
     init_colors();
 
-    //Checks terminal size
+    // Check the terminal size
     check_terminal_size();
 
-    // Create MENU window
+    // Create the MENU window
     WINDOW *menu = newwin(MENU_HEIGHT, MENU_WIDTH, ((LINES/2)-(MENU_HEIGHT/2)), ((COLS/2)-(MENU_WIDTH/2)));
 
     // Initialize miniaudio engine
@@ -86,15 +89,15 @@ int main(){
 
         if(!start_menu(menu)) break; // If the USER click QUIT, break
 
-        // Clear the INITSCR so remove the menu win
+        // Clear the INITSCR then remove the menu window
         clear();
         refresh();
 
-        // Creates the two GAME windows
+        // Create the two GAME windows
         WINDOW *score = newwin(SCORE_HEIGHT, GAME_WIDTH, 0, 0);
         WINDOW *game = newwin(GAME_HEIGHT, GAME_WIDTH, GAME_START, 0);
 
-        // Centers entire screen
+        // Center the entire screen
         center_game(score, game);
 
         // Start the entire game

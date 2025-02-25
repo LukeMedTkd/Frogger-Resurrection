@@ -1,8 +1,8 @@
 #include "miniaudio.h"
 #include "struct.h"
 
+// Sounds Constants
 #define N_SOUND 8
-
 #define DEMO 0
 #define MANCHE 1
 #define JUMP 2

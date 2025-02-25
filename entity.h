@@ -1,6 +1,4 @@
 #include <unistd.h>
-#include <sys/types.h>
-#include <stdbool.h>
 #include "process.h"
 #include "utils.h"
 #include "sprites.h"
@@ -32,12 +30,12 @@
 #define MAX_RANDOM_SHOT 200
 #define MIN_RANDOM_SHOT 1
 
-// FROG Bullets
+// FROG Bullets constants
 #define LEFT_FROG_BULLET_ID 50
 #define RIGHT_FROG_BULLET_ID 51
 #define FROG_BULLET_SPEED 12000
 
-// CROCODILE Bullets
+// CROCODILE Bullets constants
 #define BULLET_OFFSET_ID 50
 #define MAX_BULLET_SPEED_INCREASE 60
 #define MIN_BULLET_SPEED_INCREASE 45
@@ -46,7 +44,7 @@
 #define ACTIVE 1
 #define DEACTIVE 0
 
-// Time costants
+// Time constants
 #define TIME_ID 1
 
 // Functions Prototypes

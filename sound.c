@@ -9,11 +9,11 @@ Sound sounds[N_SOUND];
 char *audio_files[N_SOUND] = {"sound/demo_music.wav", "sound/manche.wav", "sound/frog_jump.wav", "sound/fall_water.wav", "sound/won.wav", "sound/lost.wav", "sound/den_close.wav", "sound/dead.wav"};
 ma_engine engine;
 
-
+// Init the miniaudio engine to handle sounds
 void init_ma_engine(Sound *sounds) {
     ma_engine_config engineConfig = ma_engine_config_init();
-    engineConfig.sampleRate = 44100;  // Sample rate elevato per ridurre la latenza
-    engineConfig.periodSizeInFrames = 64; // Minore è il valore, minore è la latenza
+    engineConfig.sampleRate = 44100;                            
+    engineConfig.periodSizeInFrames = 64;                       
 
     // Initialize the engine
     if (ma_engine_init(&engineConfig, &engine) != MA_SUCCESS) {
@@ -26,7 +26,7 @@ void init_ma_engine(Sound *sounds) {
         sounds[i].filename = audio_files[i];
     }
 
-    // Upload all sounds/musics
+    // Upload all sounds/music
     for (int i = 0; i < N_SOUND; i++) {
         if (ma_sound_init_from_file(&engine, sounds[i].filename, 0, NULL, NULL, &sounds[i].sound) != MA_SUCCESS) {
             printf("Errore nel caricamento del file audio: %s\n", sounds[i].filename);
@@ -35,8 +35,6 @@ void init_ma_engine(Sound *sounds) {
         }
     }
 }
-
-
 
 // Play the sound in input
 void play_sound(ma_sound *sound_to_play){

@@ -6,15 +6,21 @@
 
 void create_process(int *fds,  Character *Entities, int index, int id, void (*func_process)(int, int*), int *func_params){
     pid_t pid = fork();
-    if(pid < 0) {
+
+    // Error Case
+    if(pid < 0){
         kill_processes(Entities, 0, N_ENTITIES);
         perror("Pipe call");
         exit(0);
     }
-    else if(pid == PID_CHILD) {
+
+    // Child Case
+    else if(pid == PID_CHILD){
         close(fds[PIPE_READ]);
         func_process(fds[PIPE_WRITE], func_params);
     }
+
+    // Parent Case
     else{
         // Set Id and Pid
         Entities[index].id = id;

@@ -39,6 +39,54 @@ void print_timer(WINDOW *score, int timer) {
     wattroff(score, COLOR_PAIR(color_id) | A_BOLD);
 }
 
+void print_countdown(WINDOW *game){
+
+    static const char *numbers[3][5] = {
+		
+		{ // 1
+			"   ██╗   ", 
+			"  ███║   ", 
+			"  ╚██║   ", 
+			"   ██║   ", 
+			"   ██║   "
+		},
+
+		{ // 2
+			"██████╗  ", 
+			"╚════██╗ ", 
+			" █████╔╝ ", 
+			"██╔═══╝  ", 
+			"███████╗ "
+		}, 
+
+		{  // 3
+			"██████╗  ", 
+			"╚════██╗ ", 
+			" █████╔╝ ", 
+			" ╚═══██╗ ", 
+			"██████╔╝ "
+		}
+    };
+
+
+    // Print Background
+    wattron(game, COLOR_PAIR(COLOR_BKG_DEMO_ID));
+    for (int j = 0; j < GAME_HEIGHT; j++) {
+        mvwhline(game, j, 0, ' ', GAME_WIDTH);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_BKG_DEMO_ID));
+
+    wattron(game, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+    for(int j = 2; j >= 0; j--){
+        for(int i = 0; i < 5; i++){
+            mvwprintw(game, ((GAME_HEIGHT/2) - (5/2)) + i, ((GAME_WIDTH/2) - (4/2)), "%s", numbers[j][i]);
+        }
+        wrefresh(game);
+        usleep(900000);
+    }
+    wattroff(game, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
+}
+
 void print_score(WINDOW *score, int vscore){
     wattron(score, COLOR_PAIR(COLOR_SCORE_ID) | A_BOLD);
     mvwprintw(score, 0, GAME_WIDTH/3, "SCORE: %d", vscore);
@@ -137,8 +185,6 @@ void print_frog(WINDOW *game, Character frog_entity){
 
     };
 
-
-
     for (int i = 0; i < FROG_DIM_Y; i++) {
         for (int j = 0; j < FROG_DIM_X; j++) {
             if (frog[i][j][0] == '\0') {
@@ -187,7 +233,6 @@ void print_frog_bullets(WINDOW *game, Character *Bullets){
         mvwprintw(game, Bullets[FROG_ID + 1].y, Bullets[FROG_ID + 1].x, " ");
         wattroff(game, COLOR_PAIR(COLOR_DENS_ID));
     }
-
 }
 
 void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_dir){
@@ -258,7 +303,7 @@ void print_crocodiles(WINDOW *game, Character *Entities, int *stream_speed_with_
 
 void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
     for(int i = FIRST_CROCODILE; i < LAST_CROCODILE; i++){
-        // Print the bullet
+        // Print the bullets
         if(Bullets[i].sig == ACTIVE){
             wattron(game, COLOR_PAIR(COLOR_CROCODILE_BULLETS_ID));
             mvwprintw(game, Bullets[i].y, Bullets[i].x, " ");
@@ -271,13 +316,14 @@ void print_crocodiles_bullets(WINDOW *game, Character *Bullets){
 /*-------------- Outcomes prints --------------*/
 void print_lost_game(WINDOW *game){
     
-    // Print background
+    // Print the background
     wattron(game, COLOR_PAIR(COLOR_BKG_LOST_GAME_ID));
     for (int i = 0; i < GAME_HEIGHT; i++){
         mvwhline(game, i, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_BKG_LOST_GAME_ID));
 
+    // Print the "YOU LOSE" text
     wattron(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK );
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 0, (GAME_WIDTH / 2) - (64 / 2), "██╗   ██╗ ██████╗ ██╗   ██╗    ██╗      ██████╗ ███████╗███████╗");
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 1, (GAME_WIDTH / 2) - (64 / 2), "╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║     ██╔═══██╗██╔════╝██╔════╝");
@@ -288,18 +334,19 @@ void print_lost_game(WINDOW *game){
     wattroff(game, COLOR_PAIR(COLOR_WRT_LOST_GAME_ID) | A_BOLD | A_BLINK);
 
     wrefresh(game);
-    usleep(DURATION);
-    
+    usleep(DURATION); 
 }
 
 void print_time_is_up(WINDOW *game){
-    // Print background
+
+    // Print the background
     wattron(game, COLOR_PAIR(COLOR_BKG_TIME_IS_UP_ID));
     for (int i = 0; i < GAME_HEIGHT; i++){
         mvwhline(game, i, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_BKG_TIME_IS_UP_ID));
 
+    // Print the "TIME IS UP" text
     wattron(game, COLOR_PAIR(COLOR_WRT_TIME_IS_UP_ID) | A_BOLD | A_BLINK );
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 0, (GAME_WIDTH / 2) - (67 / 2), "████████╗██╗███╗   ███╗███████╗    ██╗███████╗    ██╗   ██╗██████╗ ");
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 1, (GAME_WIDTH / 2) - (67 / 2), "╚══██╔══╝██║████╗ ████║██╔════╝    ██║██╔════╝    ██║   ██║██╔══██╗");
@@ -315,13 +362,14 @@ void print_time_is_up(WINDOW *game){
 
 void print_won_game(WINDOW *game){
 
-    // Print background
+    // Print the background
     wattron(game, COLOR_PAIR(COLOR_BKG_WON_GAME_ID));
     for (int i = 0; i < GAME_HEIGHT; i++){
         mvwhline(game, i, 0, ' ', GAME_WIDTH);
     }
     wattroff(game, COLOR_PAIR(COLOR_BKG_WON_GAME_ID));
 
+    // Print the "YOU WON" text
     wattron(game, COLOR_PAIR(COLOR_WRT_WON_GAME_ID) | A_BOLD | A_BLINK );
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 0, (GAME_WIDTH / 2) - (60 / 2), "██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗ ██████╗ ███╗   ██╗");
     mvwprintw(game, ((GAME_HEIGHT - 6) / 2) + 1, (GAME_WIDTH / 2) - (60 / 2), "╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██╔═══██╗████╗  ██║");
@@ -339,7 +387,7 @@ void print_won_game(WINDOW *game){
 }
 
 /*---------------------------------------------*/
-/*---------..----- Menu prints ----------------*/
+/*---------------- Menu prints ----------------*/
 void print_demo(WINDOW *menu) {
 
     // Variables statements
@@ -350,14 +398,14 @@ void print_demo(WINDOW *menu) {
     for (int i = 0; i <= center_y; i++) {
         wclear(menu);
 
-        // Print Background
+        // Print the background
         wattron(menu, COLOR_PAIR(COLOR_BKG_DEMO_ID));
         for (int j = 0; j < GAME_HEIGHT; j++) {
             mvwhline(menu, j, 0, ' ', GAME_WIDTH);
         }
         wattroff(menu, COLOR_PAIR(COLOR_BKG_DEMO_ID));
 
-        // Print FROGGER
+        // Print the "FROGGER" text
         wattron(menu, COLOR_PAIR(COLOR_WRT_DEMO_ID) | A_BOLD);
         mvwprintw(menu, frogger_start_y + i, (GAME_WIDTH / 2) - (61 / 2), "███████╗██████╗  ██████╗  ██████╗  ██████╗ ███████╗██████╗ ");
         mvwprintw(menu, frogger_start_y + i + 1, (GAME_WIDTH / 2) - (61 / 2), "██╔════╝██╔══██╗██╔═══██╗██╔════╝ ██╔════╝ ██╔════╝██╔══██╗");
@@ -366,7 +414,7 @@ void print_demo(WINDOW *menu) {
         mvwprintw(menu, frogger_start_y + i + 4, (GAME_WIDTH / 2) - (61 / 2), "██║     ██║  ██║╚██████╔╝╚██████╔╝╚██████╔╝███████╗██║  ██║");
         mvwprintw(menu, frogger_start_y + i + 5, (GAME_WIDTH / 2) - (61 / 2), "╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝");
 
-        // Print "RESURRECTION"
+        // Print the "RESURRECTION" text
         mvwprintw(menu, resurrection_start_y - i, (GAME_WIDTH / 2) - (97 / 2), "██████╗ ███████╗███████╗██╗   ██╗██████╗ ██████╗ ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗");
         mvwprintw(menu, resurrection_start_y - i + 1, (GAME_WIDTH / 2) - (97 / 2), "██╔══██╗██╔════╝██╔════╝██║   ██║██╔══██╗██╔══██╗██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║");
         mvwprintw(menu, resurrection_start_y - i + 2, (GAME_WIDTH / 2) - (97 / 2), "██████╔╝█████╗  ███████╗██║   ██║██████╔╝██████╔╝█████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║");
@@ -384,7 +432,7 @@ void print_demo(WINDOW *menu) {
     }
     usleep(DEMO_DURATION);
 
-    // Pulisce la finestra
+    // Clear the menu WINDOW
     wclear(menu);
     wrefresh(menu);
 }
