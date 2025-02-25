@@ -167,7 +167,7 @@ void start_game(WINDOW *score, WINDOW *game){
         play_sound(&sounds[MANCHE].sound);
 
         // Parent Thread
-        parent_thread(game, score, &buf, client_fd, Entities, Bullets, &gameVar);
+        parent_thread(game, score, &buf, new_conn_fd, Entities, Bullets, &gameVar);
 
         // Stop the manche soundtrack
         stop_sound(&sounds[MANCHE].sound);
