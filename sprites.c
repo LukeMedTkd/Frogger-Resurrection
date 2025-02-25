@@ -11,23 +11,23 @@ extern Sound sounds[N_SOUND];
 /*--------------- Game’s Prints ---------------*/
 void print_timer(WINDOW *score, int timer) {
 
-    for (int j = 0; j <= TIME; j++) mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");
+    for (int j = 0; j <= TIME; j++){ mvwprintw(score, 0, GAME_WIDTH - TIME + j, " ");}
 
     int color_id = COLOR_TIME1_ID; // Default
-    if (timer <= 56 && timer > 52) color_id = COLOR_TIME2_ID;
-    if (timer <= 52 && timer > 48) color_id = COLOR_TIME3_ID;
-    if (timer <= 48 && timer > 44) color_id = COLOR_TIME4_ID;
-    if (timer <= 44 && timer > 40) color_id = COLOR_TIME5_ID;
-    if (timer <= 40 && timer > 36) color_id = COLOR_TIME6_ID;
-    if (timer <= 36 && timer > 32) color_id = COLOR_TIME7_ID;
-    if (timer <= 32 && timer > 28) color_id = COLOR_TIME8_ID;
-    if (timer <= 28 && timer > 24) color_id = COLOR_TIME9_ID;
-    if (timer <= 24 && timer > 20) color_id = COLOR_TIME10_ID;
-    if (timer <= 20 && timer > 16) color_id = COLOR_TIME11_ID;
-    if (timer <= 16 && timer > 12) color_id = COLOR_TIME12_ID;
-    if (timer <= 12 && timer > 8) color_id = COLOR_TIME13_ID;
-    if (timer <= 8 && timer > 4) color_id = COLOR_TIME14_ID;
-    if (timer <= 4 && timer > 0) color_id = COLOR_TIME15_ID;
+    if (timer <= 56 && timer > 52){ color_id = COLOR_TIME2_ID; }
+    if (timer <= 52 && timer > 48){ color_id = COLOR_TIME3_ID; }
+    if (timer <= 48 && timer > 44){ color_id = COLOR_TIME4_ID; }
+    if (timer <= 44 && timer > 40){ color_id = COLOR_TIME5_ID; }
+    if (timer <= 40 && timer > 36){ color_id = COLOR_TIME6_ID; }
+    if (timer <= 36 && timer > 32){ color_id = COLOR_TIME7_ID; }
+    if (timer <= 32 && timer > 28){ color_id = COLOR_TIME8_ID; }
+    if (timer <= 28 && timer > 24){ color_id = COLOR_TIME9_ID; }
+    if (timer <= 24 && timer > 20){ color_id = COLOR_TIME10_ID; }
+    if (timer <= 20 && timer > 16){ color_id = COLOR_TIME11_ID; }
+    if (timer <= 16 && timer > 12){ color_id = COLOR_TIME12_ID; }
+    if (timer <= 12 && timer > 8){ color_id = COLOR_TIME13_ID; }
+    if (timer <= 8 && timer > 4){ color_id = COLOR_TIME14_ID; }
+    if (timer <= 4 && timer > 0){ color_id = COLOR_TIME15_ID; }
 
     wattron(score, COLOR_PAIR(color_id) | A_BOLD);
 
@@ -50,7 +50,7 @@ void print_lifes(WINDOW *score, int lifes){
     mvwprintw(score, 0, 1, "LIFES: ");
     mvwprintw(score, 0, 7, "%s", "                         ");
     for (int i = 0; i < lifes; i++){
-        if(lifes < 3) wattron(score, A_BLINK);
+        if(lifes < 3){ wattron(score, A_BLINK); }
         mvwprintw(score, 0, (8 + (i*3)), "%s", "🐸");
     }
     wattroff(score, A_BLINK);
@@ -146,11 +146,15 @@ void print_frog(WINDOW *game, Character frog_entity){
             }
 
             // Gets the color
-            if (i == 0) {
+            if(i == 0){
                 wattron(game, COLOR_PAIR(COLOR_EYE_ID));
-            } else if (i == 2 && (j == 0 || j == 1 || j == 4 || j == 5)) {
+            } 
+            
+            else if(i == 2 && (j == 0 || j == 1 || j == 4 || j == 5)){
                 wattron(game, COLOR_PAIR(COLOR_LEGS_ID));
-            } else {
+            } 
+            
+            else{
                 wattron(game, COLOR_PAIR(COLOR_FROG_ID));
             }
 

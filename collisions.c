@@ -153,8 +153,8 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
     // If some crocodiles bullet is ACTIVE and the manche ends, the bullets are set to DEACTIVE and are killed
     for(int i = 0; i < N_BULLETS; i++){
         if(Bullets[i].sig == ACTIVE && *manche_ended){
-            if(Entities[i].pid != 0) kill(Bullets[i].pid, SIGKILL);
-            if(Entities[i].pid != 0) waitpid(Bullets[i].pid, NULL, WNOHANG);
+            if(Entities[i].pid != 0){ kill(Bullets[i].pid, SIGKILL); }
+            if(Entities[i].pid != 0){ waitpid(Bullets[i].pid, NULL, WNOHANG); }
             Bullets[i].sig = DEACTIVE;
         }
     }
@@ -163,7 +163,7 @@ void bullets_collision(Character *Entities, Character *Bullets, Game_var *gameVa
     int current_crocodile_index, current_stream = 0;
     if (RIVER_Y_START <= Entities[FROG_ID].y && Entities[FROG_ID].y < RIVER_Y_END) {
         // Get index of the current stream
-        while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y) current_stream++;
+        while ((CROCODILE_OFFSET_Y + (current_stream * CROCODILE_DIM_Y)) < Entities[FROG_ID].y){ current_stream++; }
 
         // Check 3 crocodiles bullets at once
         for (int j = 0; j < MAX_N_CROCODILE_PER_STREAM; j++) {
