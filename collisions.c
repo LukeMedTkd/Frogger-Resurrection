@@ -92,7 +92,7 @@ void generate_bullets(int *fds, Character *Entities, Character *Bullets, Game_va
         int args[4] = {0};
 
         // Get stream based on index
-            int n_stream = get_nStream_based_on_id(msg->id);
+        int n_stream = get_nStream_based_on_id(msg->id);
 
         // Get the stream dir -> crocodile bullet orientation
         int dir = (msg->x == 1 ? 1 : -1);
@@ -114,7 +114,7 @@ void generate_bullets(int *fds, Character *Entities, Character *Bullets, Game_va
 }
 
 void reset_bullets_signal(Character *Bullets){
-    for(int i=0; i<N_BULLETS; i++) Bullets[i].sig = DEACTIVE;
+    for(int i = 0; i < N_BULLETS; i++) Bullets[i].sig = DEACTIVE;
 }
 
 void deactive_bullets_out_game(Character *Bullets, int *current_bullet_id,  Msg *msg){

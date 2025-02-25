@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <ncurses.h>
-#include <stdbool.h>
 #include "struct.h"
 
 // GAME VARIABLES

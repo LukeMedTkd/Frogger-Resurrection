@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <sys/wait.h>
 #include <sys/signal.h>
 #include "struct.h"

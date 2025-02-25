@@ -27,6 +27,7 @@ void frog_process(int pipe_write, int* args){
         switch(move){
             case KEY_UP:
                 direction = -1;
+                [[fallthrough]];
             case KEY_DOWN:
                 msg.y = FROG_MOVE_Y * direction;
                 msg.x = 0;
@@ -34,6 +35,7 @@ void frog_process(int pipe_write, int* args){
                 break;
             case KEY_LEFT:
                 direction = -1;
+                [[fallthrough]];
             case KEY_RIGHT:
                 msg.x = FROG_MOVE_X * direction;
                 msg.y = 0;
@@ -48,7 +50,7 @@ void frog_process(int pipe_write, int* args){
 
         // Check if a message needs to be sent
         if(msg_to_send) {
-            write_msg(pipe_write, msg); // Write message on pipe
+            write_msg(pipe_write, msg); // Write message on the pipe
 
             // Reset Defaults
             direction = 1;
@@ -60,6 +62,8 @@ void frog_process(int pipe_write, int* args){
 }
 
 void reset_frog_position(Character *frog_entity){
+
+    // Place the frog in the middle of the lower bank of the river
     frog_entity->y = FROG_INIT_Y;
     frog_entity->x = FROG_INIT_X;
 }
@@ -109,7 +113,6 @@ void crocodile_process(int pipe_write, int* args){
     msg.x = CROCODILE_MOVE_X * direction;
     msg.y = 0;
 
-
     // The spawn time is delayed
     usleep(spawn_delay);
 
@@ -132,7 +135,6 @@ void crocodile_bullet_process(int pipe_write, int* args){
     msg.x = (args[1] > 0 ? 1 : -1);
     msg.id = args[3];
     
-    usleep(abs(args[2]));
     while(TRUE){
         write_msg(pipe_write, msg);
         usleep(abs(args[1]));
@@ -173,13 +175,13 @@ void timer_process(int pipe_write, int* args){
 /*-------------------- Parent Process --------------------*/
 void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, Character *Bullets, Game_var *gameVar){
 
-    int current_bullet_id, random_shot = -1; // Crocodiles utils variables
-    bool manche_ended = FALSE; // Flag
-    Msg msg; // Define msg to store pipe message
+    int current_bullet_id, random_shot = -1;    // Useful crocodile variables
+    bool manche_ended = FALSE;                  // The flag pointed out  if the game is over
+    Msg msg;                                    // Define msg to store pipe message
 
     // Manche Loop
     while(!manche_ended){
-        // Read msg from the pipes
+        // Read msg from the pipe
         msg = read_msg(fds[PIPE_READ]);
 
         switch (msg.id){
@@ -336,7 +338,7 @@ void parent_process(WINDOW *game, WINDOW *score, int *fds, Character *Entities, 
         // Print Crocodile Bullets
         print_crocodiles_bullets(game, Bullets);
 
-        // Refresh the game and the score screen
+        // Refresh game and score windows
         wrefresh(game);
         wrefresh(score);
     }

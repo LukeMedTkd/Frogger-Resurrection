@@ -2,15 +2,15 @@
 #include "utils.h"
 
 void init_screen(){
-    // Setup screen
-    setlocale(LC_ALL, ""); // Enable UTF-8 chars
-    initscr(); // Initialize window
-    noecho(); // Hide character typed
-    curs_set(0); // Remove cursor
-    cbreak(); // Don't wait ENTER in getch()
-    keypad(stdscr, TRUE); // Enable function keys listener
-    nodelay(stdscr, TRUE);
-    srand(time(NULL));
+    // Setup the screen
+    setlocale(LC_ALL, "");        // Enable UTF-8 chars
+    initscr();                    // Initialize window
+    noecho();                     // Hide character typed
+    curs_set(0);                  // Remove cursor
+    cbreak();                     // Don't wait ENTER in getch()
+    keypad(stdscr, TRUE);         // Enable function keys listener
+    nodelay(stdscr, TRUE);        // If bf is TRUE, this screen is set to No Delay Mode (from the man)
+    srand(time(NULL));            // Set the seed in a random way
 }
 
 void init_colors(){
@@ -127,7 +127,7 @@ void check_terminal_size(){
             wattroff(resize_term ,A_BOLD);
             mvwprintw(resize_term, 3, 3, "Make sure that full screen is enabled");
             mvwprintw(resize_term, 6, 5, "The window is too small for playing");
-            mvwprintw(resize_term, 7, 5, "Minimum size allowed; %d x %d", GAME_WIDTH, GAME_HEIGHT);
+            mvwprintw(resize_term, 7, 5, "Minimum size allowed; %d x %d", GAME_WIDTH, GAME_HEIGHT+1);
             mvwprintw(resize_term, 8, 5, "Current Size; %d x %d", COLS, LINES);
             mvwprintw(resize_term, 9, 5, "If the full screen is too small, click on 'Ctrl -'");
             wrefresh(resize_term);

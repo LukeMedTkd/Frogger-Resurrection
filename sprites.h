@@ -1,5 +1,4 @@
 #include <ncurses.h>
-#include <stdbool.h>
 #include "struct.h"
 
 extern bool crocodiles_creation;
@@ -12,8 +11,7 @@ extern bool crocodiles_creation;
 #define CROCODILE_DIM_X 30
 #define CROCODILE_DIM_Y 4
 
-
-// Dens costants
+// Dens constants
 #define DENS1_START 20
 #define DENS2_START 45
 #define DENS3_START 70
@@ -23,7 +21,7 @@ extern bool crocodiles_creation;
 // Animation's OUTCOME Duration
 #define DURATION 3200000
 
-// DEMO costants
+// DEMO constants
 #define DURATION_MAX 50000 
 #define DURATION_MIN 5000
 #define DEMO_DURATION 145000

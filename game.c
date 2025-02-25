@@ -1,5 +1,5 @@
-#include "struct.h"
 #include "game.h"
+#include "struct.h"
 #include "entity.h"
 #include "utils.h"
 #include "sprites.h"
@@ -7,7 +7,7 @@
 #include "sound.h"
 
 bool crocodiles_creation = false;
-extern Sound sounds[N_SOUND];
+extern Sound sounds[N_SOUND]; 
 
 Game_var initialize_gameVar(){
     Game_var gameVar;
@@ -96,7 +96,7 @@ void outcome(WINDOW *game, Game_var *gameVar){
 /*---------------- Main GAME function --------------------*/
 void start_game(WINDOW *score, WINDOW *game){
 
-    //set game variables
+    // Set game variables
     Game_var gameVar = initialize_gameVar();
 
     // Dynamic allocation 
@@ -133,13 +133,13 @@ void start_game(WINDOW *score, WINDOW *game){
         // Create the crocodiles on the streams
         set_crocodiles_on_streams(Entities, fds, &gameVar);
 
-        // Play the manche soundtrack
+        // Play the soundtrack manche
         play_sound(&sounds[MANCHE].sound);
 
         // Parent Process
         parent_process(game, score, fds, Entities, Bullets, &gameVar);
 
-        // Stop the manche soundtrack
+        // Stop the soundtrack manche
         stop_sound(&sounds[MANCHE].sound);
 
         // Kill all the crocodile processes and their bullets to generate a new original scene
@@ -158,7 +158,7 @@ void start_game(WINDOW *score, WINDOW *game){
     wait_children(Bullets, 0, N_BULLETS);
 
 
-    // Free the allocated memeory
+    // Free the allocated memory
     free(Entities);
     free(Bullets);
 

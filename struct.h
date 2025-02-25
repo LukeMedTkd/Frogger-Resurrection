@@ -44,7 +44,6 @@ typedef struct
    int y;
    int x;
    int sig;
-
 }Character;
 
 #endif
