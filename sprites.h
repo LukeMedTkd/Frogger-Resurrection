@@ -12,7 +12,6 @@ extern bool crocodiles_creation;
 #define CROCODILE_DIM_X 30
 #define CROCODILE_DIM_Y 4
 
-
 // Dens costants
 #define DENS1_START 20
 #define DENS2_START 45

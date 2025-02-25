@@ -13,7 +13,8 @@
 
 extern Sound sounds[N_SOUND];
 
-int start_menu(WINDOW *menu) {
+int start_menu(WINDOW *menu){
+
     keypad(menu, TRUE);
     int key, choice = 0;
     const char *options[MENU_OPTIONS] = {" START ", " QUIT "};
@@ -41,7 +42,7 @@ int start_menu(WINDOW *menu) {
 
         // User Input
         key = wgetch(menu);
-        switch (key) {
+        switch (key){
             case KEY_UP:
                 choice = (choice - 1 + MENU_OPTIONS) % MENU_OPTIONS;
                 break;
@@ -51,20 +52,19 @@ int start_menu(WINDOW *menu) {
             case 10:
                 return choice == 0 ? 1 : 0; // 1 = START, 0 = QUIT
         }
-
         wrefresh(menu); 
     }
 }
 
 int main(){
 
-    // Inits screen
+    // Init screen
     init_screen();
 
-    // Sets colors
+    // Set colors
     init_colors();
 
-    //Checks terminal size
+    //Check terminal size
     check_terminal_size();
 
     // Create MENU window
@@ -85,17 +85,17 @@ int main(){
         // Stop DEMO Sound
         stop_sound(&sounds[DEMO].sound);
 
-        if(!start_menu(menu)) break; // If the USER click QUIT, break
+        if(!start_menu(menu)) break; // If the USER selects QUIT, break
 
         // Clear the INITSCR so remove the menu win
         clear();
         refresh();
 
-        // Creates the two GAME windows
+        // Create the two GAME windows
         WINDOW *score = newwin(SCORE_HEIGHT, GAME_WIDTH, 0, 0);
         WINDOW *game = newwin(GAME_HEIGHT, GAME_WIDTH, GAME_START, 0);
 
-        // Centers entire screen
+        // Center entire screen
         center_game(score, game);
 
         // Start the entire game

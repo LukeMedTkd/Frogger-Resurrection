@@ -39,7 +39,6 @@ typedef struct
     bool dens[N_DENS];
 }Game_var;
 
-
 typedef struct
 {
    pthread_t tid;
@@ -53,8 +52,8 @@ typedef struct
 typedef struct {
     Msg buffer[BUFFER_SIZE];
     int in, out;
-    sem_t sem_busy_spaces;    // Semaforo per gli spazi liberi
-    sem_t sem_free_spaces; // Semaforo per gli elementi disponibili
+    sem_t sem_busy_spaces;// Semaphore for the busy spaces
+    sem_t sem_free_spaces; // Semaphore for the free spaces
     pthread_mutex_t mutex;
 }Buffer;
 

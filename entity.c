@@ -7,7 +7,6 @@
 #include "sound.h"
 
 extern Sound sounds[N_SOUND];
-
 extern Buffer buf;
 
 /*--------------------------------------------------*/
@@ -16,7 +15,7 @@ void *frog_thread(void *args){
 
     // Init some variables
     int move, direction = 1;
-    bool msg_to_send = TRUE; // avoid writing no movements
+    bool msg_to_send = TRUE; // Avoid writing no movements
 
     // Declare msg and attr
     Msg msg;
@@ -29,6 +28,7 @@ void *frog_thread(void *args){
         switch(move){
             case KEY_UP:
                 direction = -1;
+                [[fallthrough]];
             case KEY_DOWN:
                 msg.y = FROG_MOVE_Y * direction;
                 msg.x = 0;
@@ -36,6 +36,7 @@ void *frog_thread(void *args){
                 break;
             case KEY_LEFT:
                 direction = -1;
+                [[fallthrough]];
             case KEY_RIGHT:
                 msg.x = FROG_MOVE_X * direction;
                 msg.y = 0;
@@ -49,7 +50,7 @@ void *frog_thread(void *args){
         }
 
         // Check if a message needs to be sent
-        if(msg_to_send) {
+        if(msg_to_send){
             write_msg(&buf, msg); // Write message on buffer
 
             // Reset Defaults
@@ -86,11 +87,13 @@ void *right_frog_bullet_thread(void *args){
 }
 
 void reset_frog_position(Character *frog_entity){
+
     frog_entity->y = FROG_INIT_Y;
     frog_entity->x = FROG_INIT_X;
 }
 
 void reset_frog_bullet_position(Character *Entities, Character *Bullets){
+
     Bullets[FROG_ID].x = Entities[FROG_ID].x;
     Bullets[FROG_ID].y = Entities[FROG_ID].y + (FROG_DIM_Y / 2);
     Bullets[FROG_ID + 1].x = Entities[FROG_ID].x + FROG_DIM_X - 1;
@@ -107,7 +110,7 @@ void *crocodile_thread(void* args){
     int stream_speed = abs(arg[1]);
     int spawn_delay = arg[2];  
 
-    // Get direction through the stream speed     args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
+    // Get stream direction through its speed   args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
     int direction = (arg[1] > 0 ? 1 : -1);
 
     // Declare msg and Set attr
@@ -119,7 +122,7 @@ void *crocodile_thread(void* args){
     // Free the allocated memory
     free(args);
 
-    // The spawn time is delayed
+    // Spawn time is delayed
     usleep(spawn_delay);
 
     while (TRUE){
@@ -134,7 +137,6 @@ void *crocodile_bullet_thred(void* args){
 
     // args[4]:  | n_stream | stream_speed_with_dir | spawn delay | entity_id
     int stream_speed = abs(arg[1]);
-    int spawn_delay = arg[2];
 
     Msg msg;
     msg.x = (arg[1] > 0 ? 1 : -1);
@@ -150,16 +152,18 @@ void *crocodile_bullet_thred(void* args){
 }
 
 void reset_crocodile_position(Character *crocodile_entity, int n_stream, Game_var *gameVar){
-    // Determine the correct position: set crocodile_init_x, crocodile_init_y
+
+    // Get correct position to set crocodile_init_x and rocodile_init_y
     crocodile_entity->y = (CROCODILE_OFFSET_Y) + (n_stream * CROCODILE_DIM_Y);
     crocodile_entity->x = (gameVar->streams_speed[n_stream] > 0 ? (-CROCODILE_DIM_X - 1) : (GAME_WIDTH + 1));
 }
 
 void reset_crocodile_bullet_position(Character *Entities, Character *Bullets, Game_var *gameVar, int index){
+
     // Get stream based on index
     int n_stream = get_nStream_based_on_id(index);
 
-    // Get the stream dir -> crocodile orientation
+    // Get stream direction through its speed
     int dir = (gameVar->streams_speed[n_stream] > 0 ? 1 : -1);
 
     // Reset the correct crocodile bullet position
@@ -182,9 +186,9 @@ void *timer_thread(void *args){
 }
 
 void reset_timer(Game_var *gameVar){
+
     gameVar->time = TIME;
 }
-
 
 /*--------------------------------------------------------*/
 /*-------------------- Parent thread --------------------*/
@@ -251,8 +255,6 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                         Bullets[FROG_ID].tid = 0; // Set tid = 0 to show the thread has been killed
                     }
                 }
-                
-                
                 break;
 
 
@@ -272,7 +274,6 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                         Bullets[FROG_ID + 1].tid = 0; // Set tid = 0 to show the thread has been killed
                     }
                 }
-
                 break;
 
 
@@ -287,7 +288,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 // Generate a random_shot value
                 random_shot = rand_range(MAX_RANDOM_SHOT, MIN_RANDOM_SHOT);
 
-                // Updates the crocodile position only if the crocodile signal is ONLINE, else resets crocodile positin
+                // Update the crocodile position only if the crocodile signal is ONLINE, else resets crocodile position
                 if(Entities[msg.id].sig == CROCODILE_ONLINE){
                     Entities[msg.id].x += msg.x;
                     
@@ -300,6 +301,7 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                     reset_crocodile_position(&(Entities[msg.id]), get_nStream_based_on_id(msg.id), gameVar);
                 }
                 break;
+
 
             // ************************************ 
             // Msg from some CROCODILE BULLETS threads
@@ -315,27 +317,25 @@ void parent_thread(WINDOW *game, WINDOW *score, Buffer *buf, Character *Entities
                 // Check if a bullet is out of the GAME
                 deactive_bullets_out_game(Bullets, &current_bullet_id, &msg);
 
-                // Checks if some CROCODILE BULLETS kill the FROG
+                // Check if some CROCODILE BULLETS killed the FROG
                 frog_killed(Entities, Bullets, gameVar, &manche_ended, &current_bullet_id);
 
 
                 break;
             
 
-
             // ************************** 
             // Msg from TIME
             // **************************
             case TIME_ID:
                 gameVar->time += msg.x;
-        
+     
 
             default:
                 break;
         }
 
         /*------------------------ Check some collisions ----------------------*/
-        // Check all the dens
         dens_collision(Entities, gameVar, &manche_ended);
         frog_on_crocodile_collision(Entities, gameVar, &manche_ended);
         is_time_up(game, Entities, Bullets, gameVar, &manche_ended);
