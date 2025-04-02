@@ -17,6 +17,6 @@ Università degli Studi di Cagliari - Informatica Applicata e Data Analytics [60
 <em>
 <strong>Autori:</strong>
 <br>Luca Medda<br>
-Corrado Casu)
+Corrado Casu
 </em>
 </p>
